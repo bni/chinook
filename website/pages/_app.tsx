@@ -2,29 +2,29 @@ import "@mantine/core/styles.css";
 import Head from "next/head";
 import { createTheme, MantineColorsTuple, MantineProvider } from "@mantine/core";
 
-const lightBlue: MantineColorsTuple = [
-  '#dffbff',
-  '#caf2ff',
-  '#99e2ff',
-  '#64d2ff',
-  '#3cc4fe',
-  '#23bcfe',
-  '#09b8ff',
-  '#00a1e4',
-  '#008fcd',
-  '#007cb6'
+const skyBlue: MantineColorsTuple = [
+  '#e1f8ff',
+  '#cbedff',
+  '#9ad7ff',
+  '#64c1ff',
+  '#3aaefe',
+  '#20a2fe',
+  '#099cff',
+  '#0088e4',
+  '#0079cd',
+  '#0068b6'
 ];
 
 const theme = createTheme({
   colors: {
-    lightBlue: lightBlue
+    skyBlue: skyBlue
   },
-  primaryColor: 'lightBlue'
+  primaryColor: 'skyBlue'
 });
 
 export default function App({ Component, pageProps }: any) {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} defaultColorScheme="auto">
       <Head>
         <title>Home Page</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no" />
