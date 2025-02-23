@@ -2,7 +2,7 @@ import { AppShell, Burger, Button, Flex, Group, Skeleton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ColorSchemeToggler from "./ColorSchemeToggler";
 
-export function CollapseDesktop() {
+export function CollapseDesktop({ children }: any) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure();
 
@@ -38,9 +38,7 @@ export function CollapseDesktop() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Group mt={50} justify="center">
-          <Button size="xl">Welcome to Mantine!</Button>
-        </Group>
+        {children}
       </AppShell.Main>
     </AppShell>
   );
