@@ -1,12 +1,17 @@
 https://www.simonpcouch.com/blog/2024-03-14-oracle/
 https://github.com/abiosoft/colima
 
+colima start
+
 docker run -d -p 1522:1521 --name oracle -e ORACLE_PWD=XXX oracle/database:19.3.0-ee
 
 docker ps -a
 docker logs 40830b484560
 
-docker stop 89fe2472c30c
+docker start 40830b484560
+
+docker stop 40830b484560
+
 docker rm 89fe2472c30c
 
 docker save -o ~/Downloads/oracle-database-19.3.0-ee.tar oracle/database:19.3.0-ee
