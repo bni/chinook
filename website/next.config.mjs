@@ -1,4 +1,5 @@
 const nextConfig = {
+  devIndicators: false,
   reactStrictMode: true,
   serverExternalPackages: ['oracledb']
 };

@@ -10,7 +10,7 @@ interface Artist {
 }
 
 export async function getServerSideProps() {
-  const artists = [];
+  let artists: Artist[] = [];
 
   let connection;
   try {
@@ -18,9 +18,9 @@ export async function getServerSideProps() {
 
     const result = await connection.execute(`
       SELECT
-        ar.artistid as "artistId",
-        ar.name as "artistName",
-        count(al.albumid) as "nrAlbums"
+        ar.artistid AS "artistId",
+        ar.name AS "artistName",
+        COUNT(al.albumid) AS "nrAlbums"
       FROM
         artist ar
       INNER JOIN
@@ -34,15 +34,7 @@ export async function getServerSideProps() {
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
-    const rows: Artist[] = result.rows as Artist[];
-
-    for (const row of rows) {
-      artists.push([
-        row.artistId,
-        row.artistName,
-        row.nrAlbums
-      ]);
-    }
+    artists = result.rows as Artist[];
   } catch (error) {
     console.log(error);
   } finally {

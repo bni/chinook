@@ -1,6 +1,8 @@
-import "@mantine/core/styles.css";
-import Head from "next/head";
 import { createTheme, MantineColorsTuple, MantineProvider } from "@mantine/core";
+import Head from "next/head";
+
+import "@mantine/core/styles.layer.css";
+import "mantine-datatable/styles.layer.css";
 
 const skyBlue: MantineColorsTuple = [
   '#e1f8ff',

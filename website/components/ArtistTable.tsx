@@ -1,12 +1,22 @@
-import { Table, TableData } from '@mantine/core';
+import { DataTable } from "mantine-datatable";
 
 export function ArtistTable({ artists }: any) {
-  const tableData: TableData = {
-    head: ['Id', 'Name', 'Number albums'],
-    body: [
-      ...artists
-    ]
-  };
-
-  return <Table m={100} data={tableData} />;
+  return (
+    <DataTable
+      withTableBorder
+      withColumnBorders
+      striped
+      highlightOnHover
+      fz="md"
+      idAccessor="artistId"
+      columns={
+        [
+          { accessor: 'artistId', hidden: true },
+          { accessor: 'artistName' },
+          { accessor: 'nrAlbums' }
+        ]
+      }
+      records={ artists }
+    />
+  );
 }
