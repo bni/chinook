@@ -1,0 +1,38 @@
+[
+  {
+    "employeeId": 42,
+    "firstName": "Sue",
+    "lastName": "Doe",
+    "fullName": "Sue Doe",
+    "title": "Developer",
+    "supporRepForCustomers": [
+      {
+        "customerId": 4535,
+        "firstName": "Customer",
+        "lastName": "A",
+        "companyName": null
+      },
+      {
+        "customerId": 8989,
+        "firstName": "Customer",
+        "lastName": "C",
+        "companyName": "Company C"
+      }
+    ]
+  },
+  {
+    "employeeId": 78,
+    "firstName": "Bob",
+    "lastName": "Bobson",
+    "fullName": "Bob Bobson",
+    "title": "Programmer",
+    "supporRepForCustomers": [
+      {
+        "customerId": 786,
+        "firstName": "Customer",
+        "lastName": "B",
+        "companyName": null
+      }
+    ]
+  }
+]

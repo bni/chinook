@@ -1,9 +1,7 @@
 import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ColorSchemeToggler from "./ColorSchemeToggler";
-import { IconActivity, IconHome2, IconMoon, IconSun, IconUser } from "@tabler/icons-react";
-import cx from "clsx";
-import classes from "./ColorSchemeToggler.module.css";
+import { IconActivity, IconHome2, IconUser, IconUsersGroup } from "@tabler/icons-react";
 
 export function CollapseDesktop({ children }: any) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
@@ -40,6 +38,7 @@ export function CollapseDesktop({ children }: any) {
 
         <NavLink href={"/"} label="Start" leftSection={<IconHome2 size="1rem" stroke={1.5} />} />
         <NavLink href={"/here"} label="Here" leftSection={<IconActivity size="1rem" stroke={1.5} />} />
+        <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size="1rem" stroke={1.5} />} />
 
       </AppShell.Navbar>
 
