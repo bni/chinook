@@ -1,5 +1,5 @@
-import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import ColorSchemeToggler from "./ColorSchemeToggler";
 import { IconActivity, IconHome2, IconUser, IconUsersGroup } from "@tabler/icons-react";
 
@@ -12,7 +12,7 @@ export function CollapseDesktop({ children }: any) {
       header={{ height: 60 }}
       navbar={{
         width: 300,
-        breakpoint: 'sm',
+        breakpoint: "sm",
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       padding="md"
@@ -23,7 +23,7 @@ export function CollapseDesktop({ children }: any) {
             <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
             <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
           </Group>
-  
+
           <Group h="100%" px="md" ml="auto">
             <ColorSchemeToggler/>
 
