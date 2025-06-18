@@ -13,7 +13,7 @@ export function CollapseDesktop({ children }: any) {
       navbar={{
         width: 300,
         breakpoint: "sm",
-        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened }
       }}
       padding="md"
     >

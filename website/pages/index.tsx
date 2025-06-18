@@ -30,8 +30,8 @@ export async function getServerSideProps() {
       ORDER BY
         "nrAlbums" DESC
       `,
-      [],
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    [],
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
     artists = result.rows as Artist[];

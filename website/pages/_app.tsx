@@ -5,23 +5,23 @@ import "@mantine/core/styles.layer.css";
 import "mantine-datatable/styles.layer.css";
 
 const skyBlue: MantineColorsTuple = [
-  '#e1f8ff',
-  '#cbedff',
-  '#9ad7ff',
-  '#64c1ff',
-  '#3aaefe',
-  '#20a2fe',
-  '#099cff',
-  '#0088e4',
-  '#0079cd',
-  '#0068b6'
+  "#e1f8ff",
+  "#cbedff",
+  "#9ad7ff",
+  "#64c1ff",
+  "#3aaefe",
+  "#20a2fe",
+  "#099cff",
+  "#0088e4",
+  "#0079cd",
+  "#0068b6"
 ];
 
 const theme = createTheme({
   colors: {
     skyBlue: skyBlue
   },
-  primaryColor: 'skyBlue'
+  primaryColor: "skyBlue"
 });
 
 export default function App({ Component, pageProps }: any) {

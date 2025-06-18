@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "indent": ["warn", 2],
+    "quotes": ["warn", "double"],
+    "prefer-const": "warn",
+    "semi": "warn",
+    "no-unused-vars": "warn",
+    "no-useless-return": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "comma-dangle": ["warn", "never"],
+    "no-multiple-empty-lines": ["warn", { "max": 1 }],
+    "keyword-spacing": ["warn", { "before": true }],
+    "space-before-blocks": "warn",
+    "eol-last": "warn"
+  }
+}

@@ -5,10 +5,10 @@ export function oracleMock(resultRows: any) {
         execute: function () {
           return {
             rows: resultRows
-          }
+          };
         },
         close: function () {}
-      }
+      };
     }
   };
 }

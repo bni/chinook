@@ -1,7 +1,7 @@
 import { Employee } from "@lib/types";
 
 export async function listEmployees(oracledb: any): Promise<Employee[]> {
-  let employees: Employee[] = [];
+  const employees: Employee[] = [];
 
   let connection;
   try {
@@ -24,12 +24,12 @@ export async function listEmployees(oracledb: any): Promise<Employee[]> {
         ORDER BY
           e.employeeid
       `,
-      [],
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    [],
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
     if (result.rows) {
-      const rows = result.rows as any[];
+      const rows = result.rows;
 
       let currentEmployee: Employee | undefined = undefined;
 

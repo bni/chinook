@@ -11,9 +11,9 @@ export function ArtistTable({ artists }: any) {
       idAccessor="artistId"
       columns={
         [
-          { accessor: 'artistId', hidden: true },
-          { accessor: 'artistName' },
-          { accessor: 'nrAlbums' }
+          { accessor: "artistId", hidden: true },
+          { accessor: "artistName" },
+          { accessor: "nrAlbums" }
         ]
       }
       records={ artists }
