@@ -1,7 +1,7 @@
 const nextConfig = {
   devIndicators: false,
   reactStrictMode: true,
-  serverExternalPackages: ['oracledb']
+  serverExternalPackages: ["oracledb"]
 };
 
 export default nextConfig;

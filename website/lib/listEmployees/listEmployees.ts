@@ -51,14 +51,14 @@ export async function listEmployees(oracledb: any): Promise<Employee[]> {
             currentEmployee.supporRepForCustomers = [];
           }
 
-          currentEmployee.supporRepForCustomers.push(
-            {
-              customerId: row.customerId,
-              firstName: row.customerFirstName,
-              lastName: row.customerLastName,
-              companyName: row.customerCompanyName
-            }
-          );
+          const customer = {
+            customerId: row.customerId,
+            firstName: row.customerFirstName,
+            lastName: row.customerLastName,
+            companyName: row.customerCompanyName
+          };
+
+          currentEmployee.supporRepForCustomers.push(customer);
         }
       }
     }
