@@ -2,8 +2,9 @@ import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from "@mantine/cor
 import { useDisclosure } from "@mantine/hooks";
 import ColorSchemeToggler from "./ColorSchemeToggler";
 import { IconActivity, IconHome2, IconUser, IconUsersGroup } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 
-export function CollapseDesktop({ children }: any) {
+export function CollapseDesktop({ children }: { children: ReactNode }) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure();
 

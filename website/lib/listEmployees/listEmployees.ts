@@ -1,13 +1,26 @@
-import { Employee } from "@lib/types";
+import { Customer, Employee } from "@lib/types/employee";
 
-export async function listEmployees(oracledb: any): Promise<Employee[]> {
+import oracledb from "oracledb";
+
+interface ResultRow {
+  employeeId: number,
+  employeeFirstName: string,
+  employeeLastName: string,
+  employeeTitle: string,
+  customerId: number,
+  customerFirstName: string,
+  customerLastName: string,
+  customerCompanyName: string
+}
+
+export async function listEmployees(): Promise<Employee[]> {
   const employees: Employee[] = [];
 
   let connection;
   try {
     connection = await oracledb.getConnection();
 
-    const result = await connection.execute(`
+    const result: oracledb.Result<ResultRow> = await connection.execute(`
         SELECT
           e.employeeid AS "employeeId",
           e.firstname AS "employeeFirstName",
@@ -51,7 +64,7 @@ export async function listEmployees(oracledb: any): Promise<Employee[]> {
             currentEmployee.supporRepForCustomers = [];
           }
 
-          const customer = {
+          const customer: Customer = {
             customerId: row.customerId,
             firstName: row.customerFirstName,
             lastName: row.customerLastName,

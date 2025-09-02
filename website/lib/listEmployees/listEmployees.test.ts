@@ -1,13 +1,23 @@
-import { Employee } from "@lib/types";
+import { Employee } from "@lib/types/employee";
 import { listEmployees } from "@lib/listEmployees/listEmployees";
+import oracledb from "oracledb";
+import sinon from "sinon";
 import testRows from "./testRows.json";
 import expectedResult from "./expectedResult.json";
-import { oracleMock } from "@lib/util/oracleMock";
 
 test("List employees", async () => {
-  const oracledb = oracleMock(testRows);
+  sinon.stub(oracledb, "getConnection").resolves({
+    execute: function() {},
+    close: function() {}
+  });
 
-  const employees: Employee[] = await listEmployees(oracledb);
+  const connection = await oracledb.getConnection();
+
+  sinon.stub(connection, "execute").resolves({
+    rows: testRows
+  });
+
+  const employees: Employee[] = await listEmployees();
 
   expect(employees).toStrictEqual(expectedResult);
 });

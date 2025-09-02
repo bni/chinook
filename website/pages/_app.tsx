@@ -1,5 +1,6 @@
 import { createTheme, MantineColorsTuple, MantineProvider } from "@mantine/core";
 import Head from "next/head";
+import type { AppProps } from "next/app";
 
 import "@mantine/core/styles.layer.css";
 import "mantine-datatable/styles.layer.css";
@@ -21,10 +22,17 @@ const theme = createTheme({
   colors: {
     skyBlue: skyBlue
   },
-  primaryColor: "skyBlue"
+  primaryColor: "skyBlue",
+  fontSizes: {
+    xs: "20px",
+    sm: "21px",
+    md: "24px",
+    lg: "26px",
+    xl: "30px"
+  }
 });
 
-export default function App({ Component, pageProps }: any) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <Head>

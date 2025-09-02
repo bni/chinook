@@ -4,7 +4,6 @@
     "next/typescript"
   ],
   "rules": {
-    "@typescript-eslint/no-explicit-any": "off",
     "indent": ["warn", 2],
     "quotes": ["warn", "double"],
     "prefer-const": "warn",
