@@ -2,10 +2,8 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { Employee } from "@lib/types/employee";
 import { useEffect, useState } from "react";
 import sortBy from "lodash/sortBy";
-import { IconChevronRight, IconX, IconUser, IconBuilding } from "@tabler/icons-react";
-import clsx from "clsx";
-import classes from './EmployeeTable.module.css';
-import { Box } from "@mantine/core";
+import { EmployeeRow } from "./EmployeeRow";
+import { EmployeeCustomerRow } from "./EmployeeCustomerRow";
 
 export function EmployeeTable({ employees }: { employees: Employee[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Employee>>({
@@ -34,24 +32,16 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
       columns={[
         { accessor: "employeeId", hidden: true },
         {
-          accessor: 'fullName',
-          title: 'Name / Customer',
+          accessor: "fullName",
+          title: "Name / Customer",
           noWrap: true,
           sortable: true,
-          render: ({ employeeId, fullName, supporRepForCustomers }) => (
-            <>
-              {supporRepForCustomers && supporRepForCustomers.length > 0 ?
-                  <IconChevronRight
-                    className={clsx(classes.icon, classes.expandIcon, {
-                      [classes.expandIconRotated]: expandedCustomerIds.includes(employeeId),
-                    })}
-                  />
-                :
-                <IconX className={classes.icon} />
-              }
-              <IconUser className={classes.icon} />
-              <span>{fullName}</span>
-            </>
+          render: ({ employeeId, fullName, supportRepForCustomers }) => (
+            <EmployeeRow params={{
+              hasCustomers: !!supportRepForCustomers && supportRepForCustomers.length > 0,
+              isExpanded: expandedCustomerIds.includes(employeeId),
+              fullName: fullName
+            }}/>
           ),
           width: 400
         },
@@ -61,7 +51,7 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
       rowExpansion={{
         allowMultiple: true,
         expanded: { recordIds: expandedCustomerIds, onRecordIdsChange: setExpandedCustomerIds },
-        "expandable": ({ record: { supporRepForCustomers } }) => !!supporRepForCustomers,
+        "expandable": ({ record: { supportRepForCustomers } }) => !!supportRepForCustomers,
         "content": (employee) => (
           <DataTable
             noHeader
@@ -73,14 +63,15 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
                 accessor: "firstName",
                 noWrap: true,
                 render: ({ firstName, lastName, companyName }) => (
-                  <Box component="span" ml={20}>
-                    <IconBuilding className={classes.icon} />
-                    <span>{firstName} {lastName}{companyName && ', ' + companyName}</span>
-                  </Box>
+                  <EmployeeCustomerRow params={{
+                    firstName: firstName,
+                    lastName: lastName,
+                    companyName: companyName
+                  }}/>
                 )
               }
             ]}
-            records={ employee.record.supporRepForCustomers }
+            records={ employee.record.supportRepForCustomers }
           />
         )
       }}

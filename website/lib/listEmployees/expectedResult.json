@@ -5,12 +5,11 @@
     "lastName": "Doe",
     "fullName": "Sue Doe",
     "title": "Developer",
-    "supporRepForCustomers": [
+    "supportRepForCustomers": [
       {
         "customerId": 4535,
         "firstName": "Customer",
-        "lastName": "A",
-        "companyName": null
+        "lastName": "A"
       },
       {
         "customerId": 8989,
@@ -26,12 +25,11 @@
     "lastName": "Bobson",
     "fullName": "Bob Bobson",
     "title": "Programmer",
-    "supporRepForCustomers": [
+    "supportRepForCustomers": [
       {
         "customerId": 786,
         "firstName": "Customer",
-        "lastName": "B",
-        "companyName": null
+        "lastName": "B"
       }
     ]
   }

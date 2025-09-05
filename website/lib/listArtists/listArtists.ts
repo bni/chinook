@@ -1,15 +1,22 @@
 import { Artist } from "@lib/types/artist";
 
-import oracledb from "oracledb";
+import oracledb, { Connection, Result } from "oracledb";
+
+interface ResultRow {
+  artistId: number,
+  artistName: string,
+  nrAlbums: number
+}
 
 export async function listArtists(): Promise<Artist[]> {
   let artists: Artist[] = [];
 
-  let connection;
+  let connection: Connection | undefined;
   try {
     connection = await oracledb.getConnection();
 
-    const result = await connection.execute(`
+    const result: Result<ResultRow> = await connection.execute(`
+
       SELECT
         ar.artistid AS "artistId",
         ar.name AS "artistName",
@@ -22,14 +29,15 @@ export async function listArtists(): Promise<Artist[]> {
         ar.artistid, ar.name
       ORDER BY
         "artistName" ASC, "nrAlbums" ASC
-      `,
-    [],
-    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+
+      `, [], { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
     artists = result.rows as Artist[];
   } catch (error) {
     console.log(error);
+
+    throw error;
   } finally {
     if (connection) { await connection.close(); }
   }

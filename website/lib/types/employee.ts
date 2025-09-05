@@ -15,7 +15,7 @@ const Employee = z.object({
   lastName: z.string(),
   fullName: z.string(),
   title: z.string().optional(),
-  supporRepForCustomers: Customer.array().optional()
+  supportRepForCustomers: Customer.array().optional()
 });
 
 export type Employee = z.infer<typeof Employee>;
