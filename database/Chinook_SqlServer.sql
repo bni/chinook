@@ -8,6 +8,7 @@ CREATE TABLE album
     artist_id INT NOT NULL,
     CONSTRAINT album_pkey PRIMARY KEY  (album_id)
 );
+GO
 
 CREATE TABLE artist
 (
@@ -15,6 +16,7 @@ CREATE TABLE artist
     name VARCHAR(120),
     CONSTRAINT artist_pkey PRIMARY KEY  (artist_id)
 );
+GO
 
 CREATE TABLE customer
 (
@@ -33,6 +35,7 @@ CREATE TABLE customer
     support_rep_id INT,
     CONSTRAINT customer_pkey PRIMARY KEY  (customer_id)
 );
+GO
 
 CREATE TABLE employee
 (
@@ -41,8 +44,8 @@ CREATE TABLE employee
     first_name VARCHAR(20) NOT NULL,
     title VARCHAR(30),
     reports_to INT,
-    birth_date TIMESTAMP,
-    hire_date TIMESTAMP,
+    birth_date DATETIME2,
+    hire_date DATETIME2,
     address VARCHAR(70),
     city VARCHAR(40),
     state VARCHAR(40),
@@ -53,6 +56,7 @@ CREATE TABLE employee
     email VARCHAR(60),
     CONSTRAINT employee_pkey PRIMARY KEY  (employee_id)
 );
+GO
 
 CREATE TABLE genre
 (
@@ -60,30 +64,33 @@ CREATE TABLE genre
     name VARCHAR(120),
     CONSTRAINT genre_pkey PRIMARY KEY  (genre_id)
 );
+GO
 
 CREATE TABLE invoice
 (
     invoice_id INT NOT NULL,
     customer_id INT NOT NULL,
-    invoice_date TIMESTAMP NOT NULL,
+    invoice_date DATETIME2 NOT NULL,
     billing_address VARCHAR(70),
     billing_city VARCHAR(40),
     billing_state VARCHAR(40),
     billing_country VARCHAR(40),
     billing_postal_code VARCHAR(10),
-    total NUMERIC(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
     CONSTRAINT invoice_pkey PRIMARY KEY  (invoice_id)
 );
+GO
 
 CREATE TABLE invoice_line
 (
     invoice_line_id INT NOT NULL,
     invoice_id INT NOT NULL,
     track_id INT NOT NULL,
-    unit_price NUMERIC(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
     CONSTRAINT invoice_line_pkey PRIMARY KEY  (invoice_line_id)
 );
+GO
 
 CREATE TABLE media_type
 (
@@ -91,6 +98,7 @@ CREATE TABLE media_type
     name VARCHAR(120),
     CONSTRAINT media_type_pkey PRIMARY KEY  (media_type_id)
 );
+GO
 
 CREATE TABLE playlist
 (
@@ -98,6 +106,7 @@ CREATE TABLE playlist
     name VARCHAR(120),
     CONSTRAINT playlist_pkey PRIMARY KEY  (playlist_id)
 );
+GO
 
 CREATE TABLE playlist_track
 (
@@ -105,6 +114,7 @@ CREATE TABLE playlist_track
     track_id INT NOT NULL,
     CONSTRAINT playlist_track_pkey PRIMARY KEY  (playlist_id, track_id)
 );
+GO
 
 CREATE TABLE track
 (
@@ -116,9 +126,10 @@ CREATE TABLE track
     composer VARCHAR(220),
     milliseconds INT NOT NULL,
     bytes INT,
-    unit_price NUMERIC(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
     CONSTRAINT track_pkey PRIMARY KEY  (track_id)
 );
+GO
 
 
 
@@ -133,56 +144,67 @@ ALTER TABLE album ADD CONSTRAINT album_artist_id_fkey
     FOREIGN KEY (artist_id) REFERENCES artist (artist_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX album_artist_id_idx ON album (artist_id);
+GO
 
 ALTER TABLE customer ADD CONSTRAINT customer_support_rep_id_fkey
     FOREIGN KEY (support_rep_id) REFERENCES employee (employee_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX customer_support_rep_id_idx ON customer (support_rep_id);
+GO
 
 ALTER TABLE employee ADD CONSTRAINT employee_reports_to_fkey
     FOREIGN KEY (reports_to) REFERENCES employee (employee_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX employee_reports_to_idx ON employee (reports_to);
+GO
 
 ALTER TABLE invoice ADD CONSTRAINT invoice_customer_id_fkey
     FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX invoice_customer_id_idx ON invoice (customer_id);
+GO
 
 ALTER TABLE invoice_line ADD CONSTRAINT invoice_line_invoice_id_fkey
     FOREIGN KEY (invoice_id) REFERENCES invoice (invoice_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX invoice_line_invoice_id_idx ON invoice_line (invoice_id);
+GO
 
 ALTER TABLE invoice_line ADD CONSTRAINT invoice_line_track_id_fkey
     FOREIGN KEY (track_id) REFERENCES track (track_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX invoice_line_track_id_idx ON invoice_line (track_id);
+GO
 
 ALTER TABLE playlist_track ADD CONSTRAINT playlist_track_playlist_id_fkey
     FOREIGN KEY (playlist_id) REFERENCES playlist (playlist_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX playlist_track_playlist_id_idx ON playlist_track (playlist_id);
+GO
 
 ALTER TABLE playlist_track ADD CONSTRAINT playlist_track_track_id_fkey
     FOREIGN KEY (track_id) REFERENCES track (track_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX playlist_track_track_id_idx ON playlist_track (track_id);
+GO
 
 ALTER TABLE track ADD CONSTRAINT track_album_id_fkey
     FOREIGN KEY (album_id) REFERENCES album (album_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX track_album_id_idx ON track (album_id);
+GO
 
 ALTER TABLE track ADD CONSTRAINT track_genre_id_fkey
     FOREIGN KEY (genre_id) REFERENCES genre (genre_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX track_genre_id_idx ON track (genre_id);
+GO
 
 ALTER TABLE track ADD CONSTRAINT track_media_type_id_fkey
     FOREIGN KEY (media_type_id) REFERENCES media_type (media_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 CREATE INDEX track_media_type_id_idx ON track (media_type_id);
+GO
 
 
 /*******************************************************************************
@@ -215,6 +237,7 @@ INSERT INTO genre (genre_id, name) VALUES
     (23, N'Alternative'),
     (24, N'Classical'),
     (25, N'Opera');
+GO
 
 INSERT INTO media_type (media_type_id, name) VALUES
     (1, N'MPEG audio file'),
@@ -222,6 +245,7 @@ INSERT INTO media_type (media_type_id, name) VALUES
     (3, N'Protected MPEG-4 video file'),
     (4, N'Purchased AAC audio file'),
     (5, N'AAC audio file');
+GO
 
 INSERT INTO artist (artist_id, name) VALUES
     (1, N'AC/DC'),
@@ -499,6 +523,7 @@ INSERT INTO artist (artist_id, name) VALUES
     (273, N'C. Monteverdi, Nigel Rogers - Chiaroscuro; London Baroque; London Cornett & Sackbu'),
     (274, N'Nash Ensemble'),
     (275, N'Philip Glass Ensemble');
+GO
 
 INSERT INTO album (album_id, title, artist_id) VALUES
     (1, N'For Those About To Rock We Salute You', 1),
@@ -848,6 +873,7 @@ INSERT INTO album (album_id, title, artist_id) VALUES
     (345, N'Monteverdi: L''Orfeo', 273),
     (346, N'Mozart: Chamber Music', 274),
     (347, N'Koyaanisqatsi (Soundtrack from the Motion Picture)', 275);
+GO
 
 INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, milliseconds, bytes, unit_price) VALUES
     (1, N'For Those About To Rock (We Salute You)', 1, 1, 1, N'Angus Young, Malcolm Young, Brian Johnson', 343719, 11170334, 0.99),
@@ -1850,6 +1876,7 @@ INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, 
     (998, N'End Over End', 79, 1, 1, N'Dave Grohl, Taylor Hawkins, Nate Mendel, Chris Shiflett', 352078, 11395296, 0.99),
     (999, N'Still', 80, 1, 1, N'Dave Grohl, Taylor Hawkins, Nate Mendel, Chris Shiflett/FOO FIGHTERS', 313182, 10323157, 0.99),
     (1000, N'What If I Do?', 80, 1, 1, N'Dave Grohl, Taylor Hawkins, Nate Mendel, Chris Shiflett/FOO FIGHTERS', 302994, 9929799, 0.99);
+GO
 
 INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, milliseconds, bytes, unit_price) VALUES
     (1001, N'Miracle', 80, 1, 1, N'Dave Grohl, Taylor Hawkins, Nate Mendel, Chris Shiflett/FOO FIGHTERS', 209684, 6877994, 0.99),
@@ -2852,6 +2879,7 @@ INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, 
     (1998, N'Negative Creep', 163, 1, 1, N'Kurt Cobain', 163761, 5354854, 0.99),
     (1999, N'Polly', 163, 1, 1, N'Kurt Cobain', 149995, 4885331, 0.99),
     (2000, N'Breed', 163, 1, 1, N'Kurt Cobain', 208378, 6759080, 0.99);
+GO
 
 INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, milliseconds, bytes, unit_price) VALUES
     (2001, N'Tourette''s', 163, 1, 1, N'Kurt Cobain', 115591, 3753246, 0.99),
@@ -3854,6 +3882,7 @@ INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, 
     (2998, N'When Love Comes To Town', 237, 1, 1, N'Bono/Clayton, Adam/Mullen Jr., Larry/The Edge', 255869, 8340954, 0.99),
     (2999, N'Heartland', 237, 1, 1, N'Bono/Clayton, Adam/Mullen Jr., Larry/The Edge', 303360, 9867748, 0.99),
     (3000, N'God Part II', 237, 1, 1, N'Bono/Clayton, Adam/Mullen Jr., Larry/The Edge', 195604, 6497570, 0.99);
+GO
 
 INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, milliseconds, bytes, unit_price) VALUES
     (3001, N'The Star Spangled Banner', 237, 1, 1, N'Hendrix, Jimi', 43232, 1385810, 0.99),
@@ -4359,6 +4388,7 @@ INSERT INTO track (track_id, name, album_id, media_type_id, genre_id, composer, 
     (3501, N'L''orfeo, Act 3, Sinfonia (Orchestra)', 345, 2, 24, N'Claudio Monteverdi', 66639, 1189062, 0.99),
     (3502, N'Quintet for Horn, Violin, 2 Violas, and Cello in E Flat Major, K. 407/386c: III. Allegro', 346, 2, 24, N'Wolfgang Amadeus Mozart', 221331, 3665114, 0.99),
     (3503, N'Koyaanisqatsi', 347, 2, 10, N'Philip Glass', 206005, 3305164, 0.99);
+GO
 
 INSERT INTO employee (employee_id, last_name, first_name, title, reports_to, birth_date, hire_date, address, city, state, country, postal_code, phone, fax, email) VALUES
     (1, N'Adams', N'Andrew', N'General Manager', NULL, '1962/2/18', '2002/8/14', N'11120 Jasper Ave NW', N'Edmonton', N'AB', N'Canada', N'T5K 2N1', N'+1 (780) 428-9482', N'+1 (780) 428-3457', N'andrew@chinookcorp.com'),
@@ -4369,6 +4399,7 @@ INSERT INTO employee (employee_id, last_name, first_name, title, reports_to, bir
     (6, N'Mitchell', N'Michael', N'IT Manager', 1, '1973/7/1', '2003/10/17', N'5827 Bowness Road NW', N'Calgary', N'AB', N'Canada', N'T3B 0C5', N'+1 (403) 246-9887', N'+1 (403) 246-9899', N'michael@chinookcorp.com'),
     (7, N'King', N'Robert', N'IT Staff', 6, '1970/5/29', '2004/1/2', N'590 Columbia Boulevard West', N'Lethbridge', N'AB', N'Canada', N'T1K 5N8', N'+1 (403) 456-9986', N'+1 (403) 456-8485', N'robert@chinookcorp.com'),
     (8, N'Callahan', N'Laura', N'IT Staff', 6, '1968/1/9', '2004/3/4', N'923 7 ST NW', N'Lethbridge', N'AB', N'Canada', N'T1H 1Y8', N'+1 (403) 467-3351', N'+1 (403) 467-8772', N'laura@chinookcorp.com');
+GO
 
 INSERT INTO customer (customer_id, first_name, last_name, company, address, city, state, country, postal_code, phone, fax, email, support_rep_id) VALUES
     (1, N'Luís', N'Gonçalves', N'Embraer - Empresa Brasileira de Aeronáutica S.A.', N'Av. Brigadeiro Faria Lima, 2170', N'São José dos Campos', N'SP', N'Brazil', N'12227-000', N'+55 (12) 3923-5555', N'+55 (12) 3923-5566', N'luisg@embraer.com.br', 3),
@@ -4430,6 +4461,7 @@ INSERT INTO customer (customer_id, first_name, last_name, company, address, city
     (57, N'Luis', N'Rojas', NULL, N'Calle Lira, 198', N'Santiago', NULL, N'Chile', NULL, N'+56 (0)2 635 4444', NULL, N'luisrojas@yahoo.cl', 5),
     (58, N'Manoj', N'Pareek', NULL, N'12,Community Centre', N'Delhi', NULL, N'India', N'110017', N'+91 0124 39883988', NULL, N'manoj.pareek@rediff.com', 3),
     (59, N'Puja', N'Srivastava', NULL, N'3,Raj Bhavan Road', N'Bangalore', NULL, N'India', N'560001', N'+91 080 22289999', NULL, N'puja_srivastava@yahoo.in', 3);
+GO
 
 INSERT INTO invoice (invoice_id, customer_id, invoice_date, billing_address, billing_city, billing_state, billing_country, billing_postal_code, total) VALUES
     (1, 2, '2021/1/1', N'Theodor-Heuss-Straße 34', N'Stuttgart', NULL, N'Germany', N'70174', 1.98),
@@ -4844,6 +4876,7 @@ INSERT INTO invoice (invoice_id, customer_id, invoice_date, billing_address, bil
     (410, 35, '2025/12/9', N'Rua dos Campeões Europeus de Viena, 4350', N'Porto', NULL, N'Portugal', NULL, 8.91),
     (411, 44, '2025/12/14', N'Porthaninkatu 9', N'Helsinki', NULL, N'Finland', N'00530', 13.86),
     (412, 58, '2025/12/22', N'12,Community Centre', N'Delhi', NULL, N'India', N'110017', 1.99);
+GO
 
 INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, quantity) VALUES
     (1, 1, 2, 0.99, 1),
@@ -5846,6 +5879,7 @@ INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, qua
     (998, 185, 2557, 0.99, 1),
     (999, 185, 2561, 0.99, 1),
     (1000, 185, 2565, 0.99, 1);
+GO
 
 INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, quantity) VALUES
     (1001, 186, 2571, 0.99, 1),
@@ -6848,6 +6882,7 @@ INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, qua
     (1998, 369, 1654, 0.99, 1),
     (1999, 369, 1663, 0.99, 1),
     (2000, 369, 1672, 0.99, 1);
+GO
 
 INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, quantity) VALUES
     (2001, 369, 1681, 0.99, 1),
@@ -7090,6 +7125,7 @@ INSERT INTO invoice_line (invoice_line_id, invoice_id, track_id, unit_price, qua
     (2238, 411, 3154, 0.99, 1),
     (2239, 411, 3163, 0.99, 1),
     (2240, 412, 3177, 1.99, 1);
+GO
 
 INSERT INTO playlist (playlist_id, name) VALUES
     (1, N'Music'),
@@ -7110,6 +7146,7 @@ INSERT INTO playlist (playlist_id, name) VALUES
     (16, N'Grunge'),
     (17, N'Heavy Metal Classic'),
     (18, N'On-The-Go 1');
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 3402),
@@ -8112,6 +8149,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 983),
     (1, 984),
     (1, 985);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 986),
@@ -9114,6 +9152,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 686),
     (1, 687),
     (1, 688);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 689),
@@ -10116,6 +10155,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 2548),
     (1, 2549),
     (1, 2550);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (1, 2551),
@@ -11118,6 +11158,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (5, 2494),
     (5, 2514),
     (5, 2515);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (5, 2516),
@@ -12120,6 +12161,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 20),
     (8, 21),
     (8, 22);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 3411),
@@ -13122,6 +13164,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 502),
     (8, 503),
     (8, 504);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 505),
@@ -14124,6 +14167,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 1946),
     (8, 1947),
     (8, 1948);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 1949),
@@ -15126,6 +15170,7 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 3065),
     (8, 3066),
     (8, 3067);
+GO
 
 INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (8, 3068),
@@ -15843,3 +15888,4 @@ INSERT INTO playlist_track (playlist_id, track_id) VALUES
     (17, 2096),
     (17, 3290),
     (18, 597);
+GO

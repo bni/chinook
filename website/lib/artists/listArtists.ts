@@ -1,4 +1,4 @@
-import { Artist } from "@lib/types/artist";
+import { Artist } from "@lib/artists/artist";
 
 import oracledb, { Connection, Result } from "oracledb";
 

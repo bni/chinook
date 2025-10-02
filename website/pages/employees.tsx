@@ -1,8 +1,8 @@
 import { CollapseDesktop } from "../components/CollapseDesktop";
 import { Group } from "@mantine/core";
-import { EmployeeTable } from "../components/EmployeeTable";
-import { listEmployees } from "@lib/listEmployees/listEmployees";
-import { Employee } from "@lib/types/employee";
+import { EmployeeTable } from "../components/employees/EmployeeTable";
+import { listEmployees } from "@lib/employees/listEmployees";
+import { Employee } from "@lib/employees/employee";
 
 export async function getServerSideProps() {
   return {

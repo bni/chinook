@@ -1,5 +1,5 @@
-import { Employee } from "@lib/types/employee";
-import { listEmployees } from "@lib/listEmployees/listEmployees";
+import { Employee } from "@lib/employees/employee";
+import { listEmployees } from "@lib/employees/listEmployees";
 import oracledb from "oracledb";
 import sinon from "sinon";
 import testRows from "./testRows.json";

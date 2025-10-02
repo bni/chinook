@@ -1,4 +1,4 @@
-import { Customer, Employee } from "@lib/types/employee";
+import { Customer, Employee } from "@lib/employees/employee";
 
 import oracledb, { Connection, Result } from "oracledb";
 
