@@ -3,10 +3,14 @@ import { useDisclosure } from "@mantine/hooks";
 import ColorSchemeToggler from "./ColorSchemeToggler";
 import { IconActivity, IconHome2, IconUser, IconUsersGroup } from "@tabler/icons-react";
 import type { ReactNode } from "react";
+import { AuthModal } from "./AuthModal";
+import { authClient } from "@lib/client";
 
 export function CollapseDesktop({ children }: { children: ReactNode }) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure();
+  const [authModalOpened, { open: openAuthModal, close: closeAuthModal }] = useDisclosure(false);
+  const { data: session } = authClient.useSession();
 
   return (
     <AppShell
@@ -28,7 +32,7 @@ export function CollapseDesktop({ children }: { children: ReactNode }) {
           <Group h="100%" px="md" ml="auto">
             <ColorSchemeToggler/>
 
-            <ActionIcon variant="default" size="xl" aria-label="User preferences" >
+            <ActionIcon variant="default" size="xl" aria-label="User preferences" onClick={openAuthModal}>
               <IconUser stroke={1.5} />
             </ActionIcon>
           </Group>
@@ -38,14 +42,16 @@ export function CollapseDesktop({ children }: { children: ReactNode }) {
       <AppShell.Navbar p="md">
 
         <NavLink href={"/"} label="Start" leftSection={<IconHome2 size="1rem" stroke={1.5} />} />
-        <NavLink href={"/here"} label="Here" leftSection={<IconActivity size="1rem" stroke={1.5} />} />
-        <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size="1rem" stroke={1.5} />} />
+        {session && <NavLink href={"/artists"} label="Artists" leftSection={<IconActivity size="1rem" stroke={1.5} />} />}
+        {session && <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size="1rem" stroke={1.5} />} />}
 
       </AppShell.Navbar>
 
       <AppShell.Main>
         {children}
       </AppShell.Main>
+
+      <AuthModal opened={authModalOpened} onClose={closeAuthModal} />
     </AppShell>
   );
 }

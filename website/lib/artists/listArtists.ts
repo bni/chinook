@@ -1,6 +1,5 @@
 import { Artist } from "@lib/artists/artist";
-
-import oracledb, { Connection, Result } from "oracledb";
+import { query, Result } from "@lib/util/postgres";
 
 interface ResultRow {
   artistId: number,
@@ -11,26 +10,23 @@ interface ResultRow {
 export async function listArtists(): Promise<Artist[]> {
   let artists: Artist[] = [];
 
-  let connection: Connection | undefined;
   try {
-    connection = await oracledb.getConnection();
-
-    const result: Result<ResultRow> = await connection.execute(`
+    const result: Result<ResultRow> = await query(`
 
       SELECT
-        ar.artistid AS "artistId",
+        ar.artist_id AS "artistId",
         ar.name AS "artistName",
-        COUNT(al.albumid) AS "nrAlbums"
+        COUNT(al.album_id) AS "nrAlbums"
       FROM
         artist ar
       INNER JOIN
-        album al ON ar.artistid = al.artistid
+        album al ON ar.artist_id = al.artist_id
       GROUP BY
-        ar.artistid, ar.name
+        ar.artist_id, ar.name
       ORDER BY
         "artistName" ASC, "nrAlbums" ASC
 
-      `, [], { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      `, []
     );
 
     artists = result.rows as Artist[];
@@ -38,8 +34,6 @@ export async function listArtists(): Promise<Artist[]> {
     console.log(error);
 
     throw error;
-  } finally {
-    if (connection) { await connection.close(); }
   }
 
   return artists;

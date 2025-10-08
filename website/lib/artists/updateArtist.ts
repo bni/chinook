@@ -1,33 +1,26 @@
-import oracledb, { Connection, BindParameters } from "oracledb";
+import { query } from "@lib/util/postgres";
 
 export async function updateArtist(artistId: number, artistName: string): Promise<void> {
-  let connection: Connection | undefined;
   try {
-    connection = await oracledb.getConnection();
+    const params = [
+      artistName,
+      artistId
+    ];
 
-    const params: BindParameters = {
-      artistName: artistName,
-      artistId: artistId
-    };
-
-    await connection.execute(`
+    await query(`
 
       UPDATE
         artist
       SET
-        name = :artistName
+        name = $1
       WHERE
-        artistid = :artistId
+        artist_id = $2
 
-    `, params, { autoCommit: true }
+    `, params
     );
   } catch (error) {
     console.error("Error updating artist:", error);
 
     throw error;
-  } finally {
-    if (connection) {
-      await connection.close();
-    }
   }
 }

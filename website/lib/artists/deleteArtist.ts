@@ -1,30 +1,23 @@
-import oracledb, { Connection, BindParameters } from "oracledb";
+import { query } from "@lib/util/postgres";
 
 export async function deleteArtist(artistId: number): Promise<void> {
-  let connection: Connection | undefined;
   try {
-    connection = await oracledb.getConnection();
+    const params = [
+      artistId
+    ];
 
-    const params: BindParameters = {
-      artistId: artistId
-    };
-
-    await connection.execute(`
+    await query(`
 
       DELETE FROM
         artist
       WHERE
-        artistid = :artistId
+        artist_id = $1
 
-    `, params, { autoCommit: true }
+    `, params
     );
   } catch (error) {
     console.error("Error deleting artist:", error);
 
     throw error;
-  } finally {
-    if (connection) {
-      await connection.close();
-    }
   }
 }
