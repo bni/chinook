@@ -1,6 +1,5 @@
 import { Customer, Employee } from "@lib/employees/employee";
-
-import oracledb, { Connection, Result } from "oracledb";
+import { query, Result } from "@lib/util/postgres";
 
 interface ResultRow {
   employeeId: number,
@@ -16,29 +15,26 @@ interface ResultRow {
 export async function listEmployees(): Promise<Employee[]> {
   const employees: Employee[] = [];
 
-  let connection: Connection | undefined;
   try {
-    connection = await oracledb.getConnection();
-
-    const result: Result<ResultRow> = await connection.execute(`
+    const result: Result<ResultRow> = await query(`
 
       SELECT
-        e.employeeid AS "employeeId",
-        e.firstname AS "employeeFirstName",
-        e.lastname AS "employeeLastName",
+        e.employee_id AS "employeeId",
+        e.first_name AS "employeeFirstName",
+        e.last_name AS "employeeLastName",
         e.title AS "employeeTitle",
-        c.customerid AS "customerId",
-        c.firstname AS "customerFirstName",
-        c.lastname AS "customerLastName",
+        c.customer_id AS "customerId",
+        c.first_name AS "customerFirstName",
+        c.last_name AS "customerLastName",
         c.company AS "customerCompanyName"
       FROM
         employee e
       LEFT JOIN
-        customer c ON e.employeeid = c.supportrepid
+        customer c ON e.employee_id = c.support_rep_id
       ORDER BY
-        e.employeeid ASC, c.customerid ASC
+        e.employee_id ASC, c.customer_id ASC
 
-      `, [], { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      `, []
     );
 
     if (result.rows) {
@@ -79,8 +75,6 @@ export async function listEmployees(): Promise<Employee[]> {
     console.log(error);
 
     throw error;
-  } finally {
-    if (connection) { await connection.close(); }
   }
 
   return employees;

@@ -1,19 +1,12 @@
 import { Employee } from "@lib/employees/employee";
 import { listEmployees } from "@lib/employees/listEmployees";
-import oracledb from "oracledb";
+import { Pool } from "pg";
 import sinon from "sinon";
 import testRows from "./testRows.json";
 import expectedResult from "./expectedResult.json";
 
 test("List employees", async () => {
-  sinon.stub(oracledb, "getConnection").resolves({
-    execute: function() {},
-    close: function() {}
-  });
-
-  const connection = await oracledb.getConnection();
-
-  sinon.stub(connection, "execute").resolves({
+  sinon.stub(Pool.prototype, "query").resolves({
     rows: testRows
   });
 

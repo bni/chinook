@@ -1,3 +1,5 @@
+docker pull postgres
+
 docker run --name postgres -p 5432:5432 -e POSTGRES_USER=chinook -e POSTGRES_PASSWORD=chinook -d postgres
 
 DROP DATABASE IF EXISTS chinook;

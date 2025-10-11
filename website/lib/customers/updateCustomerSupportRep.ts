@@ -1,33 +1,26 @@
-import oracledb, { Connection, BindParameters } from "oracledb";
+import { query } from "@lib/util/postgres";
 
 export async function updateCustomerSupportRep(customerId: number, supportRepId: number): Promise<void> {
-  let connection: Connection | undefined;
   try {
-    connection = await oracledb.getConnection();
+    const params = [
+      supportRepId,
+      customerId
+    ];
 
-    const params: BindParameters = {
-      supportRepId: supportRepId,
-      customerId: customerId
-    };
-
-    await connection.execute(`
+    await query(`
 
       UPDATE
         customer
       SET
-        supportrepid = :supportRepId
+        support_rep_id = $1
       WHERE
-        customerid = :customerId
+        customer_id = $2
 
-    `, params, { autoCommit: true }
+    `, params
     );
   } catch (error) {
     console.error("Error updating customer support rep:", error);
 
     throw error;
-  } finally {
-    if (connection) {
-      await connection.close();
-    }
   }
 }
