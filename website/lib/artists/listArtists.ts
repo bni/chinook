@@ -26,8 +26,7 @@ export async function listArtists(): Promise<Artist[]> {
       ORDER BY
         "artistName" ASC, "nrAlbums" ASC
 
-      `, []
-    );
+    `);
 
     artists = result.rows as Artist[];
   } catch (error) {

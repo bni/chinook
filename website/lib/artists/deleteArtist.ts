@@ -2,10 +2,6 @@ import { query } from "@lib/util/postgres";
 
 export async function deleteArtist(artistId: number): Promise<void> {
   try {
-    const params = [
-      artistId
-    ];
-
     await query(`
 
       DELETE FROM
@@ -13,8 +9,7 @@ export async function deleteArtist(artistId: number): Promise<void> {
       WHERE
         artist_id = $1
 
-    `, params
-    );
+    `, [ artistId ]);
   } catch (error) {
     console.error("Error deleting artist:", error);
 

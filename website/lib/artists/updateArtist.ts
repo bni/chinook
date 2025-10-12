@@ -2,11 +2,6 @@ import { query } from "@lib/util/postgres";
 
 export async function updateArtist(artistId: number, artistName: string): Promise<void> {
   try {
-    const params = [
-      artistName,
-      artistId
-    ];
-
     await query(`
 
       UPDATE
@@ -16,8 +11,7 @@ export async function updateArtist(artistId: number, artistName: string): Promis
       WHERE
         artist_id = $2
 
-    `, params
-    );
+    `, [ artistName, artistId ]);
   } catch (error) {
     console.error("Error updating artist:", error);
 

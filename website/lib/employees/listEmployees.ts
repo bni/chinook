@@ -34,8 +34,7 @@ export async function listEmployees(): Promise<Employee[]> {
       ORDER BY
         e.employee_id ASC, c.customer_id ASC
 
-      `, []
-    );
+    `);
 
     if (result.rows) {
       const rows = result.rows;
