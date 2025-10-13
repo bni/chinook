@@ -1,7 +1,8 @@
-import { Modal, TextInput, Button, Stack, Group } from "@mantine/core";
+import { Modal, TextInput, Button, Stack, Text, Divider, Title, ActionIcon } from "@mantine/core";
 import { useState } from "react";
 import { authClient } from "@lib/client";
 import { useRouter } from "next/router";
+import { IconBrandGithub, IconBrandGoogle, IconBrandAzure, IconUser } from "@tabler/icons-react";
 
 interface AuthModalProps {
   opened: boolean;
@@ -14,12 +15,14 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const session = authClient.useSession();
 
   const handleLogin = async () => {
     setLoading(true);
 
     try {
-      const { data, error } = await authClient.signIn.email({
+      const { error } = await authClient.signIn.email({
         email,
         password
       });
@@ -27,8 +30,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
       if (error) {
         alert("Login Error: " + JSON.stringify(error));
       } else {
-        alert("Login Success! " + JSON.stringify(data));
-
         onClose();
       }
     } catch (err) {
@@ -41,7 +42,7 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
   const handleSignup = async () => {
     setLoading(true);
     try {
-      const { data, error } = await authClient.signUp.email({
+      const { error } = await authClient.signUp.email({
         email,
         password,
         name
@@ -50,8 +51,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
       if (error) {
         alert("Signup Error: " + JSON.stringify(error));
       } else {
-        alert("Signup Success!" + JSON.stringify(data));
-
         onClose();
       }
     } catch (err) {
@@ -66,8 +65,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
     try {
       await authClient.signOut();
 
-      alert("Logged out successfully!");
-
       onClose();
 
       await router.push("/");
@@ -78,42 +75,162 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
     }
   };
 
+  const handleGithubLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "github"
+      });
+    } catch (err) {
+      alert("GitHub Login Error: " + JSON.stringify(err));
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google"
+      });
+    } catch (err) {
+      alert("Google Login Error: " + JSON.stringify(err));
+    }
+  };
+
+  const handleMicrosoftLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "microsoft"
+      });
+    } catch (err) {
+      alert("Microsoft Login Error: " + JSON.stringify(err));
+    }
+  };
+
   return (
-    <Modal opened={opened} onClose={onClose} title="Login or sign up" centered>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      centered
+      withCloseButton={false}
+      overlayProps={{
+        blur: 10
+      }}
+    >
       <Stack>
-        <TextInput
-          label="Email"
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.currentTarget.value)}
-          disabled={loading}
-        />
-        <TextInput
-          label="Password"
-          placeholder="Your password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.currentTarget.value)}
-          disabled={loading}
-        />
-        <TextInput
-          label="Name (for signup)"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.currentTarget.value)}
-          disabled={loading}
-        />
-        <Group grow>
-          <Button onClick={handleLogin} disabled={loading || !email || !password}>
-            Login
-          </Button>
-          <Button onClick={handleSignup} disabled={loading || !email || !password}>
-            Signup
-          </Button>
-        </Group>
-        <Button onClick={handleLogout} disabled={loading} color="red" variant="light">
-          Logout
-        </Button>
+        {!session.data ? (
+          <>
+            <Title order={2} ta="center">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </Title>
+            <Text c="dimmed" size="sm" ta="center">
+              {isLogin ? "Sign in to your account with" : "Sign up with to get started"}
+            </Text>
+
+            <Stack>
+              <Button
+                onClick={handleMicrosoftLogin}
+                disabled={loading}
+                variant="default"
+                leftSection={<IconBrandAzure size="1.2rem" stroke={1.5} />}
+                fullWidth
+              >
+                Microsoft
+              </Button>
+
+              <Button
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                variant="default"
+                leftSection={<IconBrandGoogle size="1.2rem" stroke={1.5} />}
+                fullWidth
+              >
+                Google
+              </Button>
+
+              <Button
+                onClick={handleGithubLogin}
+                disabled={loading}
+                variant="default"
+                leftSection={<IconBrandGithub size="1.2rem" stroke={1.5} />}
+                fullWidth
+              >
+                GitHub
+              </Button>
+
+            </Stack>
+
+            <Divider label="OR" labelPosition="center" my="md" />
+
+            <Stack>
+              {!isLogin && (
+                <TextInput
+                  label="Name"
+                  placeholder="Your full name"
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
+                  disabled={loading}
+                />
+              )}
+              <TextInput
+                label="Email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                disabled={loading}
+                type="email"
+              />
+              <TextInput
+                label="Password"
+                placeholder="Enter your password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
+                disabled={loading}
+              />
+
+              <Button
+                onClick={isLogin ? handleLogin : handleSignup}
+                disabled={loading || !email || !password || (!isLogin && !name)}
+                fullWidth
+              >
+                {isLogin ? "Sign In" : "Sign Up"}
+              </Button>
+            </Stack>
+
+            <Text ta="center" size="sm">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              <Text
+                component="span"
+                c="blue"
+                style={{ cursor: "pointer" }}
+                onClick={() => setIsLogin(!isLogin)}
+              >
+                {isLogin ? "Sign up" : "Sign in"}
+              </Text>
+            </Text>
+          </>
+        ) : (
+          <>
+            <ActionIcon variant="default" size="xl" ta="center" aria-label="User icon" >
+              <IconUser stroke={1.5} />
+            </ActionIcon>
+            <Title order={2} ta="center">
+              Hello, {session.data.user.name}.
+            </Title>
+            <Text c="dimmed" size="sm" ta="center">
+              You are currently logged in
+            </Text>
+            <Divider />
+            <Button
+              onClick={handleLogout}
+              disabled={loading}
+              color="red"
+              variant="subtle"
+              fullWidth
+            >
+              Sign Out
+            </Button>
+          </>
+        )}
       </Stack>
     </Modal>
   );
