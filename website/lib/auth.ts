@@ -1,25 +1,34 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { Pool } from "pg";
+import { secret } from "@lib/util/secrets";
 
 export const auth = betterAuth({
-  database: new Pool(),
+  secret: await secret("BETTER_AUTH_SECRET"),
+  baseURL: await secret("BETTER_AUTH_URL"),
+  database: new Pool({
+    user: await secret("PGUSER"),
+    password: await secret("PGPASSWORD"),
+    host: await secret("PGHOST"),
+    port: parseInt(await secret("PGPORT"), 10),
+    database: await secret("PGDATABASE")
+  }),
   emailAndPassword: {
     enabled: true
   },
   socialProviders: {
     microsoft: {
-      clientId: process.env.MICROSOFT_CLIENT_ID || "",
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET || "",
-      tenantId: process.env.MICROSOFT_TENANT_ID || "common"
+      clientId: await secret("MICROSOFT_CLIENT_ID"),
+      clientSecret: await secret("MICROSOFT_CLIENT_SECRET"),
+      tenantId: await secret("MICROSOFT_TENANT_ID")
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
+      clientId: await secret("GOOGLE_CLIENT_ID"),
+      clientSecret: await secret("GOOGLE_CLIENT_SECRET")
     },
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID || "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
+      clientId: await secret("GITHUB_CLIENT_ID"),
+      clientSecret: await secret("GITHUB_CLIENT_SECRET")
     }
   },
   advanced: {
