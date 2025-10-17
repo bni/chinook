@@ -1,4 +1,5 @@
 import { query } from "@lib/util/postgres";
+import { error } from "@lib/util/logger";
 
 export async function updateArtist(artistId: number, artistName: string): Promise<void> {
   try {
@@ -12,9 +13,9 @@ export async function updateArtist(artistId: number, artistName: string): Promis
         artist_id = $2
 
     `, [ artistName, artistId ]);
-  } catch (error) {
-    console.error("Error updating artist:", error);
+  } catch (e) {
+    error(e, "Failed to update artist");
 
-    throw error;
+    throw e;
   }
 }

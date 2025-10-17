@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { updateArtist } from "@lib/artists/updateArtist";
 import { deleteArtist } from "@lib/artists/deleteArtist";
+import { error } from "@lib/util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,8 +20,8 @@ export default async function handler(
       await updateArtist(Number(id), artistName);
 
       res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Error updating artist:", error);
+    } catch (e) {
+      error(e, "Failed to update artist");
 
       res.status(500).json({ error: "Failed to update artist" });
     }
@@ -29,8 +30,8 @@ export default async function handler(
       await deleteArtist(Number(id));
 
       res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Error deleting artist:", error);
+    } catch (e) {
+      error(e, "Failed to delete artist");
 
       res.status(500).json({ error: "Failed to delete artist" });
     }

@@ -1,5 +1,6 @@
 import { Customer, Employee } from "@lib/employees/employee";
 import { query, Result } from "@lib/util/postgres";
+import { error } from "@lib/util/logger";
 
 interface ResultRow {
   employeeId: number,
@@ -70,10 +71,10 @@ export async function listEmployees(): Promise<Employee[]> {
         }
       }
     }
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    error(e, "Failed to list employees");
 
-    throw error;
+    throw e;
   }
 
   return employees;

@@ -1,4 +1,4 @@
-import { Card, Container, createTheme, Paper, rem, Select } from "@mantine/core";
+import { createTheme, rem, Container, Paper, Card, Select } from "@mantine/core";
 import type { MantineThemeOverride } from "@mantine/core";
 
 const CONTAINER_SIZES: Record<string, string> = {
@@ -11,6 +11,7 @@ const CONTAINER_SIZES: Record<string, string> = {
   xxl: rem("1600px")
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const mantineTheme: MantineThemeOverride = createTheme({
   fontSizes: {
     xs: rem("12px"),
@@ -55,7 +56,6 @@ export const mantineTheme: MantineThemeOverride = createTheme({
         withBorder: true
       }
     }),
-
     Card: Card.extend({
       defaultProps: {
         p: "xl",

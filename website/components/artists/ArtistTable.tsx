@@ -6,6 +6,7 @@ import { modals } from "@mantine/modals";
 
 import sortBy from "lodash/sortBy";
 import { Artist } from "@lib/artists/artist";
+import { error } from "@lib/util/logger";
 
 export function ArtistTable({ artists }: { artists: Artist[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
@@ -63,8 +64,8 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
 
       setEditingId(null);
       setEditingName("");
-    } catch (error) {
-      console.error("Error saving artist:", error);
+    } catch (e) {
+      error(e, "Failed to save artist");
     } finally {
       setIsLoading(false);
     }
@@ -88,8 +89,8 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
 
           // Remove from local state
           setRecords(prev => prev.filter(a => a.artistId !== artist.artistId));
-        } catch (error) {
-          console.error("Error deleting artist:", error);
+        } catch (e) {
+          error(e, "Failed to delete artist");
         }
       }
     });

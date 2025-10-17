@@ -1,4 +1,5 @@
 import { query } from "@lib/util/postgres";
+import { error } from "@lib/util/logger";
 
 export async function updateCustomerSupportRep(customerId: number, supportRepId: number): Promise<void> {
   try {
@@ -12,9 +13,9 @@ export async function updateCustomerSupportRep(customerId: number, supportRepId:
         customer_id = $2
 
     `, [ supportRepId, customerId ]);
-  } catch (error) {
-    console.error("Error updating customer support rep:", error);
+  } catch (e) {
+    error(e, "Failed to update customer support rep");
 
-    throw error;
+    throw e;
   }
 }

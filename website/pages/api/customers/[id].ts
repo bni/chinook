@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { updateCustomerSupportRep } from "@lib/customers/updateCustomerSupportRep";
+import { info, error } from "@lib/util/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,6 +9,8 @@ export default async function handler(
   const { id } = req.query;
 
   if (req.method === "PUT") {
+    info("Updating customer support rep");
+
     const { supportRepId } = req.body;
 
     if (supportRepId === undefined || typeof supportRepId !== "number") {
@@ -18,8 +21,8 @@ export default async function handler(
       await updateCustomerSupportRep(Number(id), supportRepId);
 
       res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("Error updating customer support rep:", error);
+    } catch (e) {
+      error(e, "Failed to update customer support rep");
 
       res.status(500).json({ error: "Failed to update customer support rep" });
     }
