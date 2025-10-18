@@ -1,6 +1,6 @@
 import { Artist } from "@lib/artists/artist";
 import { query, Result } from "@lib/util/postgres";
-import { error } from "@lib/util/logger";
+import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   artistId: number,
@@ -30,10 +30,10 @@ export async function listArtists(): Promise<Artist[]> {
     `);
 
     artists = result.rows as Artist[];
-  } catch (e) {
-    error(e, "Failed to list artists");
+  } catch (error) {
+    logger.error(error, "Failed to list artists");
 
-    throw e;
+    throw error;
   }
 
   return artists;

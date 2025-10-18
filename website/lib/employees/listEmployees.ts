@@ -1,6 +1,6 @@
 import { Customer, Employee } from "@lib/employees/employee";
 import { query, Result } from "@lib/util/postgres";
-import { error } from "@lib/util/logger";
+import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   employeeId: number,
@@ -14,6 +14,8 @@ interface ResultRow {
 }
 
 export async function listEmployees(): Promise<Employee[]> {
+  logger.info("Log me harder, baby!!!");
+
   const employees: Employee[] = [];
 
   try {
@@ -71,10 +73,10 @@ export async function listEmployees(): Promise<Employee[]> {
         }
       }
     }
-  } catch (e) {
-    error(e, "Failed to list employees");
+  } catch (error) {
+    logger.error(error, "Failed to list employees");
 
-    throw e;
+    throw error;
   }
 
   return employees;

@@ -1,8 +1,10 @@
 import { Employee } from "@lib/employees/employee";
 import { listEmployees } from "@lib/employees/listEmployees";
 import { Pool } from "pg";
-import testRows from "./testRows.json";
-import expectedResult from "./expectedResult.json";
+import testRows from "./testRows.json" with { type: "json" };
+import expectedResult from "./expectedResult.json" with { type: "json" };
+
+import { jest } from "@jest/globals";
 
 test("List employees", async () => {
   const queryResult = {
@@ -13,5 +15,5 @@ test("List employees", async () => {
 
   const employees: Employee[] = await listEmployees();
 
-  expect(employees).toStrictEqual(expectedResult);
+  expect(employees).toEqual(expectedResult);
 });

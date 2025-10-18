@@ -1,8 +1,8 @@
 import { query } from "@lib/util/postgres";
-import { warn, error } from "@lib/util/logger";
+import { logger } from "@lib/util/logger";
 
 export async function deleteArtist(artistId: number): Promise<void> {
-  warn("Deleting artist");
+  logger.warn("Deleting artist");
 
   try {
     await query(`
@@ -13,9 +13,9 @@ export async function deleteArtist(artistId: number): Promise<void> {
         artist_id = $1
 
     `, [ artistId ]);
-  } catch (e) {
-    error(e, "Failed to delete artist");
+  } catch (error) {
+    logger.error(error, "Failed to delete artist");
 
-    throw e;
+    throw error;
   }
 }

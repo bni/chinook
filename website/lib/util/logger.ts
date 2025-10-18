@@ -10,8 +10,4 @@ const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime
 });
 
-const info = logger.info;
-const warn = logger.warn;
-const error = logger.error;
-
-export { info, warn, error };
+export { logger };

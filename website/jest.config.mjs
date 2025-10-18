@@ -1,8 +1,8 @@
 const jestConfig = {
-  testEnvironment: "node",
   preset: "ts-jest",
+  extensionsToTreatAsEsm: [".ts"],
   transform: {
-    "^.+\\.(t|j)sx?$": "@swc/jest"
+    "^.+\\.(t|j)sx?$": ["ts-jest", { useESM: true } ]
   },
   roots: ["<rootDir>"],
   moduleNameMapper: {
