@@ -1,6 +1,5 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { apiKey } from "better-auth/plugins";
 import { Pool } from "pg";
 import { secret } from "@lib/util/secrets";
 
@@ -36,5 +35,5 @@ export const auth = betterAuth({
     cookiePrefix: "chinook"
   },
   trustedOrigins: ["http://localhost:3000", "http://192.168.0.3:3000", "http://192.168.86.193:3000"],
-  plugins: [nextCookies(), apiKey()]
+  plugins: [nextCookies()]
 });
