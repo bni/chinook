@@ -14,16 +14,6 @@ interface ResultRow {
 }
 
 export async function listEmployees(): Promise<Employee[]> {
-  const someObject = {
-    password: "verysecret",
-    more: {
-      something: "other",
-      hey: "ho"
-    }
-  };
-
-  logger.info(someObject, "Searching for employees");
-
   const employees: Employee[] = [];
 
   try {

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger } from "@lib/util/logger";
-import { boss } from "@lib/util/boss";
+import { broker } from "@lib/util/broker";
 import { artistQueue } from "@lib/worker/queues";
 
 export default async function handler(
@@ -15,7 +15,7 @@ export default async function handler(
     }
 
     try {
-      const id = await boss.send(artistQueue, { artistName: artistName });
+      const id = await broker.send(artistQueue, { artistName: artistName });
 
       logger.info({ id: id, queue: artistQueue }, "Put artist on queue");
 

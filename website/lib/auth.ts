@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
+import { apiKey } from "better-auth/plugins";
 import { Pool } from "pg";
 import { secret } from "@lib/util/secrets";
 
@@ -7,11 +8,11 @@ export const auth = betterAuth({
   secret: await secret("BETTER_AUTH_SECRET"),
   baseURL: await secret("BETTER_AUTH_URL"),
   database: new Pool({
-    user: await secret("PGUSER"),
-    password: await secret("PGPASSWORD"),
-    host: await secret("PGHOST"),
-    port: parseInt(await secret("PGPORT"), 10),
-    database: await secret("PGDATABASE")
+    user: await secret("BETTER_AUTH_PGUSER"),
+    password: await secret("BETTER_AUTH_PGPASSWORD"),
+    host: await secret("BETTER_AUTH_PGHOST"),
+    port: parseInt(await secret("BETTER_AUTH_PGPORT"), 10),
+    database: await secret("BETTER_AUTH_PGDATABASE")
   }),
   emailAndPassword: {
     enabled: true
@@ -35,5 +36,5 @@ export const auth = betterAuth({
     cookiePrefix: "chinook"
   },
   trustedOrigins: ["http://localhost:3000", "http://192.168.0.3:3000", "http://192.168.86.193:3000"],
-  plugins: [nextCookies()]
+  plugins: [nextCookies(), apiKey()]
 });

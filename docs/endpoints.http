@@ -1,6 +1,8 @@
+### Create artist
+
 POST https://chinook.loca.lt/api/external/v1/artists
 Content-Type: application/json
 
 {
-  "artistName": "The Boss 4"
+  "artistName": "The Boss 5"
 }
