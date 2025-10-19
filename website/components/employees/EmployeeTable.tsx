@@ -42,7 +42,7 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
     }
 
     try {
-      const response = await fetch(`/api/customers/${customer.customerId}`, {
+      const response = await fetch(`/api/internal/customers/${customer.customerId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"

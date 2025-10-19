@@ -43,7 +43,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/artists/${artistId}`, {
+      const response = await fetch(`/api/internal/artists/${artistId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
@@ -79,7 +79,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          const response = await fetch(`/api/artists/${artist.artistId}`, {
+          const response = await fetch(`/api/internal/artists/${artist.artistId}`, {
             method: "DELETE"
           });
 

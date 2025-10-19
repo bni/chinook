@@ -19,7 +19,6 @@ export const config = {
   matcher: [
     "/artists",
     "/employees",
-    "/api/artists",
-    "/api/customers"
+    "/api/internal/:path*"
   ]
 };
