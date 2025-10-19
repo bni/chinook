@@ -24,6 +24,15 @@ const getRawBody = async (readable: Readable): Promise<Buffer> => {
   return Buffer.concat(chunks);
 };
 
+const validateHMAC = async (sentInDigest: string, rawBody: Buffer) => {
+  const ourDigest = crypto
+    .createHmac("sha256", await secret("SHARED_SECRET_FOR_HMAC"))
+    .update(rawBody)
+    .digest("base64");
+
+  return sentInDigest && sentInDigest === ourDigest;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -34,18 +43,13 @@ export default async function handler(
 
       const rawBody = await getRawBody(req);
 
-      const body = JSON.parse(Buffer.from(rawBody).toString("utf8"));
-
-      const ourDigest = crypto
-        .createHmac("sha256", await secret("SHARED_SECRET_FOR_HMAC"))
-        .update(rawBody)
-        .digest("base64");
-
-      if (!sentInDigest || sentInDigest !== ourDigest) {
+      if (!await validateHMAC(sentInDigest, rawBody)) {
         logger.warn("Invalid HMAC digest");
 
         return res.status(401).json({ error: "Invalid HMAC digest" });
       }
+
+      const body = JSON.parse(Buffer.from(rawBody).toString("utf8"));
 
       const artistName = body.artistName;
 

@@ -11,5 +11,5 @@ Content-Type: application/json
 x-chinook-hmac-sha256: {{signature}}
 
 {
-  "artistName": "The Boss 10"
+  "artistName": "The Boss 11"
 }
