@@ -20,7 +20,7 @@ export async function listArtists(): Promise<Artist[]> {
         COUNT(al.album_id) AS "nrAlbums"
       FROM
         artist ar
-      INNER JOIN
+      LEFT JOIN
         album al ON ar.artist_id = al.artist_id
       GROUP BY
         ar.artist_id, ar.name

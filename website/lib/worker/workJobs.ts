@@ -1,6 +1,7 @@
 import { broker } from "@lib/util/broker";
 import { logger } from "@lib/util/logger";
 import { artistQueue } from "@lib/worker/queues";
+import { createArtist } from "@lib/artists/createArtist";
 
 const workJobs = async () => {
   broker.on("error", (error) => {
@@ -13,7 +14,17 @@ const workJobs = async () => {
   await broker.work(artistQueue, async ([job]) => {
     logger.info({ id: job.id, data: job.data }, "Worker received job");
 
-    await broker.deleteJob(artistQueue, job.id);
+    try {
+      const data = job.data as { artistName: string };
+
+      logger.info(data, "Worker received artist");
+
+      await createArtist(data.artistName);
+
+      await broker.deleteJob(artistQueue, job.id);
+    } catch (error) {
+      logger.error(error, "Failed to create artist form the queue");
+    }
 
     logger.info({ id: job.id }, "Worker deleted job");
   });
