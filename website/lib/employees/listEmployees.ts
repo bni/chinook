@@ -1,6 +1,7 @@
 import { Customer, Employee } from "@lib/employees/employee";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
+import sortBy from "lodash/sortBy";
 
 interface ResultRow {
   employeeId: number,
@@ -77,5 +78,5 @@ export async function listEmployees(): Promise<Employee[]> {
     throw error;
   }
 
-  return employees;
+  return sortBy(employees, "fullName");
 }

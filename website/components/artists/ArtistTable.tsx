@@ -161,6 +161,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
             { accessor: "artistId", hidden: true },
             {
               accessor: "artistName",
+              title: "Artist",
               sortable: true,
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
@@ -183,10 +184,10 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
                 return artist.artistName;
               }
             },
-            { accessor: "nrAlbums", sortable: true },
+            { accessor: "nrAlbums", title: "Albums", sortable: true },
             {
               accessor: "actions",
-              title: "Actions",
+              title: "",
               textAlign: "center",
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {

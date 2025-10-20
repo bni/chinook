@@ -15,10 +15,7 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
   const [ records, setRecords ] = useState(employees);
 
   useEffect(() => {
-    const data = sortBy(employees, [
-      (employee) => !(employee.supportRepForCustomers && employee.supportRepForCustomers.length > 0),
-      sortStatus.columnAccessor
-    ]) as Employee[];
+    const data = sortBy(employees, [sortStatus.columnAccessor]) as Employee[];
 
     setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
   }, [ employees, sortStatus ]);
