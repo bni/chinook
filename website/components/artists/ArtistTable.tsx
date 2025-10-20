@@ -1,7 +1,7 @@
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import { ActionIcon, TextInput, Group } from "@mantine/core";
-import { IconEdit, IconCheck, IconX, IconTrash } from "@tabler/icons-react";
+import { ActionIcon, TextInput, Group, Button, Box } from "@mantine/core";
+import { IconEdit, IconCheck, IconX, IconTrash, IconPlus } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 
 import sortBy from "lodash/sortBy";
@@ -96,90 +96,142 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     });
   };
 
+  const handleCreate = () => {
+    modals.openConfirmModal({
+      title: "Create Artist",
+      children: (
+        <TextInput
+          label="Artist Name"
+          placeholder="Enter artist name"
+          data-autofocus
+          id="create-artist-input"
+        />
+      ),
+      labels: { confirm: "Create", cancel: "Cancel" },
+      onConfirm: async () => {
+        const input = document.getElementById("create-artist-input") as HTMLInputElement;
+        const artistName = input?.value.trim();
+
+        if (!artistName) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/internal/artists", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ artistName })
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to create artist");
+          }
+
+          // Refresh the page to show the new artist
+          window.location.reload();
+        } catch (error) {
+          logger.error(error, "Failed to create artist");
+        }
+      }
+    });
+  };
+
   return (
-    <DataTable
-      withTableBorder
-      withColumnBorders
-      striped
-      highlightOnHover
-      fz="md"
-      idAccessor="artistId"
-      records={ records }
-      columns={
-        [
-          { accessor: "artistId", hidden: true },
-          {
-            accessor: "artistName",
-            sortable: true,
-            render: (artist: Artist) => {
-              if (editingId === artist.artistId) {
-                return (
-                  <TextInput
-                    value={ editingName }
-                    onChange={ (e) => setEditingName(e.currentTarget.value) }
-                    onKeyDown={ async (e) => {
-                      if (e.key === "Enter") {
-                        await handleSave(artist.artistId);
-                      } else if (e.key === "Escape") {
-                        handleCancel();
-                      }
-                    } }
-                    autoFocus
-                    disabled={ isLoading }
-                  />
-                );
+    <Box>
+      <Group justify="flex-end" mb="md">
+        <Button
+          leftSection={ <IconPlus size={ 16 } /> }
+          onClick={ handleCreate }
+        >
+          Create Artist
+        </Button>
+      </Group>
+      <DataTable
+        withTableBorder
+        withColumnBorders
+        striped
+        highlightOnHover
+        fz="md"
+        idAccessor="artistId"
+        records={ records }
+        columns={
+          [
+            { accessor: "artistId", hidden: true },
+            {
+              accessor: "artistName",
+              sortable: true,
+              render: (artist: Artist) => {
+                if (editingId === artist.artistId) {
+                  return (
+                    <TextInput
+                      value={ editingName }
+                      onChange={ (e) => setEditingName(e.currentTarget.value) }
+                      onKeyDown={ async (e) => {
+                        if (e.key === "Enter") {
+                          await handleSave(artist.artistId);
+                        } else if (e.key === "Escape") {
+                          handleCancel();
+                        }
+                      } }
+                      autoFocus
+                      disabled={ isLoading }
+                    />
+                  );
+                }
+                return artist.artistName;
               }
-              return artist.artistName;
-            }
-          },
-          { accessor: "nrAlbums", sortable: true },
-          {
-            accessor: "actions",
-            title: "Actions",
-            textAlign: "center",
-            render: (artist: Artist) => {
-              if (editingId === artist.artistId) {
+            },
+            { accessor: "nrAlbums", sortable: true },
+            {
+              accessor: "actions",
+              title: "Actions",
+              textAlign: "center",
+              render: (artist: Artist) => {
+                if (editingId === artist.artistId) {
+                  return (
+                    <Group gap="xs" justify="center">
+                      <ActionIcon
+                        color="green"
+                        onClick={ () => handleSave(artist.artistId) }
+                        disabled={ isLoading }
+                      >
+                        <IconCheck size={ 16 } />
+                      </ActionIcon>
+                      <ActionIcon
+                        color="red"
+                        onClick={ handleCancel }
+                        disabled={ isLoading }
+                      >
+                        <IconX size={ 16 } />
+                      </ActionIcon>
+                    </Group>
+                  );
+                }
                 return (
                   <Group gap="xs" justify="center">
                     <ActionIcon
-                      color="green"
-                      onClick={ () => handleSave(artist.artistId) }
-                      disabled={ isLoading }
+                      color="blue"
+                      onClick={ () => handleEdit(artist) }
                     >
-                      <IconCheck size={ 16 } />
+                      <IconEdit size={ 16 } />
                     </ActionIcon>
                     <ActionIcon
                       color="red"
-                      onClick={ handleCancel }
-                      disabled={ isLoading }
+                      onClick={ () => handleDelete(artist) }
                     >
-                      <IconX size={ 16 } />
+                      <IconTrash size={ 16 } />
                     </ActionIcon>
                   </Group>
                 );
               }
-              return (
-                <Group gap="xs" justify="center">
-                  <ActionIcon
-                    color="blue"
-                    onClick={ () => handleEdit(artist) }
-                  >
-                    <IconEdit size={ 16 } />
-                  </ActionIcon>
-                  <ActionIcon
-                    color="red"
-                    onClick={ () => handleDelete(artist) }
-                  >
-                    <IconTrash size={ 16 } />
-                  </ActionIcon>
-                </Group>
-              );
             }
-          }
-        ]
-      }
-      sortStatus={ sortStatus }
-      onSortStatusChange={ setSortStatus }
-    />
+          ]
+        }
+        sortStatus={ sortStatus }
+        onSortStatusChange={ setSortStatus }
+      />
+    </Box>
   );
 }

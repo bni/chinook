@@ -1,6 +1,6 @@
 docker pull postgres
 
-docker run --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=xxx -d postgres
+docker run --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d postgres
 
 DROP DATABASE IF EXISTS auth;
 DROP DATABASE IF EXISTS broker;
@@ -19,4 +19,4 @@ GRANT CREATE ON DATABASE broker TO broker;
 GRANT ALL PRIVILEGES ON SCHEMA public TO chinook;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO chinook;
 
-npx @better-auth/cli migrate (Need .env file)
+npx @better-auth/cli@latest info
