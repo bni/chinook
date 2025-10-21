@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { updateCustomerSupportRep } from "@lib/customers/updateCustomerSupportRep";
-import { logger } from "@lib/util/logger";
+import { logger, traceRequest } from "@lib/util/logger";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  traceRequest(req, res);
+
   const { id } = req.query;
 
   if (req.method === "PUT") {

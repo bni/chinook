@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import sortBy from "lodash/sortBy";
 import { EmployeeRow } from "./EmployeeRow";
 import { EmployeeCustomerRow } from "./EmployeeCustomerRow";
-import { logger } from "@lib/util/logger";
 
 export function EmployeeTable({ employees }: { employees: Employee[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Employee>>({
@@ -48,13 +47,13 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
       });
 
       if (!response.ok) {
-        logger.error("Failed to update customer support rep");
+        console.error("Failed to update customer support rep");
       } else {
         // Reload the page to reflect the changes
         window.location.reload();
       }
     } catch (error) {
-      logger.error(error, "Failed to update customer");
+      console.error("Failed to update customer", error);
     }
 
     setDraggedCustomer(null);

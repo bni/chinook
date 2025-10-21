@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { logger } from "@lib/util/logger";
+import { logger, traceRequest } from "@lib/util/logger";
 import { broker } from "@lib/util/broker";
 import { artistQueue } from "@lib/worker/queues";
 import { secret } from "@lib/util/secrets";
@@ -37,6 +37,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  traceRequest(req, res);
+
   try {
     if (req.method === "POST") {
       const sentInDigest = req?.headers["x-chinook-hmac-sha256"]?.toString() || "";

@@ -1,11 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createArtist } from "@lib/artists/createArtist";
-import { logger } from "@lib/util/logger";
+import { logger, traceRequest } from "@lib/util/logger";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  traceRequest(req, res);
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }

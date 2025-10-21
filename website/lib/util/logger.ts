@@ -1,4 +1,5 @@
 import pino from "pino";
+import PinoHttp from "pino-http";
 import { secret } from "@lib/util/secrets";
 
 const logger = pino({
@@ -11,12 +12,6 @@ const logger = pino({
           colorize: true,
           levelFirst: true,
           translateTime: "yyyy-mm-dd HH:MM:ss Z"
-        }
-      },
-      {
-        target: "pino/file",
-        options: {
-          destination: await secret("LOG_FILE_DESTINATION")
         }
       },
       {
@@ -42,4 +37,14 @@ const logger = pino({
   }
 });
 
-export { logger };
+const traceRequest = PinoHttp({
+  logger: logger,
+  serializers: {
+    req(req) {
+      req.body = req.raw.body;
+      return req;
+    }
+  }
+});
+
+export { logger, traceRequest };
