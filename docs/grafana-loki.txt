@@ -1,0 +1,5 @@
+docker run -d --name=loki --mount source=loki-data,target=/loki -p 3100:3100 grafana/loki:3.5.7
+
+docker run -d --name=grafana -p 3000:3000 grafana/grafana:12.2
+
+https://grafana.com/grafana/dashboards/21900-pino-http-logs/

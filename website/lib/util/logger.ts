@@ -24,10 +24,7 @@ const logger = pino({
             source: "pino",
             runtime: `nodejs/${process.version}`
           },
-          host: await secret("LOKI_HOST"),
-          headers: {
-            Authorization: `Bearer ${await secret("LOKI_USERNAME")}:${await secret("LOKI_TOKEN")}`
-          }
+          host: await secret("LOKI_HOST")
         }
       }
     ]
