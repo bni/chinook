@@ -6,6 +6,7 @@ import sortBy from "lodash/sortBy";
 interface ResultRow {
   artistId: number,
   artistName: string,
+  mostRecentAlbum: string,
   nrAlbums: number
 }
 
@@ -18,6 +19,7 @@ export async function listArtists(): Promise<Artist[]> {
       SELECT
         ar.artist_id AS "artistId",
         ar.name AS "artistName",
+        COALESCE(MIN(al.title), 'N/A') AS "mostRecentAlbum",
         COUNT(al.album_id) AS "nrAlbums"
       FROM
         artist ar
@@ -35,6 +37,7 @@ export async function listArtists(): Promise<Artist[]> {
         const artist: Artist = {
           artistId: row.artistId,
           artistName: row.artistName,
+          mostRecentAlbum: row.mostRecentAlbum,
           nrAlbums: row.nrAlbums
         };
 

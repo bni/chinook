@@ -1,11 +1,14 @@
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import { ActionIcon, TextInput, Group, Button, Box } from "@mantine/core";
-import { IconEdit, IconCheck, IconX, IconTrash, IconPlus } from "@tabler/icons-react";
+import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 
 import sortBy from "lodash/sortBy";
 import { Artist } from "@lib/artists/artist";
+
+const PAGE_SIZES = [10, 50, 100];
+const DEFAULT_PAGE_SIZE = 50;
 
 export function ArtistTable({ artists }: { artists: Artist[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
@@ -17,12 +20,34 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
   const [ editingId, setEditingId ] = useState<number | null>(null);
   const [ editingName, setEditingName ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
+  const [ page, setPage ] = useState(1);
+  const [ searchQuery, setSearchQuery ] = useState("");
+  const [ pageSize, setPageSize ] = useState(() => {
+    return DEFAULT_PAGE_SIZE;
+  });
 
   useEffect(() => {
     const data = sortBy(artists, sortStatus.columnAccessor) as Artist[];
 
     setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
   }, [ artists, sortStatus ]);
+
+  // Filter records based on search query
+  const filteredRecords = records.filter((artist) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return artist.artistName.toLowerCase().includes(query);
+  });
+
+  // Calculate paginated records from filtered results
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize;
+  const paginatedRecords = filteredRecords.slice(from, to);
+
+  // Reset to page 1 when search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [ searchQuery ]);
 
   const handleEdit = (artist: Artist) => {
     setEditingId(artist.artistId);
@@ -139,7 +164,14 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
 
   return (
     <Box>
-      <Group justify="flex-end" mb="md">
+      <Group justify="space-between" mb="md">
+        <TextInput
+          placeholder="Search artists..."
+          leftSection={ <IconSearch size={ 16 } /> }
+          value={ searchQuery }
+          onChange={ (e) => setSearchQuery(e.currentTarget.value) }
+          w={ 300 }
+        />
         <Button
           leftSection={ <IconPlus size={ 16 } /> }
           onClick={ handleCreate }
@@ -154,7 +186,13 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
         highlightOnHover
         fz="md"
         idAccessor="artistId"
-        records={ records }
+        records={ paginatedRecords }
+        page={ page }
+        onPageChange={ setPage }
+        totalRecords={ filteredRecords.length }
+        recordsPerPage={ pageSize }
+        recordsPerPageOptions={ PAGE_SIZES }
+        onRecordsPerPageChange={ setPageSize }
         columns={
           [
             { accessor: "artistId", hidden: true },
@@ -183,6 +221,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
                 return artist.artistName;
               }
             },
+            { accessor: "mostRecentAlbum", title: "Most Recent Album" , sortable: true },
             { accessor: "nrAlbums", title: "Albums", sortable: true },
             {
               accessor: "actions",

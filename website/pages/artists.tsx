@@ -15,7 +15,7 @@ export async function getServerSideProps() {
 export default function ArtistsPage({ artists }: { artists: Artist[] }) {
   return (
     <CollapseDesktop>
-      <Group mt={25} justify="center">
+      <Group mt={25} ml={25} mr={25} justify="space-between" grow>
         <ArtistTable artists={artists}/>
       </Group>
     </CollapseDesktop>
