@@ -1,4 +1,13 @@
 /*******************************************************************************
+   Chinook Database - Version 1.4.5
+   Script: Chinook_PostgreSql.sql
+   Description: Creates and populates the Chinook database.
+   DB Server: PostgreSql
+   Author: Luis Rocha
+   License: https://github.com/lerocha/chinook-database/blob/master/LICENSE.md
+********************************************************************************/
+
+/*******************************************************************************
    Create Tables
 ********************************************************************************/
 CREATE TABLE album
