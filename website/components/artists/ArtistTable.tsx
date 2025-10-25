@@ -200,6 +200,8 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
               accessor: "artistName",
               title: "Artist",
               sortable: true,
+              width: "500px",
+              ellipsis: true,
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
                   return (
@@ -221,16 +223,29 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
                 return artist.artistName;
               }
             },
-            { accessor: "mostRecentAlbum", title: "Most Recent Album" , sortable: true },
-            { accessor: "nrAlbums", title: "Albums", sortable: true },
+            {
+              accessor: "mostRecentAlbum",
+              title: "Most Recent Album",
+              sortable: true,
+              width: "300px",
+              ellipsis: true
+            },
+            {
+              accessor: "nrAlbums",
+              title: "Albums",
+              sortable: true,
+              noWrap: true,
+              width: "80px"
+            },
             {
               accessor: "actions",
               title: "",
               textAlign: "center",
+              width: "60px",
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
                   return (
-                    <Group gap="xs" justify="center">
+                    <Group gap="xs" justify="center" wrap="nowrap">
                       <ActionIcon
                         color="green"
                         onClick={ () => handleSave(artist.artistId) }
@@ -249,7 +264,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
                   );
                 }
                 return (
-                  <Group gap="xs" justify="center">
+                  <Group gap="xs" justify="center" wrap="nowrap">
                     <ActionIcon
                       color="blue"
                       onClick={ () => handleEdit(artist) }
