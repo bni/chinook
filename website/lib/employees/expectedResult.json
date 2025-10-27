@@ -1,19 +1,5 @@
 [
   {
-    "employeeId": 78,
-    "firstName": "Bob",
-    "lastName": "Bobson",
-    "fullName": "Bob Bobson",
-    "title": "Programmer",
-    "supportRepForCustomers": [
-      {
-        "customerId": 786,
-        "firstName": "Customer",
-        "lastName": "B"
-      }
-    ]
-  },
-  {
     "employeeId": 42,
     "firstName": "Sue",
     "lastName": "Doe",
@@ -30,6 +16,20 @@
         "firstName": "Customer",
         "lastName": "C",
         "companyName": "Company C"
+      }
+    ]
+  },
+  {
+    "employeeId": 78,
+    "firstName": "Bob",
+    "lastName": "Bobson",
+    "fullName": "Bob Bobson",
+    "title": "Programmer",
+    "supportRepForCustomers": [
+      {
+        "customerId": 786,
+        "firstName": "Customer",
+        "lastName": "B"
       }
     ]
   }

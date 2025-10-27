@@ -15,6 +15,9 @@ const Employee = z.object({
   lastName: z.string(),
   fullName: z.string(),
   title: z.string().optional(),
+  city: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
   supportRepForCustomers: Customer.array().optional()
 });
 

@@ -1,7 +1,7 @@
 import { CollapseDesktop } from "../components/CollapseDesktop";
 import { Group } from "@mantine/core";
 import { ArtistTable } from "../components/artists/ArtistTable";
-import { Artist } from "@lib/artists/artist";
+import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
 
 export async function getServerSideProps() {

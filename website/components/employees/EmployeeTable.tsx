@@ -1,22 +1,20 @@
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import { Employee, Customer } from "@lib/employees/employee";
+import { Employee, Customer } from "@lib/employees/types";
 import { useEffect, useState } from "react";
-import sortBy from "lodash/sortBy";
+import orderBy from "lodash/orderBy";
 import { EmployeeRow } from "./EmployeeRow";
 import { EmployeeCustomerRow } from "./EmployeeCustomerRow";
 
 export function EmployeeTable({ employees }: { employees: Employee[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Employee>>({
-    columnAccessor: "fullName",
+    columnAccessor: "title",
     direction: "asc"
   });
 
   const [ records, setRecords ] = useState(employees);
 
   useEffect(() => {
-    const data = sortBy(employees, [sortStatus.columnAccessor]) as Employee[];
-
-    setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
+    setRecords(orderBy(employees, sortStatus.columnAccessor, sortStatus.direction));
   }, [ employees, sortStatus ]);
 
   const [expandedCustomerIds, setExpandedCustomerIds] = useState<number[]>([]);
@@ -34,6 +32,7 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
     // Don't do anything if dropping on the same employee
     if (targetEmployeeId === sourceEmployeeId) {
       setDraggedCustomer(null);
+
       return;
     }
 
@@ -91,7 +90,10 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
           ),
           width: 400
         },
-        { accessor: "title", sortable: true, width: 400 }
+        { accessor: "title", title: "Title", sortable: true, width: 400 },
+        { accessor: "city", title: "City", sortable: true, width: 200 },
+        { accessor: "email", title: "E-mail", sortable: true, width: 200 },
+        { accessor: "phone", title: "Phone", sortable: true, width: 200 }
       ]}
       records={ records }
       rowExpansion={{

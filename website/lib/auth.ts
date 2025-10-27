@@ -34,6 +34,12 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: "chinook"
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 5
+    }
+  },
   trustedOrigins: [
     "http://localhost:4000",
     "https://chinook.loca.lt"

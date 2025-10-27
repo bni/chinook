@@ -1,13 +1,16 @@
-import { Customer, Employee } from "@lib/employees/employee";
+import { Customer, Employee } from "@lib/employees/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
-import sortBy from "lodash/sortBy";
+import orderBy from "lodash/orderBy";
 
 interface ResultRow {
   employeeId: number,
   employeeFirstName: string,
   employeeLastName: string,
   employeeTitle: string | null,
+  employeeCity: string | null,
+  employeeEmail: string | null,
+  employeePhone: string | null,
   customerId: number | null,
   customerFirstName: string,
   customerLastName: string,
@@ -25,6 +28,9 @@ export async function listEmployees(): Promise<Employee[]> {
         e.first_name AS "employeeFirstName",
         e.last_name AS "employeeLastName",
         e.title AS "employeeTitle",
+        e.city AS "employeeCity",
+        e.email AS "employeeEmail",
+        e.phone AS "employeePhone",
         c.customer_id AS "customerId",
         c.first_name AS "customerFirstName",
         c.last_name AS "customerLastName",
@@ -50,7 +56,10 @@ export async function listEmployees(): Promise<Employee[]> {
             firstName: row.employeeFirstName,
             lastName: row.employeeLastName,
             fullName: `${row.employeeFirstName} ${row.employeeLastName}`,
-            ...(row.employeeTitle && { title: row.employeeTitle })
+            ...(row.employeeTitle && { title: row.employeeTitle }),
+            ...(row.employeeCity && { city: row.employeeCity }),
+            ...(row.employeeEmail && { email: row.employeeEmail }),
+            ...(row.employeePhone && { phone: row.employeePhone })
           };
 
           employees.push(currentEmployee);
@@ -78,5 +87,5 @@ export async function listEmployees(): Promise<Employee[]> {
     throw error;
   }
 
-  return sortBy(employees, "fullName");
+  return orderBy(employees, "title", "asc");
 }

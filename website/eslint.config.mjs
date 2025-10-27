@@ -1,17 +1,15 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname
-});
-
-export default defineConfig([
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
   globalIgnores([
-    ".next/*",
+    ".next/**",
     "next-env.d.ts"
-  ]), {
-    extends: compat.extends("next/core-web-vitals", "next/typescript"),
-
+  ]),
+  {
     rules: {
       "indent": ["warn", 2],
       "quotes": ["warn", "double"],
@@ -28,3 +26,5 @@ export default defineConfig([
     }
   }
 ]);
+
+export default eslintConfig;

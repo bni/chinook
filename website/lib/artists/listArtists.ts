@@ -1,7 +1,6 @@
-import { Artist } from "@lib/artists/artist";
+import { Artist } from "@lib/artists/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
-import sortBy from "lodash/sortBy";
 
 interface ResultRow {
   artistId: number,
@@ -38,7 +37,7 @@ export async function listArtists(): Promise<Artist[]> {
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
-        "artistName" ASC
+        "nrAlbums" DESC
 
     `);
 
@@ -60,5 +59,5 @@ export async function listArtists(): Promise<Artist[]> {
     throw error;
   }
 
-  return sortBy(artists, "artistName");
+  return artists;
 }

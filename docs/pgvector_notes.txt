@@ -1,0 +1,11 @@
+-- This is a complete Postgres image, that also contain pgvector extension
+docker pull pgvector/pgvector:pg18-trixie
+
+docker run --name pgvector -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d pgvector/pgvector:pg18-trixie
+
+-- Must be run in chinook schema
+SELECT extversion FROM pg_extension WHERE extname = 'vector';
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Xenova/all-MiniLM-L6-v2 Uses 384 dimensions
+ALTER TABLE album ADD embedding VECTOR(384);

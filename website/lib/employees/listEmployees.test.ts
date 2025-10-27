@@ -1,4 +1,4 @@
-import { Employee } from "@lib/employees/employee";
+import { Employee } from "@lib/employees/types";
 import { listEmployees } from "@lib/employees/listEmployees";
 import { Pool } from "pg";
 import testRows from "./testRows.json" with { type: "json" };

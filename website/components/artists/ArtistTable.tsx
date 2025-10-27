@@ -3,17 +3,16 @@ import { useEffect, useState } from "react";
 import { ActionIcon, TextInput, Group, Button, Box } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
-
-import sortBy from "lodash/sortBy";
-import { Artist } from "@lib/artists/artist";
+import orderBy from "lodash/orderBy";
+import { Artist } from "@lib/artists/types";
 
 const PAGE_SIZES = [10, 50, 100];
 const DEFAULT_PAGE_SIZE = 50;
 
 export function ArtistTable({ artists }: { artists: Artist[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
-    columnAccessor: "artistName",
-    direction: "asc"
+    columnAccessor: "nrAlbums",
+    direction: "desc"
   });
 
   const [ records, setRecords ] = useState(artists);
@@ -27,9 +26,11 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
   });
 
   useEffect(() => {
-    const data = sortBy(artists, sortStatus.columnAccessor) as Artist[];
-
-    setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
+    if (sortStatus.columnAccessor === "nrAlbums") {
+      setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
+    } else {
+      setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
+    }
   }, [ artists, sortStatus ]);
 
   // Filter records based on search query
