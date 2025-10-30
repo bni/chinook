@@ -18,6 +18,7 @@ const AlbumSearchResult = z.object({
   albumId: z.number(),
   albumTitle: z.string(),
   artistName: z.string(),
+  releaseYear: z.string(),
   similarity: z.number()
 });
 

@@ -8,6 +8,7 @@ interface ResultRow {
   albumId: number,
   albumTitle: string,
   artistName: string,
+  releaseYear: string,
   similarity: number
 }
 
@@ -24,21 +25,23 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
           al.album_id,
           al.title,
           ar.name,
+          al.release,
           1 - (al.embedding <=> $1) AS similarity
         FROM
-          album al
+          ratings_album al
         INNER JOIN
-          artist ar ON ar.artist_id = al.artist_id
+          ratings_artist ar ON ar.artist_id = al.artist_id
       )
       SELECT
         album_id AS "albumId",
         title AS "albumTitle",
         name AS "artistName",
+        release AS "releaseYear",
         similarity AS "similarity"
       FROM
         similarity_calculation
       WHERE
-        similarity > 0.3
+        similarity > 0.5
       ORDER BY
         similarity DESC
 
@@ -50,6 +53,7 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
           albumId: row.albumId,
           albumTitle: row.albumTitle,
           artistName: row.artistName,
+          releaseYear: row.releaseYear,
           similarity: row.similarity
         };
 

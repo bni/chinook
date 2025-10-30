@@ -111,12 +111,17 @@ export default function SearchPage() {
                   <Text fw={600} size="lg">
                     {result.albumTitle}
                   </Text>
-                  <Badge color="blue" variant="light">
-                    Score: {(100 * result.similarity).toFixed(1) }%
-                  </Badge>
+                  <Group>
+                    <Badge color="orange" variant="light">
+                      Year: {result.releaseYear}
+                    </Badge>
+                    <Badge color="blue" variant="light">
+                      Score: {(100 * result.similarity).toFixed(1) }%
+                    </Badge>
+                  </Group>
                 </Group>
                 <Text size="md" c="dimmed" mb="xs">
-                  by {result.artistName}
+                  {result.artistName}
                 </Text>
               </Card>
             ))}
