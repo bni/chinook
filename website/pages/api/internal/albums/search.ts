@@ -22,7 +22,7 @@ export default async function handler(
 
         const albumSearchResults: AlbumSearchResult[] = await searchAlbums(searchQuery);
 
-        res.status(200).json({ query: searchQuery, results: albumSearchResults });
+        res.status(200).json({ results: albumSearchResults });
       } catch (error) {
         logger.error(error, "Failed to query");
 

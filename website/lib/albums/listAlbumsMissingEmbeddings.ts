@@ -4,7 +4,9 @@ import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   albumId: number,
-  title: string,
+  albumTitle: string,
+  artistId: number,
+  artistName: string,
   embedding?: string
 }
 
@@ -15,15 +17,19 @@ export async function listAlbumsMissingEmbeddings(): Promise<Album[]> {
     const result: Result<ResultRow> = await query(`
 
       SELECT
-        a.album_id AS "albumId",
-        a.title AS "title",
-        a.embedding AS "embedding"
+        al.album_id AS "albumId",
+        al.title AS "albumTitle",
+        at.artist_id AS "artistId",
+        at.name AS "artistName",
+        al.embedding AS "embedding"
       FROM
-        album a
+        album al
+      INNER JOIN
+        artist at ON at.artist_id = al.artist_id
       WHERE
-        a.embedding IS NULL
+        al.embedding IS NULL
       ORDER BY
-          a.album_id ASC
+        al.album_id ASC
 
     `);
 
@@ -31,7 +37,11 @@ export async function listAlbumsMissingEmbeddings(): Promise<Album[]> {
       for (const row of result.rows) {
         const album: Album = {
           albumId: row.albumId,
-          title: row.title,
+          albumTitle: row.albumTitle,
+          artist: {
+            artistId: row.artistId,
+            artistName: row.artistName
+          },
           embedding: row.embedding
         };
 

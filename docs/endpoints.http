@@ -13,15 +13,3 @@ x-chinook-hmac-sha256: {{signature}}
 {
   "artistName": "The Boss 11"
 }
-
-### Query
-POST http://localhost:4000/api/external/v1/search
-Content-Type: application/json
-
-{
-  "query": "dark theme metal"
-}
-
-###{
-###  "query": "This mission is too important for me to allow you to jeopardize it."
-###}

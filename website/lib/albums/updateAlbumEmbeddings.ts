@@ -8,9 +8,11 @@ export async function updateAlbumEmbeddings(): Promise<void> {
   const albums: Album[] = await listAlbumsMissingEmbeddings();
 
   for (const album of albums) {
-    logger.info({ title: album.title }, "Embedding needs updating");
+    const embeddingInput = `${album.artist.artistName} ${album.albumTitle}`;
 
-    const embedding = await extractEmbedding(album.title);
+    logger.info({ embeddingInput: embeddingInput }, "Embedding needs updating");
+
+    const embedding = await extractEmbedding(embeddingInput);
 
     await updateAlbumEmbedding(album.albumId, embedding);
   }

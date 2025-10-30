@@ -1,8 +1,14 @@
 import { z } from "zod";
 
+const AlbumArtist = z.object({
+  artistId: z.number(),
+  artistName: z.string()
+});
+
 const Album = z.object({
   albumId: z.number(),
-  title: z.string(),
+  albumTitle: z.string(),
+  artist: AlbumArtist,
   embedding: z.string().optional()
 });
 
@@ -10,8 +16,8 @@ export type Album = z.infer<typeof Album>;
 
 const AlbumSearchResult = z.object({
   albumId: z.number(),
-  title: z.string(),
-  artist: z.string(),
+  albumTitle: z.string(),
+  artistName: z.string(),
   similarity: z.number()
 });
 

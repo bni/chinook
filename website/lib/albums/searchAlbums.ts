@@ -6,8 +6,8 @@ import { extractEmbedding } from "@lib/util/extractor";
 
 interface ResultRow {
   albumId: number,
-  title: string,
-  artist: string,
+  albumTitle: string,
+  artistName: string,
   similarity: number
 }
 
@@ -19,18 +19,28 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
   try {
     const result: Result<ResultRow> = await query(`
 
+      WITH similarity_calculation AS (
+        SELECT
+          al.album_id,
+          al.title,
+          ar.name,
+          1 - (al.embedding <=> $1) AS similarity
+        FROM
+          album al
+        INNER JOIN
+          artist ar ON ar.artist_id = al.artist_id
+      )
       SELECT
-        al.album_id AS "albumId",
-        al.title AS "title",
-        ar.name AS "artist",
-        (al.embedding <=> $1) AS "similarity"
+        album_id AS "albumId",
+        title AS "albumTitle",
+        name AS "artistName",
+        similarity AS "similarity"
       FROM
-        album al
-      INNER JOIN
-        artist ar ON ar.artist_id = al.artist_id
+        similarity_calculation
+      WHERE
+        similarity > 0.3
       ORDER BY
-        "similarity" ASC
-      FETCH FIRST 3 ROWS ONLY
+        similarity DESC
 
     `, [ embedding ]);
 
@@ -38,8 +48,8 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
       for (const row of result.rows) {
         const albumSearchResult: AlbumSearchResult = {
           albumId: row.albumId,
-          title: row.title,
-          artist: row.artist,
+          albumTitle: row.albumTitle,
+          artistName: row.artistName,
           similarity: row.similarity
         };
 
