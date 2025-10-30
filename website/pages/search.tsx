@@ -66,7 +66,7 @@ export default function SearchPage() {
         {/* Search Input */}
         <Group style={{ width: "100%" }} gap="md">
           <TextInput
-            placeholder="Search for albums by description, mood, genre..."
+            placeholder="Search for albums by mood..."
             size="lg"
             style={{ flex: 1 }}
             value={query}
@@ -120,9 +120,14 @@ export default function SearchPage() {
                     </Badge>
                   </Group>
                 </Group>
-                <Text size="md" c="dimmed" mb="xs">
-                  {result.artistName}
-                </Text>
+                <Group justify="space-between">
+                  <Text size="md" c="dimmed">
+                    {result.artistName}
+                  </Text>
+                  <Text size="md" c="dark">
+                    {result.genre}
+                  </Text>
+                </Group>
               </Card>
             ))}
           </Stack>

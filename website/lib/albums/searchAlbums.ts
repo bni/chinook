@@ -9,6 +9,8 @@ interface ResultRow {
   albumTitle: string,
   artistName: string,
   releaseYear: string,
+  label: string;
+  genre: string;
   similarity: number
 }
 
@@ -26,6 +28,8 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
           al.title,
           ar.name,
           al.release,
+          al.label,
+          al.genre,
           1 - (al.embedding <=> $1) AS similarity
         FROM
           ratings_album al
@@ -37,6 +41,8 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
         title AS "albumTitle",
         name AS "artistName",
         release AS "releaseYear",
+        label AS "label",
+        genre AS "genre",
         similarity AS "similarity"
       FROM
         similarity_calculation
@@ -54,6 +60,8 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
           albumTitle: row.albumTitle,
           artistName: row.artistName,
           releaseYear: row.releaseYear,
+          label: row.label,
+          genre: row.genre,
           similarity: row.similarity
         };
 
