@@ -1,7 +1,7 @@
 import { query } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 
-export async function deleteArtist(artistId: number): Promise<void> {
+export async function deleteArtist(artistId: string): Promise<void> {
   logger.warn("Deleting artist");
 
   try {

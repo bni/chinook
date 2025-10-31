@@ -6,6 +6,6 @@ export async function register() {
     const { workJobs } = await import("@lib/worker/workJobs");
     await workJobs();
 
-    console.log(`Album embeddings updated & job worker started. Running on ${ os.hostname }`);
+    console.log(`Job worker started. Running on ${ os.hostname }`);
   }
 }

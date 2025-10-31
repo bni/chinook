@@ -3,7 +3,7 @@ import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 
 interface ResultRow {
-  artistId: number,
+  artistId: string,
   artistName: string,
   mostRecentAlbum?: string,
   nrAlbums: number

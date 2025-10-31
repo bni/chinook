@@ -5,10 +5,10 @@ import { logger } from "@lib/util/logger";
 import { extractEmbedding } from "@lib/util/extractor";
 
 interface ResultRow {
-  albumId: number,
+  albumId: string,
   albumTitle: string,
   artistName: string,
-  releaseYear: string,
+  releaseYear: number,
   label: string;
   genre: string;
   similarity: number
@@ -32,9 +32,9 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
           al.genre,
           1 - (al.embedding <=> $1) AS similarity
         FROM
-          ratings_album al
+          album al
         INNER JOIN
-          ratings_artist ar ON ar.artist_id = al.artist_id
+          artist ar ON ar.artist_id = al.artist_id
       )
       SELECT
         album_id AS "albumId",

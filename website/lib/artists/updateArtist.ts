@@ -1,7 +1,7 @@
 import { query } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 
-export async function updateArtist(artistId: number, artistName: string): Promise<void> {
+export async function updateArtist(artistId: string, artistName: string): Promise<void> {
   try {
     await query(`
 

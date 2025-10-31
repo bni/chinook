@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 const { Pool } = pg;
 import { pipeline } from "@xenova/transformers";
 
+// https://www.kaggle.com/datasets/kauvinlucas/30000-albums-aggregated-review-ratings
+// TODO fix encoding errors: LC_ALL=C grep '[^ -~]' album_ratings.csv
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CSV_FILE = path.join(__dirname, "album_ratings.csv");
@@ -49,7 +51,7 @@ const fetchOrCreateArtist = async (client, artistName) => {
     SELECT
       artist_id
     FROM
-      ratings_artist
+      artist
     WHERE
       name = $1
 
@@ -61,7 +63,7 @@ const fetchOrCreateArtist = async (client, artistName) => {
 
   const newArtist = await client.query(`
 
-    INSERT INTO ratings_artist (
+    INSERT INTO artist (
       name
     ) VALUES (
       $1
@@ -73,18 +75,11 @@ const fetchOrCreateArtist = async (client, artistName) => {
 }
 
 const importData = async () => {
-  console.log("Starting data import...");
   console.log(`Reading CSV file: ${CSV_FILE}`);
   const fileContent = fs.readFileSync(CSV_FILE, "utf-8");
   const lines = fileContent.split("\n").filter(line => line.trim());
 
-  if (lines.length < 2) {
-    throw new Error("CSV file is empty or has no data rows");
-  }
-
-  const headers = parseCSVLine(lines[0]);
   console.log(`Found ${lines.length - 1} albums to import`);
-  console.log(`CSV columns: ${headers.join(", ")}`);
 
   let imported = 0;
   let skipped = 0;
@@ -122,9 +117,9 @@ const importData = async () => {
         const existingAlbum = await client.query(`
 
           SELECT
-              album_id
+            album_id
           FROM
-              ratings_album
+            album
           WHERE
             title = $1 AND
             artist_id = $2
@@ -150,8 +145,7 @@ const importData = async () => {
 
         await client.query(`
 
-          INSERT INTO ratings_album
-          (
+          INSERT INTO album (
             title,
             release,
             label,
