@@ -1,6 +1,6 @@
-import { CollapseDesktop } from "../components/CollapseDesktop";
+import { CollapseDesktop } from "@components/CollapseDesktop";
 import { Stack, Text } from "@mantine/core";
-import { AuthModal } from "../components/AuthModal";
+import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
 import { authClient } from "@lib/client";
 

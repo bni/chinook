@@ -6,7 +6,8 @@ const jestConfig = {
   },
   roots: ["<rootDir>"],
   moduleNameMapper: {
-    "@lib/(.*)$": "<rootDir>/lib/$1"
+    "@lib/(.*)$": "<rootDir>/lib/$1",
+    "@components/(.*)$": "<rootDir>/components/$1"
   }
 };
 

@@ -10,7 +10,12 @@ import { YearSlider } from "./YearSlider";
 const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
 
-export function ArtistTable({ artists }: { artists: Artist[] }) {
+interface ArtistTableProps {
+  artists: Artist[],
+  defaultRange: [number, number]
+}
+
+export function ArtistTable({ artists, defaultRange }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "nrAlbums",
     direction: "desc"
@@ -27,7 +32,6 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     return DEFAULT_PAGE_SIZE;
   });
 
-  const defaultRange: [number, number] = [1991, 2004];
   const [selectedRange, setSelectedRange] = useState<[number, number]>(defaultRange);
 
   // Fetch artists when selectedRange changes

@@ -1,11 +1,11 @@
-import { CollapseDesktop } from "../components/CollapseDesktop";
+import { CollapseDesktop } from "@components/CollapseDesktop";
 import { Stack, TextInput, Text, Loader, Alert } from "@mantine/core";
 import { IconSearch, IconAlertCircle } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 import { AlbumSearchResult } from "@lib/albums/types";
 import React from "react";
-import { SearchResults } from "../components/search/SearchResults";
-import { EmptyState } from "../components/search/EmptyState";
+import { SearchResults } from "@components/search/SearchResults";
+import { EmptyState } from "@components/search/EmptyState";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");

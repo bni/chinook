@@ -5,7 +5,11 @@ import orderBy from "lodash/orderBy";
 import { EmployeeRow } from "./EmployeeRow";
 import { EmployeeCustomerRow } from "./EmployeeCustomerRow";
 
-export function EmployeeTable({ employees }: { employees: Employee[] }) {
+interface EmployeeTableProps {
+  employees: Employee[]
+}
+
+export function EmployeeTable({ employees }: EmployeeTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Employee>>({
     columnAccessor: "title",
     direction: "asc"
@@ -81,11 +85,11 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
                 await handleEmployeeRowDrop(employeeId);
               }}
             >
-              <EmployeeRow params={{
-                hasCustomers: !!supportRepForCustomers && supportRepForCustomers.length > 0,
-                isExpanded: expandedCustomerIds.includes(employeeId),
-                fullName: fullName
-              }}/>
+              <EmployeeRow
+                hasCustomers={!!supportRepForCustomers && supportRepForCustomers.length > 0}
+                isExpanded={expandedCustomerIds.includes(employeeId)}
+                fullName={fullName}
+              />
             </div>
           ),
           width: 400
@@ -117,11 +121,11 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
                     onDragEnd={() => setDraggedCustomer(null)}
                     style={{ cursor: "grab" }}
                   >
-                    <EmployeeCustomerRow params={{
-                      firstName: customer.firstName,
-                      lastName: customer.lastName,
-                      companyName: customer.companyName
-                    }}/>
+                    <EmployeeCustomerRow
+                      firstName={customer.firstName}
+                      lastName={customer.lastName}
+                      companyName={customer.companyName}
+                    />
                   </div>
                 )
               }

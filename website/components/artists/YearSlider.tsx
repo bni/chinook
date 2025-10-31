@@ -1,12 +1,12 @@
 import { RangeSlider } from "@mantine/core";
 import { Dispatch, SetStateAction, useState } from "react";
 
-interface Params {
+interface YearSliderProps {
   defaultRange: [number, number];
   setSelectedRange: Dispatch<SetStateAction<[number, number]>>;
 }
 
-export function YearSlider({ defaultRange, setSelectedRange }: Params) {
+export function YearSlider({ defaultRange, setSelectedRange }: YearSliderProps) {
   const [value, setValue] = useState<[number, number]>(defaultRange);
 
   return (

@@ -3,25 +3,25 @@ import clsx from "clsx";
 import classes from "./EmployeeTable.module.css";
 import { Fragment } from "react";
 
-interface Params {
+interface EmployeeRowProps {
   hasCustomers: boolean,
   isExpanded: boolean,
   fullName: string
 }
 
-export function EmployeeRow({ params }: { params: Params }) {
+export function EmployeeRow({ hasCustomers, isExpanded, fullName }: EmployeeRowProps) {
   return (
     <Fragment>
-      { params.hasCustomers ?
+      { hasCustomers ?
         <IconChevronRight
-          className={ clsx(classes.icon, classes.expandIcon, { [classes.expandIconRotated]: params.isExpanded }) }
+          className={ clsx(classes.icon, classes.expandIcon, { [classes.expandIconRotated]: isExpanded }) }
         />
         :
         <IconX className={classes.icon} />
       }
       <IconUser className={classes.icon} />
 
-      <span>{ params.fullName }</span>
+      <span>{ fullName }</span>
     </Fragment>
   );
 }
