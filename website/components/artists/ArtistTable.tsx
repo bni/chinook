@@ -5,9 +5,10 @@ import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@ta
 import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
 import { Artist } from "@lib/artists/types";
+import { YearSlider } from "./YearSlider";
 
-const PAGE_SIZES = [10, 50, 100];
-const DEFAULT_PAGE_SIZE = 50;
+const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
+const DEFAULT_PAGE_SIZE = 20;
 
 export function ArtistTable({ artists }: { artists: Artist[] }) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
@@ -15,6 +16,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     direction: "desc"
   });
 
+  const [ artistsData, setArtistsData ] = useState(artists);
   const [ records, setRecords ] = useState(artists);
   const [ editingId, setEditingId ] = useState<string | null>(null);
   const [ editingName, setEditingName ] = useState("");
@@ -25,13 +27,47 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     return DEFAULT_PAGE_SIZE;
   });
 
+  const defaultRange: [number, number] = [1991, 2004];
+  const [selectedRange, setSelectedRange] = useState<[number, number]>(defaultRange);
+
+  // Fetch artists when selectedRange changes
+  useEffect(() => {
+    (async () => {
+      try {
+        const params = new URLSearchParams({
+          fromYear: selectedRange[0].toString(),
+          toYear: selectedRange[1].toString()
+        });
+
+        const response = await fetch(`/api/internal/artists/?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          console.error("Failed to list artists");
+        } else {
+          const responseBody = await response.json();
+          setArtistsData(responseBody);
+        }
+      } catch (error) {
+        console.error("Failed to fetch artists", error);
+      }
+    })();
+  }, [ selectedRange ]);
+
+  // Sort records when artistsData or sortStatus changes
   useEffect(() => {
     if (sortStatus.columnAccessor === "nrAlbums") {
-      setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
+      setRecords(orderBy(artistsData, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
+    } else if (sortStatus.columnAccessor === "mostRecentAlbumTitle") {
+      setRecords(orderBy(artistsData, "mostRecentAlbumYear", sortStatus.direction));
     } else {
-      setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
+      setRecords(orderBy(artistsData, sortStatus.columnAccessor, sortStatus.direction));
     }
-  }, [ artists, sortStatus ]);
+  }, [ artistsData, sortStatus ]);
 
   // Filter records based on search query
   const filteredRecords = records.filter((artist) => {
@@ -81,7 +117,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
       }
 
       // Update local state
-      setRecords(prev => prev.map(artist =>
+      setArtistsData(prev => prev.map(artist =>
         artist.artistId === artistId
           ? { ...artist, artistName: editingName }
           : artist
@@ -113,7 +149,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
           }
 
           // Remove from local state
-          setRecords(prev => prev.filter(a => a.artistId !== artist.artistId));
+          setArtistsData(prev => prev.filter(a => a.artistId !== artist.artistId));
         } catch (error) {
           console.error("Failed to delete artist", error);
         }
@@ -154,8 +190,8 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
             throw new Error("Failed to create artist");
           }
 
-          // Refresh the page to show the new artist
-          window.location.reload();
+          // Add it first in the table
+          setArtistsData([ { artistId: "", artistName, nrAlbums: 0 }, ...artistsData ]);
         } catch (error) {
           console.error("Failed to create artist", error);
         }
@@ -165,9 +201,17 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
 
   return (
     <Box>
-      <Group justify="space-between" mb="md">
+      <Group ml="md" mr="md" grow>
+        <YearSlider defaultRange={defaultRange} setSelectedRange={setSelectedRange}/>
+      </Group>
+      <Group>
+        <Text size="lg">
+          &nbsp;
+        </Text>
+      </Group>
+      <Group justify="space-between" mt="xl" mb="md">
         <TextInput
-          placeholder="Search artists..."
+          placeholder="Filter..."
           leftSection={ <IconSearch size={ 16 } /> }
           value={ searchQuery }
           onChange={ (e) => setSearchQuery(e.currentTarget.value) }
@@ -226,7 +270,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
             },
             {
               accessor: "mostRecentAlbumTitle",
-              title: "Most Recent Album",
+              title: "Most recent release",
               sortable: true,
               width: "300px",
               noWrap: true,
@@ -245,7 +289,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
             },
             {
               accessor: "nrAlbums",
-              title: "Albums",
+              title: "Nr releases",
               sortable: true,
               noWrap: true,
               width: "80px"

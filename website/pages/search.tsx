@@ -90,7 +90,7 @@ export default function SearchPage() {
     <CollapseDesktop>
       <Stack mt={50} align="center" gap="xl" style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px" }}>
         <Text size="xl" fw={700}>
-          Search Albums
+          Search
         </Text>
 
         <TextInput

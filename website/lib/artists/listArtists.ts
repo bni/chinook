@@ -10,8 +10,28 @@ interface ResultRow {
   nrAlbums: number
 }
 
-export async function listArtists(): Promise<Artist[]> {
+const buildYearsList = (fromYear: number, toYear: number) => {
+  const years: number[] = [];
+
+  if (fromYear < toYear) {
+    for (let i = fromYear; i <= toYear; i++) {
+      years.push(i);
+    }
+  } else if (toYear < fromYear) {
+    for (let i = toYear; i <= fromYear; i++) {
+      years.push(i);
+    }
+  } else {
+    years.push(fromYear);
+  }
+
+  return years;
+};
+
+export async function listArtists(fromYear: number, toYear: number): Promise<Artist[]> {
   const artists: Artist[] = [];
+
+  const years = buildYearsList(fromYear, toYear);
 
   try {
     const result: Result<ResultRow> = await query(`
@@ -46,12 +66,24 @@ export async function listArtists(): Promise<Artist[]> {
         artist ar
       LEFT JOIN
         album al ON ar.artist_id = al.artist_id
+      WHERE
+        (
+          SELECT
+            al2.release
+          FROM
+            album al2
+          WHERE
+            al2.artist_id = ar.artist_id
+          ORDER BY
+            al2.release DESC
+          FETCH FIRST 1 ROWS ONLY
+        ) = ANY($1::INT[])
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
         "nrAlbums" DESC
 
-    `);
+    `, [ years ]);
 
     if (result.rows) {
       for (const row of result.rows) {

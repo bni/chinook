@@ -7,7 +7,7 @@ import { listArtists } from "@lib/artists/listArtists";
 export async function getServerSideProps() {
   return {
     props: {
-      artists: await listArtists()
+      artists: await listArtists(1991, 2004)
     }
   };
 }

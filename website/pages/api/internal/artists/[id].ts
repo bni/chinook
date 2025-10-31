@@ -10,16 +10,18 @@ export default async function handler(
   traceRequest(req, res);
 
   const { id } = req.query;
+  if (!id || typeof id !== "string") {
+    return res.status(400).json({ error: "Artist id is required" });
+  }
 
   if (req.method === "PUT") {
     const { artistName } = req.body;
-
     if (!artistName || typeof artistName !== "string") {
       return res.status(400).json({ error: "Artist name is required" });
     }
 
     try {
-      await updateArtist(Number(id), artistName);
+      await updateArtist(id, artistName);
 
       res.status(200).json({ success: true });
     } catch (error) {
@@ -29,7 +31,7 @@ export default async function handler(
     }
   } else if (req.method === "DELETE") {
     try {
-      await deleteArtist(Number(id));
+      await deleteArtist(id);
 
       res.status(200).json({ success: true });
     } catch (error) {

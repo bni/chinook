@@ -10,7 +10,7 @@ export function SearchResults({ results }: SearchResultsProps) {
   return (
     <Stack style={{ width: "100%" }} gap="md">
       <Text size="lg" fw={500}>
-        Found {results.length} result{results.length !== 1 ? "s" : ""}
+        Found {results.length} match{results.length !== 1 ? "es" : ""}
       </Text>
       {results.map((result) => (
         <AlbumResultCard key={result.albumId} result={result} />
