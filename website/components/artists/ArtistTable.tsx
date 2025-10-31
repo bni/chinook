@@ -1,6 +1,6 @@
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import { useEffect, useState } from "react";
-import { ActionIcon, TextInput, Group, Button, Box } from "@mantine/core";
+import React, { useEffect, useState } from "react";
+import { ActionIcon, TextInput, Group, Button, Box, Text, Badge } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
@@ -16,7 +16,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
   });
 
   const [ records, setRecords ] = useState(artists);
-  const [ editingId, setEditingId ] = useState<number | null>(null);
+  const [ editingId, setEditingId ] = useState<string | null>(null);
   const [ editingName, setEditingName ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
   const [ page, setPage ] = useState(1);
@@ -60,7 +60,7 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
     setEditingName("");
   };
 
-  const handleSave = async (artistId: number) => {
+  const handleSave = async (artistId: string) => {
     if (!editingName.trim()) {
       return;
     }
@@ -225,11 +225,23 @@ export function ArtistTable({ artists }: { artists: Artist[] }) {
               }
             },
             {
-              accessor: "mostRecentAlbum",
+              accessor: "mostRecentAlbumTitle",
               title: "Most Recent Album",
               sortable: true,
               width: "300px",
-              ellipsis: true
+              noWrap: true,
+              render: (artist: Artist) => {
+                return (
+                  <Group justify="space-between">
+                    <Text>
+                      {artist.mostRecentAlbumTitle}
+                    </Text>
+                    <Badge color="orange" variant="light">
+                      {artist.mostRecentAlbumYear}
+                    </Badge>
+                  </Group>
+                );
+              }
             },
             {
               accessor: "nrAlbums",

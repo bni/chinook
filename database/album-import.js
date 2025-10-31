@@ -7,7 +7,7 @@ const { Pool } = pg;
 import { pipeline } from "@xenova/transformers";
 
 // https://www.kaggle.com/datasets/kauvinlucas/30000-albums-aggregated-review-ratings
-// TODO fix encoding errors: LC_ALL=C grep '[^ -~]' album_ratings.csv
+// Fixed mangled chars: LC_ALL=C grep '[^ -~]' album_ratings.csv
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CSV_FILE = path.join(__dirname, "album_ratings.csv");
@@ -122,12 +122,13 @@ const importData = async () => {
             album
           WHERE
             title = $1 AND
-            artist_id = $2
+            release = $2 AND
+            artist_id = $3
 
-        `, [title, artistId]);
+        `, [title, release, artistId]);
 
         if (existingAlbum.rows.length > 0) {
-          console.log(`Skipping duplicate album: ${title} by ${artist}`);
+          console.log(`Skipping duplicate album: ${title} (${release}) by ${artist}`);
 
           skipped++;
 

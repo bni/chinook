@@ -5,7 +5,8 @@ import { logger } from "@lib/util/logger";
 interface ResultRow {
   artistId: string,
   artistName: string,
-  mostRecentAlbum?: string,
+  mostRecentAlbumTitle?: string,
+  mostRecentAlbumYear?: number,
   nrAlbums: number
 }
 
@@ -26,9 +27,20 @@ export async function listArtists(): Promise<Artist[]> {
           WHERE
             al2.artist_id = ar.artist_id
           ORDER BY
-            al2.album_id DESC
+            al2.release DESC
           FETCH FIRST 1 ROWS ONLY
-        ) AS "mostRecentAlbum",
+        ) AS "mostRecentAlbumTitle",
+        (
+          SELECT
+            al2.release
+          FROM
+            album al2
+          WHERE
+            al2.artist_id = ar.artist_id
+          ORDER BY
+            al2.release DESC
+          FETCH FIRST 1 ROWS ONLY
+        ) AS "mostRecentAlbumYear",
         COUNT(al.album_id) AS "nrAlbums"
       FROM
         artist ar
@@ -46,7 +58,8 @@ export async function listArtists(): Promise<Artist[]> {
         const artist: Artist = {
           artistId: row.artistId,
           artistName: row.artistName,
-          mostRecentAlbum: row.mostRecentAlbum,
+          mostRecentAlbumTitle: row.mostRecentAlbumTitle,
+          mostRecentAlbumYear: row.mostRecentAlbumYear,
           nrAlbums: row.nrAlbums
         };
 

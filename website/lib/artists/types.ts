@@ -3,7 +3,8 @@ import { z } from "zod";
 const Artist = z.object({
   artistId: z.uuidv4(),
   artistName: z.string(),
-  mostRecentAlbum: z.string().optional(),
+  mostRecentAlbumTitle: z.string().optional(),
+  mostRecentAlbumYear: z.number().optional(),
   nrAlbums: z.number()
 });
 
