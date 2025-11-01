@@ -3,56 +3,42 @@ import { Group } from "@mantine/core";
 import { ArtistTable } from "@components/artists/ArtistTable";
 import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
-import { SliderProps } from "@components/artists/interfaces";
-import { logger } from "@lib/util/logger";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-
-const buildMarks = (start: number, end: number, steps: number) => {
-  const minYear = start;
-
-  const marks = [];
-  for (let year = minYear; year <= end; year += steps) {
-    marks.push({
-      value: year, label: year.toString()
-    });
-  }
-
-  const maxYear = marks[marks.length - 1].value;
-
-  return { minYear, maxYear, marks };
-};
+import { getPrefs, savePrefs } from "@lib/util/prefs";
 
 export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
-  const { minYear, maxYear, marks } = buildMarks(1940, 2030, 10);
+  const prefs = await getPrefs(context.req, context.res);
 
-  const userId = context.req.headers["x-chinook-user-id"];
+  if (!prefs.fromYear || !prefs.toYear) {
+    // None existed, save defaults
+    prefs.fromYear = 1991;
+    prefs.toYear = 2004;
 
-  logger.info({ userId });
+    await savePrefs(prefs);
+  }
 
-  const defaultRange: [number, number] = [1991, 2004];
-
-  const artists = await listArtists(defaultRange[0], defaultRange[1]);
+  const artists = await listArtists(prefs.fromYear, prefs.toYear);
 
   return {
     props: {
-      minYear: minYear,
-      maxYear: maxYear,
-      marks: marks,
-      defaultRange: defaultRange,
+      fromYear: prefs.fromYear,
+      toYear: prefs.toYear,
       artists: artists
     }
   };
 }) satisfies GetServerSideProps<ArtistsPageProps>;
 
-interface ArtistsPageProps extends SliderProps {
-  artists: Artist[],
+interface ArtistsPageProps {
+  fromYear: number,
+  toYear: number,
+  artists: Artist[]
 }
 
-export default function ArtistsPage({ minYear, maxYear, marks, defaultRange, artists }: ArtistsPageProps) {
+export default function ArtistsPage({ fromYear, toYear, artists }: ArtistsPageProps) {
   return (
     <CollapseDesktop>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ArtistTable minYear={minYear} maxYear={maxYear} marks={marks} defaultRange={defaultRange} artists={artists}/>
+        <ArtistTable fromYear={fromYear} toYear={toYear} artists={artists}/>
       </Group>
     </CollapseDesktop>
   );

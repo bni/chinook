@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { createArtist } from "@lib/artists/createArtist";
 import { logger, traceRequest } from "@lib/util/logger";
 import { listArtists } from "@lib/artists/listArtists";
+import { getPrefs, savePrefs } from "@lib/util/prefs";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +21,15 @@ export default async function handler(
       return res.status(400).json({ error: "To year is required, and to be numeric" });
     }
 
-    const artists = await listArtists(parseInt(fromYear, 10), parseInt(toYear, 10));
+    // Save Prefs
+    const prefs = await getPrefs(req, res);
+
+    prefs.fromYear = parseInt(fromYear, 10);
+    prefs.toYear = parseInt(toYear, 10);
+
+    await savePrefs(prefs);
+
+    const artists = await listArtists(prefs.fromYear, prefs.toYear);
 
     return res.status(200).json(artists);
   } else if (req.method === "POST") {

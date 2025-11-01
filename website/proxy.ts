@@ -12,14 +12,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-chinook-user-id", session.user.id);
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders
-    }
-  });
+  return NextResponse.next();
 }
 
 // noinspection JSUnusedGlobalSymbols

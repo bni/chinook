@@ -1,13 +1,30 @@
 import { RangeSlider } from "@mantine/core";
 import { Dispatch, SetStateAction, useState } from "react";
-import { SliderProps } from "./interfaces";
 
-interface YearSliderProps extends SliderProps {
+const buildMarks = (start: number, end: number, steps: number) => {
+  const minYear = start;
+
+  const marks = [];
+  for (let year = minYear; year <= end; year += steps) {
+    marks.push({
+      value: year, label: year.toString()
+    });
+  }
+
+  const maxYear = marks[marks.length - 1].value;
+
+  return { minYear, maxYear, marks };
+};
+
+interface YearSliderProps {
+  selectedRange: [number, number],
   setSelectedRange: Dispatch<SetStateAction<[number, number]>>;
 }
 
-export function YearSlider({ minYear, maxYear, marks, defaultRange, setSelectedRange }: YearSliderProps) {
-  const [value, setValue] = useState<[number, number]>(defaultRange);
+export function YearSlider({ selectedRange, setSelectedRange }: YearSliderProps) {
+  const { minYear, maxYear, marks } = buildMarks(1940, 2030, 10);
+
+  const [value, setValue] = useState<[number, number]>(selectedRange);
 
   return (
     <RangeSlider
@@ -19,7 +36,7 @@ export function YearSlider({ minYear, maxYear, marks, defaultRange, setSelectedR
       max={maxYear}
       minRange={3}
       step={1}
-      defaultValue={defaultRange}
+      defaultValue={selectedRange}
       marks={marks}
     />
   );

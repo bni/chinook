@@ -6,16 +6,17 @@ import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
 import { Artist } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
-import { SliderProps } from "./interfaces";
 
 const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
 
-interface ArtistTableProps extends SliderProps {
-  artists: Artist[],
+interface ArtistTableProps {
+  fromYear: number,
+  toYear: number,
+  artists: Artist[]
 }
 
-export function ArtistTable({ minYear, maxYear, marks, defaultRange, artists }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, artists }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -32,7 +33,7 @@ export function ArtistTable({ minYear, maxYear, marks, defaultRange, artists }: 
     return DEFAULT_PAGE_SIZE;
   });
 
-  const [selectedRange, setSelectedRange] = useState<[number, number]>(defaultRange);
+  const [selectedRange, setSelectedRange] = useState<[number, number]>([fromYear, toYear]);
 
   // Fetch artists when selectedRange changes
   useEffect(() => {
@@ -206,7 +207,7 @@ export function ArtistTable({ minYear, maxYear, marks, defaultRange, artists }: 
   return (
     <Box>
       <Group ml="md" mr="md" grow>
-        <YearSlider minYear={minYear} maxYear={maxYear} marks={marks} defaultRange={defaultRange} setSelectedRange={setSelectedRange}/>
+        <YearSlider selectedRange={selectedRange} setSelectedRange={setSelectedRange}/>
       </Group>
       <Group>
         <Text size="lg">
