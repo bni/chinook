@@ -3,18 +3,19 @@ import { Group } from "@mantine/core";
 import { EmployeeTable } from "@components/employees/EmployeeTable";
 import { listEmployees } from "@lib/employees/listEmployees";
 import { Employee } from "@lib/employees/types";
+import { GetServerSideProps } from "next";
 
-export async function getServerSideProps() {
+interface EmployeesPageProps {
+  employees: Employee[]
+}
+
+export const getServerSideProps = (async () => {
   return {
     props: {
       employees: await listEmployees()
     }
   };
-}
-
-interface EmployeesPageProps {
-  employees: Employee[]
-}
+}) satisfies GetServerSideProps<EmployeesPageProps>;
 
 export default function EmployeesPage({ employees }: EmployeesPageProps) {
   return (

@@ -4,6 +4,8 @@ import { ArtistTable } from "@components/artists/ArtistTable";
 import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
 import { SliderProps } from "@components/artists/interfaces";
+import { logger } from "@lib/util/logger";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 const buildMarks = (start: number, end: number, steps: number) => {
   const minYear = start;
@@ -20,8 +22,12 @@ const buildMarks = (start: number, end: number, steps: number) => {
   return { minYear, maxYear, marks };
 };
 
-export async function getServerSideProps() {
+export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
   const { minYear, maxYear, marks } = buildMarks(1940, 2030, 10);
+
+  const userId = context.req.headers["x-chinook-user-id"];
+
+  logger.info({ userId });
 
   const defaultRange: [number, number] = [1991, 2004];
 
@@ -36,7 +42,7 @@ export async function getServerSideProps() {
       artists: artists
     }
   };
-}
+}) satisfies GetServerSideProps<ArtistsPageProps>;
 
 interface ArtistsPageProps extends SliderProps {
   artists: Artist[],
