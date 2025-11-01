@@ -13,4 +13,4 @@ const query = (queryText: string, values?: unknown[]): Promise<Result> => {
   return pool.query(queryText, values);
 };
 
-export { query, Result };
+export { query, pool, Result };

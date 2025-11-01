@@ -3,28 +3,50 @@ import { Group } from "@mantine/core";
 import { ArtistTable } from "@components/artists/ArtistTable";
 import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
+import { SliderProps } from "@components/artists/interfaces";
+
+const buildMarks = (start: number, end: number, steps: number) => {
+  const minYear = start;
+
+  const marks = [];
+  for (let year = minYear; year <= end; year += steps) {
+    marks.push({
+      value: year, label: year.toString()
+    });
+  }
+
+  const maxYear = marks[marks.length - 1].value;
+
+  return { minYear, maxYear, marks };
+};
 
 export async function getServerSideProps() {
+  const { minYear, maxYear, marks } = buildMarks(1940, 2030, 10);
+
   const defaultRange: [number, number] = [1991, 2004];
+
+  const artists = await listArtists(defaultRange[0], defaultRange[1]);
 
   return {
     props: {
-      artists: await listArtists(defaultRange[0], defaultRange[1]),
-      defaultRange: defaultRange
+      minYear: minYear,
+      maxYear: maxYear,
+      marks: marks,
+      defaultRange: defaultRange,
+      artists: artists
     }
   };
 }
 
-interface Params {
+interface ArtistsPageProps extends SliderProps {
   artists: Artist[],
-  defaultRange: [number, number]
 }
 
-export default function ArtistsPage({ artists, defaultRange }: Params) {
+export default function ArtistsPage({ minYear, maxYear, marks, defaultRange, artists }: ArtistsPageProps) {
   return (
     <CollapseDesktop>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ArtistTable artists={artists} defaultRange={defaultRange}/>
+        <ArtistTable minYear={minYear} maxYear={maxYear} marks={marks} defaultRange={defaultRange} artists={artists}/>
       </Group>
     </CollapseDesktop>
   );

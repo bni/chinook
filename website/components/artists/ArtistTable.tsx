@@ -6,16 +6,16 @@ import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
 import { Artist } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
+import { SliderProps } from "./interfaces";
 
 const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
 
-interface ArtistTableProps {
+interface ArtistTableProps extends SliderProps {
   artists: Artist[],
-  defaultRange: [number, number]
 }
 
-export function ArtistTable({ artists, defaultRange }: ArtistTableProps) {
+export function ArtistTable({ minYear, maxYear, marks, defaultRange, artists }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -206,7 +206,7 @@ export function ArtistTable({ artists, defaultRange }: ArtistTableProps) {
   return (
     <Box>
       <Group ml="md" mr="md" grow>
-        <YearSlider defaultRange={defaultRange} setSelectedRange={setSelectedRange}/>
+        <YearSlider minYear={minYear} maxYear={maxYear} marks={marks} defaultRange={defaultRange} setSelectedRange={setSelectedRange}/>
       </Group>
       <Group>
         <Text size="lg">

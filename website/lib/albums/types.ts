@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const Album = z.object({
+  albumId: z.uuidv4(),
+  albumTitle: z.string()
+});
+
+export type Album = z.infer<typeof Album>;
+
 const AlbumSearchResult = z.object({
   albumId: z.uuidv4(),
   albumTitle: z.string(),
