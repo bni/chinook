@@ -67,21 +67,19 @@ export async function listArtists(fromYear: number, toYear: number): Promise<Art
       LEFT JOIN
         album al ON ar.artist_id = al.artist_id
       WHERE
-        (
+        EXISTS (
           SELECT
-            al2.release
+            1
           FROM
             album al2
           WHERE
-            al2.artist_id = ar.artist_id
-          ORDER BY
-            al2.release DESC
-          FETCH FIRST 1 ROWS ONLY
-        ) = ANY($1::INT[])
+            al2.artist_id = ar.artist_id AND
+            al2.release = ANY($1::INT[])
+        )
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
-        "nrAlbums" DESC
+        "mostRecentAlbumYear" ASC
 
     `, [ years ]);
 

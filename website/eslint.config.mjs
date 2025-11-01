@@ -1,4 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
+// https://github.com/vercel/next.js/issues/85379
+// https://github.com/vercel/next.js/pull/84929
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 

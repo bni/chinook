@@ -17,8 +17,8 @@ interface ArtistTableProps {
 
 export function ArtistTable({ artists, defaultRange }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
-    columnAccessor: "nrAlbums",
-    direction: "desc"
+    columnAccessor: "mostRecentAlbumTitle",
+    direction: "asc"
   });
 
   const [ artistsData, setArtistsData ] = useState(artists);
