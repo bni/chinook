@@ -3,10 +3,16 @@ import { secret } from "@lib/util/secrets";
 import { IncomingMessage, ServerResponse } from "node:http";
 
 interface Prefs {
-  fromYear: number;
-  toYear: number;
-  pageSize: number;
+  artistsFromYear: number;
+  artistsToYear: number;
+  artistsPageSize: number;
 }
+
+const defaultPrefs: Prefs = {
+  artistsFromYear: 1991,
+  artistsToYear: 2004,
+  artistsPageSize: 20
+};
 
 const securePrefix = process.env.NODE_ENV !== "development" ? "__Secure-" : "";
 const cookieName = "chinook.user_prefs";
@@ -22,7 +28,17 @@ const options: SessionOptions = {
 };
 
 const getPrefs = async (req: IncomingMessage, res: ServerResponse): Promise<IronSession<Prefs>> => {
-  return await getIronSession<Prefs>(req, res, options);
+  const prefs = await getIronSession<Prefs>(req, res, options);
+
+  // Set default prefs if no value existed
+  for (const prop in defaultPrefs) {
+    if (!prefs.hasOwnProperty(prop)) {
+      // @ts-expect-error We need to set the default values
+      prefs[prop] = defaultPrefs[prop];
+    }
+  }
+
+  return prefs;
 };
 
 const savePrefs = async (prefs: IronSession<Prefs>): Promise<void> => {

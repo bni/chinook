@@ -17,10 +17,9 @@ export default async function handler(
 
     logger.info({ pageSize }, "Saving pagesize");
 
+    // Save pref
     const prefs = await getPrefs(req, res);
-
-    prefs.pageSize = parseInt(pageSize, 10);
-
+    prefs.artistsPageSize = parseInt(pageSize, 10);
     await savePrefs(prefs);
 
     return res.status(200).json({ success: true });

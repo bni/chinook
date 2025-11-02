@@ -21,15 +21,13 @@ export default async function handler(
       return res.status(400).json({ error: "To year is required, and to be numeric" });
     }
 
-    // Save Prefs
+    // Save prefs
     const prefs = await getPrefs(req, res);
-
-    prefs.fromYear = parseInt(fromYear, 10);
-    prefs.toYear = parseInt(toYear, 10);
-
+    prefs.artistsFromYear = parseInt(fromYear, 10);
+    prefs.artistsToYear = parseInt(toYear, 10);
     await savePrefs(prefs);
 
-    const artists = await listArtists(prefs.fromYear, prefs.toYear);
+    const artists = await listArtists(prefs.artistsFromYear, prefs.artistsToYear);
 
     return res.status(200).json(artists);
   } else if (req.method === "POST") {

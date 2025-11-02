@@ -4,12 +4,8 @@ import { ArtistTable } from "@components/artists/ArtistTable";
 import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getPrefs, savePrefs } from "@lib/util/prefs";
+import { getPrefs } from "@lib/util/prefs";
 import { HeadComponent } from "@components/HeadComponent";
-
-const DEFAULT_FROM_YEAR = 1991;
-const DEFAULT_TO_YEAR = 2004;
-const DEFAULT_PAGE_SIZE = 20;
 
 interface ArtistsPageProps {
   fromYear: number,
@@ -21,26 +17,13 @@ interface ArtistsPageProps {
 export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
   const prefs = await getPrefs(context.req, context.res);
 
-  if (!prefs.fromYear || !prefs.toYear) {
-    prefs.fromYear = DEFAULT_FROM_YEAR;
-    prefs.toYear = DEFAULT_TO_YEAR;
-
-    await savePrefs(prefs);
-  }
-
-  if (!prefs.pageSize) {
-    prefs.pageSize = DEFAULT_PAGE_SIZE;
-
-    await savePrefs(prefs);
-  }
-
-  const artists = await listArtists(prefs.fromYear, prefs.toYear);
+  const artists = await listArtists(prefs.artistsFromYear, prefs.artistsToYear);
 
   return {
     props: {
-      fromYear: prefs.fromYear,
-      toYear: prefs.toYear,
-      pageSize: prefs.pageSize,
+      fromYear: prefs.artistsFromYear,
+      toYear: prefs.artistsToYear,
+      pageSize: prefs.artistsPageSize,
       artists: artists
     }
   };
