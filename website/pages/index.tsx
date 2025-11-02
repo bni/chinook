@@ -3,6 +3,7 @@ import { Stack, Text } from "@mantine/core";
 import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
 import { authClient } from "@lib/client";
+import { HeadComponent } from "@components/HeadComponent";
 
 export default function IndexPage() {
   const [authModalOpened, setAuthModalOpened] = useState(false);
@@ -10,6 +11,7 @@ export default function IndexPage() {
 
   return (
     <CollapseDesktop>
+      <HeadComponent pageName={"Welcome"}/>
       <AuthModal opened={authModalOpened} onClose={() => setAuthModalOpened(false)} />
       {!session.data && (
         <Stack mt={50} align="center" gap="md">

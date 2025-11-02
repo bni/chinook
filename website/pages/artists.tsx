@@ -5,14 +5,18 @@ import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getPrefs, savePrefs } from "@lib/util/prefs";
+import { HeadComponent } from "@components/HeadComponent";
+
+const DEFAULT_FROM_YEAR = 1991;
+const DEFAULT_TO_YEAR = 2004;
 
 export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
   const prefs = await getPrefs(context.req, context.res);
 
   if (!prefs.fromYear || !prefs.toYear) {
     // None existed, save defaults
-    prefs.fromYear = 1991;
-    prefs.toYear = 2004;
+    prefs.fromYear = DEFAULT_FROM_YEAR;
+    prefs.toYear = DEFAULT_TO_YEAR;
 
     await savePrefs(prefs);
   }
@@ -37,6 +41,7 @@ interface ArtistsPageProps {
 export default function ArtistsPage({ fromYear, toYear, artists }: ArtistsPageProps) {
   return (
     <CollapseDesktop>
+      <HeadComponent pageName={"Artists"}/>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
         <ArtistTable fromYear={fromYear} toYear={toYear} artists={artists}/>
       </Group>

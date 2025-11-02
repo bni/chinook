@@ -6,6 +6,7 @@ import { AlbumSearchResult } from "@lib/albums/types";
 import React from "react";
 import { SearchResults } from "@components/search/SearchResults";
 import { EmptyState } from "@components/search/EmptyState";
+import { HeadComponent } from "@components/HeadComponent";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -88,6 +89,7 @@ export default function SearchPage() {
 
   return (
     <CollapseDesktop>
+      <HeadComponent pageName={"Search"}/>
       <Stack mt={50} align="center" gap="xl" style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px" }}>
         <Text size="xl" fw={700}>
           Search

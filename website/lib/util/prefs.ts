@@ -19,8 +19,8 @@ const getPrefs = async (req: IncomingMessage, res: ServerResponse): Promise<Iron
   return await getIronSession<Prefs>(req, res, options);
 };
 
-const savePrefs = async (session: IronSession<Prefs>): Promise<void> => {
-  await session.save();
+const savePrefs = async (prefs: IronSession<Prefs>): Promise<void> => {
+  await prefs.save();
 };
 
 export { getPrefs, savePrefs };

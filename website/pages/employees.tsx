@@ -4,6 +4,7 @@ import { EmployeeTable } from "@components/employees/EmployeeTable";
 import { listEmployees } from "@lib/employees/listEmployees";
 import { Employee } from "@lib/employees/types";
 import { GetServerSideProps } from "next";
+import { HeadComponent } from "@components/HeadComponent";
 
 interface EmployeesPageProps {
   employees: Employee[]
@@ -20,6 +21,7 @@ export const getServerSideProps = (async () => {
 export default function EmployeesPage({ employees }: EmployeesPageProps) {
   return (
     <CollapseDesktop>
+      <HeadComponent pageName={"Employees"}/>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
         <EmployeeTable employees={employees}/>
       </Group>
