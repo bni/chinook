@@ -3,7 +3,7 @@ import { Group } from "@mantine/core";
 import { EmployeeTable } from "@components/employees/EmployeeTable";
 import { listEmployees } from "@lib/employees/listEmployees";
 import { Employee } from "@lib/employees/types";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { HeadComponent } from "@components/HeadComponent";
 
 interface EmployeesPageProps {
@@ -18,7 +18,9 @@ export const getServerSideProps = (async () => {
   };
 }) satisfies GetServerSideProps<EmployeesPageProps>;
 
-export default function EmployeesPage({ employees }: EmployeesPageProps) {
+export default function EmployeesPage({
+  employees
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <CollapseDesktop>
       <HeadComponent pageName={"Employees"}/>

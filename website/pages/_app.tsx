@@ -1,6 +1,5 @@
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
-import { HeadComponent } from "@components/HeadComponent";
 import type { AppProps } from "next/app";
 
 import { mantineTheme } from "@lib/theme";
@@ -12,7 +11,6 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <MantineProvider theme={mantineTheme} defaultColorScheme="auto">
       <ModalsProvider>
-        <HeadComponent/>
         <Component {...pageProps} />
       </ModalsProvider>
     </MantineProvider>

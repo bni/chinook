@@ -1,11 +1,7 @@
 import Head from "next/head";
 
-const generateTitle = (pageName?: string, subPageName?: string) => {
-  let title = "C H I N O O K";
-
-  if (pageName) {
-    title += ` → ${pageName}`;
-  }
+const generateTitle = (pageName: string, subPageName?: string) => {
+  let title = `C H I N O O K → ${pageName}`;
 
   if (subPageName) {
     title += ` → ${subPageName}`;
@@ -15,7 +11,7 @@ const generateTitle = (pageName?: string, subPageName?: string) => {
 };
 
 interface HeadComponentProps {
-  pageName?: string;
+  pageName: string;
   subPageName?: string;
 }
 

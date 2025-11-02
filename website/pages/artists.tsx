@@ -3,13 +3,20 @@ import { Group } from "@mantine/core";
 import { ArtistTable } from "@components/artists/ArtistTable";
 import { Artist } from "@lib/artists/types";
 import { listArtists } from "@lib/artists/listArtists";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getPrefs, savePrefs } from "@lib/util/prefs";
 import { HeadComponent } from "@components/HeadComponent";
 
 const DEFAULT_FROM_YEAR = 1991;
 const DEFAULT_TO_YEAR = 2004;
 const DEFAULT_PAGE_SIZE = 20;
+
+interface ArtistsPageProps {
+  fromYear: number,
+  toYear: number,
+  pageSize: number,
+  artists: Artist[]
+}
 
 export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
   const prefs = await getPrefs(context.req, context.res);
@@ -39,14 +46,9 @@ export const getServerSideProps = (async (context: GetServerSidePropsContext) =>
   };
 }) satisfies GetServerSideProps<ArtistsPageProps>;
 
-interface ArtistsPageProps {
-  fromYear: number,
-  toYear: number,
-  pageSize: number,
-  artists: Artist[]
-}
-
-export default function ArtistsPage({ fromYear, toYear, pageSize, artists }: ArtistsPageProps) {
+export default function ArtistsPage({
+  fromYear, toYear, pageSize, artists
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <CollapseDesktop>
       <HeadComponent pageName={"Artists"}/>
