@@ -5,12 +5,14 @@ import { IncomingMessage, ServerResponse } from "node:http";
 interface Prefs {
   artistsFromYear: number;
   artistsToYear: number;
+  artistsFilter: string;
   artistsPageSize: number;
 }
 
 const defaultPrefs: Prefs = {
   artistsFromYear: 1991,
   artistsToYear: 2004,
+  artistsFilter: "",
   artistsPageSize: 20
 };
 

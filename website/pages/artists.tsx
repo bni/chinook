@@ -24,19 +24,20 @@ export const getServerSideProps = (async (context: GetServerSidePropsContext) =>
       fromYear: prefs.artistsFromYear,
       toYear: prefs.artistsToYear,
       pageSize: prefs.artistsPageSize,
+      filter: prefs.artistsFilter,
       artists: artists
     }
   };
 }) satisfies GetServerSideProps<ArtistsPageProps>;
 
 export default function ArtistsPage({
-  fromYear, toYear, pageSize, artists
+  fromYear, toYear, filter, pageSize, artists
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <CollapseDesktop>
       <HeadComponent pageName={"Artists"}/>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ArtistTable fromYear={fromYear} toYear={toYear} pageSize={pageSize} artists={artists}/>
+        <ArtistTable fromYear={fromYear} toYear={toYear} filter={filter} pageSize={pageSize} artists={artists}/>
       </Group>
     </CollapseDesktop>
   );

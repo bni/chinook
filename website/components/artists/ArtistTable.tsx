@@ -7,16 +7,15 @@ import orderBy from "lodash/orderBy";
 import { Artist } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 
-const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
-
 interface ArtistTableProps {
   fromYear: number,
   toYear: number,
+  filter: string,
   pageSize: number,
   artists: Artist[]
 }
 
-export function ArtistTable({ fromYear, toYear, pageSize, artists }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -28,8 +27,34 @@ export function ArtistTable({ fromYear, toYear, pageSize, artists }: ArtistTable
   const [ editingName, setEditingName ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
   const [ page, setPage ] = useState(1);
-  const [ searchQuery, setSearchQuery ] = useState("");
+  const [ searchQuery, setSearchQuery ] = useState(filter);
   const [ currentPageSize, setCurrentPageSize ] = useState(pageSize);
+
+  // When user changes filter
+  useEffect(() => {
+    (async () => {
+      try {
+        const params = new URLSearchParams({
+          filter: searchQuery
+        });
+
+        const response = await fetch(`/api/internal/artists/prefs/filter?${params.toString()}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          console.error("Failed to save filter");
+        } else {
+          console.info("Saved filter");
+        }
+      } catch (error) {
+        console.error("Failed to save filter", error);
+      }
+    })();
+  }, [ searchQuery, setSearchQuery ]);
 
   // When user changes page size
   useEffect(() => {
@@ -39,7 +64,7 @@ export function ArtistTable({ fromYear, toYear, pageSize, artists }: ArtistTable
           pageSize: currentPageSize.toString()
         });
 
-        const response = await fetch(`/api/internal/artists/pagesize?${params.toString()}`, {
+        const response = await fetch(`/api/internal/artists/prefs/pagesize?${params.toString()}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -227,6 +252,8 @@ export function ArtistTable({ fromYear, toYear, pageSize, artists }: ArtistTable
       }
     });
   };
+
+  const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
 
   return (
     <Box>
