@@ -8,11 +8,16 @@ interface Prefs {
   pageSize: number;
 }
 
+const securePrefix = process.env.NODE_ENV !== "development" ? "__Secure-" : "";
+const cookieName = "chinook.user_prefs";
+
 const options: SessionOptions = {
   password: await secret("IRON_SESSION_SECRET"),
-  cookieName: "chinook.user_prefs",
+  cookieName: `${securePrefix}${cookieName}`,
+  ttl: 0, // Will result in maximum allowed
   cookieOptions: {
-    secure: process.env.NODE_ENV !== "development"
+    secure: process.env.NODE_ENV !== "development",
+    sameSite: "strict"
   }
 };
 

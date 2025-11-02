@@ -6,6 +6,8 @@ export async function register() {
     const { workJobs } = await import("@lib/worker/workJobs");
     await workJobs();
 
-    console.log(`Job worker started. Running on ${ os.hostname }`);
+    const mode = process.env.NODE_ENV;
+
+    console.log(`Job worker started. Running on ${ os.hostname }, in ${ mode } mode.`);
   }
 }
