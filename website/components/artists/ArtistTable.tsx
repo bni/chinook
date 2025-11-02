@@ -8,15 +8,15 @@ import { Artist } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 
 const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
-const DEFAULT_PAGE_SIZE = 20;
 
 interface ArtistTableProps {
   fromYear: number,
   toYear: number,
+  pageSize: number,
   artists: Artist[]
 }
 
-export function ArtistTable({ fromYear, toYear, artists }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, pageSize, artists }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -29,9 +29,33 @@ export function ArtistTable({ fromYear, toYear, artists }: ArtistTableProps) {
   const [ isLoading, setIsLoading ] = useState(false);
   const [ page, setPage ] = useState(1);
   const [ searchQuery, setSearchQuery ] = useState("");
-  const [ pageSize, setPageSize ] = useState(() => {
-    return DEFAULT_PAGE_SIZE;
-  });
+  const [ currentPageSize, setCurrentPageSize ] = useState(pageSize);
+
+  // When user changes page size
+  useEffect(() => {
+    (async () => {
+      try {
+        const params = new URLSearchParams({
+          pageSize: currentPageSize.toString()
+        });
+
+        const response = await fetch(`/api/internal/artists/pagesize?${params.toString()}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          console.error("Failed to save pagesize");
+        } else {
+          console.info("Saved pagesize");
+        }
+      } catch (error) {
+        console.error("Failed to save pagesize", error);
+      }
+    })();
+  }, [ currentPageSize, setCurrentPageSize ]);
 
   const [selectedRange, setSelectedRange] = useState<[number, number]>([fromYear, toYear]);
 
@@ -82,8 +106,8 @@ export function ArtistTable({ fromYear, toYear, artists }: ArtistTableProps) {
   });
 
   // Calculate paginated records from filtered results
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize;
+  const from = (page - 1) * currentPageSize;
+  const to = from + currentPageSize;
   const paginatedRecords = filteredRecords.slice(from, to);
 
   // Reset to page 1 when search query changes
@@ -240,9 +264,9 @@ export function ArtistTable({ fromYear, toYear, artists }: ArtistTableProps) {
         page={ page }
         onPageChange={ setPage }
         totalRecords={ filteredRecords.length }
-        recordsPerPage={ pageSize }
+        recordsPerPage={ currentPageSize }
         recordsPerPageOptions={ PAGE_SIZES }
-        onRecordsPerPageChange={ setPageSize }
+        onRecordsPerPageChange={ setCurrentPageSize }
         columns={
           [
             { accessor: "artistId", hidden: true },

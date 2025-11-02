@@ -5,6 +5,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 interface Prefs {
   fromYear: number;
   toYear: number;
+  pageSize: number;
 }
 
 const options: SessionOptions = {
