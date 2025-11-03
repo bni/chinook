@@ -9,3 +9,10 @@ const Artist = z.object({
 });
 
 export type Artist = z.infer<typeof Artist>;
+
+const ArtistSearchResult = z.object({
+  artists: Artist.array(),
+  total: z.number()
+});
+
+export type ArtistSearchResult = z.infer<typeof ArtistSearchResult>;

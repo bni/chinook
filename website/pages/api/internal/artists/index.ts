@@ -3,6 +3,7 @@ import { createArtist } from "@lib/artists/createArtist";
 import { logger, traceRequest } from "@lib/util/logger";
 import { listArtists } from "@lib/artists/listArtists";
 import { getPrefs, savePrefs } from "@lib/util/prefs";
+import { ArtistSearchResult } from "@lib/artists/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +12,7 @@ export default async function handler(
   traceRequest(req, res);
 
   if (req.method === "GET") {
-    const { fromYear, toYear } = req.query;
+    const { fromYear, toYear, searchFilter, page, pageSize } = req.query;
 
     if (!fromYear || typeof fromYear !== "string" || Number.isNaN(fromYear)) {
       return res.status(400).json({ error: "From year is required, and to be numeric" });
@@ -21,15 +22,34 @@ export default async function handler(
       return res.status(400).json({ error: "To year is required, and to be numeric" });
     }
 
+    if (typeof searchFilter !== "string") {
+      return res.status(400).json({ error: "Page is required to be numeric" });
+    }
+
+    if (!page || typeof page !== "string" || Number.isNaN(page)) {
+      return res.status(400).json({ error: "Page is required, and to be numeric" });
+    }
+
+    if (!pageSize || typeof pageSize !== "string" || Number.isNaN(pageSize)) {
+      return res.status(400).json({ error: "Page is required, and to be numeric" });
+    }
+
     // Save prefs
     const prefs = await getPrefs(req, res);
     prefs.artistsFromYear = parseInt(fromYear, 10);
     prefs.artistsToYear = parseInt(toYear, 10);
+    prefs.artistsFilter = searchFilter;
+    prefs.artistsPageSize = parseInt(pageSize, 10);
     await savePrefs(prefs);
 
-    const artists = await listArtists(prefs.artistsFromYear, prefs.artistsToYear);
+    const searchResult: ArtistSearchResult = await listArtists(
+      prefs.artistsFromYear,
+      prefs.artistsToYear,
+      prefs.artistsFilter,
+      parseInt(page, 10),
+      prefs.artistsPageSize);
 
-    return res.status(200).json(artists);
+    return res.status(200).json(searchResult);
   } else if (req.method === "POST") {
     try {
       const { artistName } = req.body;

@@ -4,7 +4,7 @@ import { ActionIcon, TextInput, Group, Button, Box, Text, Badge } from "@mantine
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
-import { Artist } from "@lib/artists/types";
+import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 
 interface ArtistTableProps {
@@ -12,85 +12,39 @@ interface ArtistTableProps {
   toYear: number,
   filter: string,
   pageSize: number,
-  artists: Artist[]
+  searchResult: ArtistSearchResult
 }
 
-export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }: ArtistTableProps) {
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
   });
 
-  const [ artistsData, setArtistsData ] = useState(artists);
+  const [ artists, setArtists ] = useState(searchResult.artists);
   const [ records, setRecords ] = useState(artists);
+  const [ totalRecords, setTotalRecords ] = useState(searchResult.total);
+
+  const [ selectedRange, setSelectedRange ] = useState<[number, number]>([fromYear, toYear]);
+
+  const [ searchFilter, setSearchFilter ] = useState(filter);
+
+  const [ page, setPage ] = useState(1);
+  const [ recordsPerPage, setRecordsPerPage ] = useState(pageSize);
+
   const [ editingId, setEditingId ] = useState<string | null>(null);
   const [ editingName, setEditingName ] = useState("");
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ page, setPage ] = useState(1);
-  const [ searchQuery, setSearchQuery ] = useState(filter);
-  const [ currentPageSize, setCurrentPageSize ] = useState(pageSize);
 
-  // When user changes filter
-  useEffect(() => {
-    (async () => {
-      try {
-        const params = new URLSearchParams({
-          filter: searchQuery
-        });
-
-        const response = await fetch(`/api/internal/artists/prefs/filter?${params.toString()}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (!response.ok) {
-          console.error("Failed to save filter");
-        } else {
-          console.info("Saved filter");
-        }
-      } catch (error) {
-        console.error("Failed to save filter", error);
-      }
-    })();
-  }, [ searchQuery, setSearchQuery ]);
-
-  // When user changes page size
-  useEffect(() => {
-    (async () => {
-      try {
-        const params = new URLSearchParams({
-          pageSize: currentPageSize.toString()
-        });
-
-        const response = await fetch(`/api/internal/artists/prefs/pagesize?${params.toString()}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (!response.ok) {
-          console.error("Failed to save pagesize");
-        } else {
-          console.info("Saved pagesize");
-        }
-      } catch (error) {
-        console.error("Failed to save pagesize", error);
-      }
-    })();
-  }, [ currentPageSize, setCurrentPageSize ]);
-
-  const [selectedRange, setSelectedRange] = useState<[number, number]>([fromYear, toYear]);
-
-  // Fetch artists when selectedRange changes
+  // Fetch artists when any seaerch criteria changes
   useEffect(() => {
     (async () => {
       try {
         const params = new URLSearchParams({
           fromYear: selectedRange[0].toString(),
-          toYear: selectedRange[1].toString()
+          toYear: selectedRange[1].toString(),
+          searchFilter: searchFilter,
+          page: page.toString(),
+          pageSize: recordsPerPage.toString()
         });
 
         const response = await fetch(`/api/internal/artists/?${params.toString()}`, {
@@ -103,42 +57,32 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
         if (!response.ok) {
           console.error("Failed to list artists");
         } else {
-          const responseBody = await response.json();
-          setArtistsData(responseBody);
+          const artistSearchResult: ArtistSearchResult = await response.json();
+
+          setArtists(artistSearchResult.artists);
+          setTotalRecords(artistSearchResult.total);
         }
       } catch (error) {
         console.error("Failed to fetch artists", error);
       }
     })();
-  }, [ selectedRange ]);
+  }, [ selectedRange, searchFilter, page, recordsPerPage ]);
 
   // Sort records when artistsData or sortStatus changes
   useEffect(() => {
     if (sortStatus.columnAccessor === "nrAlbums") {
-      setRecords(orderBy(artistsData, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
+      setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
     } else if (sortStatus.columnAccessor === "mostRecentAlbumTitle") {
-      setRecords(orderBy(artistsData, "mostRecentAlbumYear", sortStatus.direction));
+      setRecords(orderBy(artists, "mostRecentAlbumYear", sortStatus.direction));
     } else {
-      setRecords(orderBy(artistsData, sortStatus.columnAccessor, sortStatus.direction));
+      setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
     }
-  }, [ artistsData, sortStatus ]);
+  }, [ artists, sortStatus ]);
 
-  // Filter records based on search query
-  const filteredRecords = records.filter((artist) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return artist.artistName.toLowerCase().includes(query);
-  });
-
-  // Calculate paginated records from filtered results
-  const from = (page - 1) * currentPageSize;
-  const to = from + currentPageSize;
-  const paginatedRecords = filteredRecords.slice(from, to);
-
-  // Reset to page 1 when search query changes
+  // When user write a filter we need to reset to page 1
   useEffect(() => {
     setPage(1);
-  }, [ searchQuery ]);
+  }, [ searchFilter ]);
 
   const handleEdit = (artist: Artist) => {
     setEditingId(artist.artistId);
@@ -155,8 +99,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
       return;
     }
 
-    setIsLoading(true);
-
     try {
       const response = await fetch(`/api/internal/artists/${artistId}`, {
         method: "PUT",
@@ -171,7 +113,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
       }
 
       // Update local state
-      setArtistsData(prev => prev.map(artist =>
+      setArtists(prev => prev.map(artist =>
         artist.artistId === artistId
           ? { ...artist, artistName: editingName }
           : artist
@@ -181,8 +123,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
       setEditingName("");
     } catch (error) {
       console.error("Failed to save artist", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -203,7 +143,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
           }
 
           // Remove from local state
-          setArtistsData(prev => prev.filter(a => a.artistId !== artist.artistId));
+          setArtists(prev => prev.filter(a => a.artistId !== artist.artistId));
         } catch (error) {
           console.error("Failed to delete artist", error);
         }
@@ -245,15 +185,13 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
           }
 
           // Add it first in the table
-          setArtistsData([ { artistId: "", artistName, nrAlbums: 0 }, ...artistsData ]);
+          setArtists([ { artistId: "", artistName, nrAlbums: 0 }, ...artists ]);
         } catch (error) {
           console.error("Failed to create artist", error);
         }
       }
     });
   };
-
-  const PAGE_SIZES = [10, 20, 30, 40, 50, 100];
 
   return (
     <Box>
@@ -269,8 +207,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
         <TextInput
           placeholder="Filter..."
           leftSection={ <IconSearch size={ 16 } /> }
-          value={ searchQuery }
-          onChange={ (e) => setSearchQuery(e.currentTarget.value) }
+          value={ searchFilter }
+          onChange={ (e) => setSearchFilter(e.currentTarget.value) }
           w={ 300 }
         />
         <Button
@@ -287,13 +225,15 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
         highlightOnHover
         fz="md"
         idAccessor="artistId"
-        records={ paginatedRecords }
+        records={ records }
+        totalRecords={ totalRecords }
         page={ page }
         onPageChange={ setPage }
-        totalRecords={ filteredRecords.length }
-        recordsPerPage={ currentPageSize }
-        recordsPerPageOptions={ PAGE_SIZES }
-        onRecordsPerPageChange={ setCurrentPageSize }
+        recordsPerPageOptions={ [10, 20, 30, 40, 50, 100] }
+        recordsPerPage={ recordsPerPage }
+        onRecordsPerPageChange={ setRecordsPerPage }
+        sortStatus={ sortStatus }
+        onSortStatusChange={ setSortStatus }
         columns={
           [
             { accessor: "artistId", hidden: true },
@@ -317,7 +257,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
                         }
                       } }
                       autoFocus
-                      disabled={ isLoading }
                     />
                   );
                 }
@@ -362,14 +301,12 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
                       <ActionIcon
                         color="green"
                         onClick={ () => handleSave(artist.artistId) }
-                        disabled={ isLoading }
                       >
                         <IconCheck size={ 16 } />
                       </ActionIcon>
                       <ActionIcon
                         color="red"
                         onClick={ handleCancel }
-                        disabled={ isLoading }
                       >
                         <IconX size={ 16 } />
                       </ActionIcon>
@@ -396,8 +333,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, artists }: Art
             }
           ]
         }
-        sortStatus={ sortStatus }
-        onSortStatusChange={ setSortStatus }
       />
     </Box>
   );

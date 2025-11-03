@@ -1,6 +1,8 @@
-import { Artist } from "@lib/artists/types";
+import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
+import { buildYearsList } from "@lib/artists/buildYearsList";
+import { buildArtistSearchResult } from "@lib/artists/buildArtistSearchResult";
 
 interface ResultRow {
   artistId: string,
@@ -10,25 +12,13 @@ interface ResultRow {
   nrAlbums: number
 }
 
-const buildYearsList = (fromYear: number, toYear: number) => {
-  const years: number[] = [];
-
-  if (fromYear < toYear) {
-    for (let i = fromYear; i <= toYear; i++) {
-      years.push(i);
-    }
-  } else if (toYear < fromYear) {
-    for (let i = toYear; i <= fromYear; i++) {
-      years.push(i);
-    }
-  } else {
-    years.push(fromYear);
-  }
-
-  return years;
-};
-
-export async function listArtists(fromYear: number, toYear: number): Promise<Artist[]> {
+export async function listArtists(
+  fromYear: number,
+  toYear: number,
+  filter: string,
+  page: number,
+  pageSize: number
+): Promise<ArtistSearchResult> {
   const artists: Artist[] = [];
 
   const years = buildYearsList(fromYear, toYear);
@@ -102,5 +92,5 @@ export async function listArtists(fromYear: number, toYear: number): Promise<Art
     throw error;
   }
 
-  return artists;
+  return buildArtistSearchResult(artists, filter, page, pageSize);
 }
