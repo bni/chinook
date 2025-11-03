@@ -16,6 +16,8 @@ interface ArtistTableProps {
 }
 
 export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }: ArtistTableProps) {
+  const [ fetching, setFetching ] = useState(true);
+
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -35,7 +37,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   const [ editingId, setEditingId ] = useState<string | null>(null);
   const [ editingName, setEditingName ] = useState("");
 
-  // Fetch artists when any seaerch criteria changes
+  // Fetch artists when any search criteria changes
   useEffect(() => {
     (async () => {
       try {
@@ -60,6 +62,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
 
           setArtists(artistSearchResult.artists);
           setTotalRecords(artistSearchResult.total);
+          setFetching(false);
         }
       } catch (error) {
         console.error("Failed to fetch artists", error);
@@ -67,7 +70,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
     })();
   }, [ selectedRange, searchFilter, recordsPerPage ]);
 
-  // Sort records when artistsData or sortStatus changes
+  // Sort records when artists or sortStatus changes
   useEffect(() => {
     if (sortStatus.columnAccessor === "nrAlbums") {
       setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
@@ -238,6 +241,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         onRecordsPerPageChange={ setRecordsPerPage }
         sortStatus={ sortStatus }
         onSortStatusChange={ setSortStatus }
+        fetching={fetching}
+        loaderBackgroundBlur={0}
+        loaderType="bars"
+        loaderSize="sm"
+        loaderColor="orange"
         columns={
           [
             { accessor: "artistId", hidden: true },
