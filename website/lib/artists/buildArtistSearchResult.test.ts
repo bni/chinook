@@ -5,52 +5,50 @@ test("Build artists search results", async () => {
   const artists: Artist[] = [
     {
       artistId: "111",
-      artistName: "AAA",
+      artistName: "aaaAAAaaa",
       nrAlbums: 0
     },
     {
       artistId: "222",
-      artistName: "BBB",
+      artistName: "bbbBBBbbb",
       nrAlbums: 0
     },
     {
       artistId: "333",
-      artistName: "CCC",
+      artistName: "cccCCCccc",
       nrAlbums: 0
     },
     {
       artistId: "444",
-      artistName: "DDD",
+      artistName: "xxxEEExxx",
       nrAlbums: 0
     },
     {
       artistId: "555",
-      artistName: "EEE",
+      artistName: "yyyEEEyyy",
       nrAlbums: 0
     }
   ];
 
-  const filter = "";
-  const page = 2;
-  const pageSize = 3;
+  const filter = "EEE";
 
   const expectedSearchResult: ArtistSearchResult = {
     artists: [
       {
         artistId: "444",
-        artistName: "DDD",
+        artistName: "xxxEEExxx",
         nrAlbums: 0
       },
       {
         artistId: "555",
-        artistName: "EEE",
+        artistName: "yyyEEEyyy",
         nrAlbums: 0
       }
     ],
-    total: 5
+    total: 2
   };
 
-  const searchResult: ArtistSearchResult = buildArtistSearchResult(artists, filter, page, pageSize);
+  const searchResult: ArtistSearchResult = buildArtistSearchResult(artists, filter);
 
   expect(searchResult).toEqual(expectedSearchResult);
 });
