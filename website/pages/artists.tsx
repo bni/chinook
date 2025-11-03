@@ -2,11 +2,9 @@ import { CollapseDesktop } from "@components/CollapseDesktop";
 import { Group } from "@mantine/core";
 import { ArtistTable } from "@components/artists/ArtistTable";
 import { ArtistSearchResult } from "@lib/artists/types";
-import { listArtists } from "@lib/artists/listArtists";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getPrefs } from "@lib/util/prefs";
 import { HeadComponent } from "@components/HeadComponent";
-import { logger } from "@lib/util/logger";
 
 interface ArtistsPageProps {
   fromYear: number,
@@ -18,12 +16,10 @@ interface ArtistsPageProps {
 export const getServerSideProps = (async (context: GetServerSidePropsContext) => {
   const prefs = await getPrefs(context.req, context.res);
 
-  const searchResult: ArtistSearchResult = await listArtists(
-    prefs.artistsFromYear,
-    prefs.artistsToYear,
-    prefs.artistsFilter,
-    1, // TODO Remember ?
-    prefs.artistsPageSize);
+  const searchResult: ArtistSearchResult = {
+    artists: [],
+    total: 0
+  };
 
   return {
     props: {

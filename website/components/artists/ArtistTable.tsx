@@ -43,7 +43,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           fromYear: selectedRange[0].toString(),
           toYear: selectedRange[1].toString(),
           searchFilter: searchFilter,
-          page: page.toString(),
           pageSize: recordsPerPage.toString()
         });
 
@@ -66,7 +65,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         console.error("Failed to fetch artists", error);
       }
     })();
-  }, [ selectedRange, searchFilter, page, recordsPerPage ]);
+  }, [ selectedRange, searchFilter, recordsPerPage ]);
 
   // Sort records when artistsData or sortStatus changes
   useEffect(() => {
@@ -78,6 +77,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
       setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
     }
   }, [ artists, sortStatus ]);
+
+  // Calculate paginated records
+  const from = (page - 1) * recordsPerPage;
+  const to = from + recordsPerPage;
+  const paginatedRecords = records.slice(from, to);
 
   // When user write a filter we need to reset to page 1
   useEffect(() => {
@@ -225,7 +229,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         highlightOnHover
         fz="md"
         idAccessor="artistId"
-        records={ records }
+        records={ paginatedRecords }
         totalRecords={ totalRecords }
         page={ page }
         onPageChange={ setPage }

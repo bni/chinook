@@ -12,7 +12,7 @@ export default async function handler(
   traceRequest(req, res);
 
   if (req.method === "GET") {
-    const { fromYear, toYear, searchFilter, page, pageSize } = req.query;
+    const { fromYear, toYear, searchFilter, pageSize } = req.query;
 
     if (!fromYear || typeof fromYear !== "string" || Number.isNaN(fromYear)) {
       return res.status(400).json({ error: "From year is required, and to be numeric" });
@@ -24,10 +24,6 @@ export default async function handler(
 
     if (typeof searchFilter !== "string") {
       return res.status(400).json({ error: "Page is required to be numeric" });
-    }
-
-    if (!page || typeof page !== "string" || Number.isNaN(page)) {
-      return res.status(400).json({ error: "Page is required, and to be numeric" });
     }
 
     if (!pageSize || typeof pageSize !== "string" || Number.isNaN(pageSize)) {
@@ -45,9 +41,8 @@ export default async function handler(
     const searchResult: ArtistSearchResult = await listArtists(
       prefs.artistsFromYear,
       prefs.artistsToYear,
-      prefs.artistsFilter,
-      parseInt(page, 10),
-      prefs.artistsPageSize);
+      prefs.artistsFilter
+    );
 
     return res.status(200).json(searchResult);
   } else if (req.method === "POST") {

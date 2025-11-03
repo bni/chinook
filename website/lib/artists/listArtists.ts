@@ -15,9 +15,7 @@ interface ResultRow {
 export async function listArtists(
   fromYear: number,
   toYear: number,
-  filter: string,
-  page: number,
-  pageSize: number
+  filter: string
 ): Promise<ArtistSearchResult> {
   const artists: Artist[] = [];
 
@@ -92,5 +90,5 @@ export async function listArtists(
     throw error;
   }
 
-  return buildArtistSearchResult(artists, filter, page, pageSize);
+  return buildArtistSearchResult(artists, filter);
 }
