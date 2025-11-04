@@ -31,8 +31,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
         alert("Login Error: " + JSON.stringify(error));
       } else {
         onClose();
-
-        await router.push("/search");
       }
     } catch (err) {
       alert("Login Error: " + JSON.stringify(err));
@@ -54,8 +52,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
         alert("Signup Error: " + JSON.stringify(error));
       } else {
         onClose();
-
-        await router.push("/search");
       }
     } catch (err) {
       alert("Signup Error: " + JSON.stringify(err));

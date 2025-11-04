@@ -1,14 +1,11 @@
-import { CollapseDesktop } from "@components/CollapseDesktop";
-import { Stack, TextInput, Text, Loader, Alert } from "@mantine/core";
+import React, { useEffect, useRef, useState } from "react";
+import { TextInput, Text, Stack, Loader, Alert } from "@mantine/core";
 import { IconSearch, IconAlertCircle } from "@tabler/icons-react";
-import { useState, useEffect, useRef } from "react";
-import { AlbumSearchResult } from "@lib/albums/types";
-import React from "react";
 import { SearchResults } from "@components/search/SearchResults";
 import { EmptyState } from "@components/search/EmptyState";
-import { HeadComponent } from "@components/HeadComponent";
+import { AlbumSearchResult } from "@lib/albums/types";
 
-export default function SearchPage() {
+export function SemanticSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<AlbumSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -88,38 +85,35 @@ export default function SearchPage() {
   };
 
   return (
-    <CollapseDesktop>
-      <HeadComponent pageName={"Search"}/>
-      <Stack mt={50} align="center" gap="xl" style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px" }}>
-        <Text size="xl" fw={700}>
-          Search
-        </Text>
+    <Stack mt={50} align="center" gap="xl" style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px" }}>
+      <Text size="xl" fw={700}>
+        Search
+      </Text>
 
-        <TextInput
-          placeholder="Start typing to search..."
-          size="lg"
-          style={{ width: "100%" }}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          leftSection={<IconSearch size={20} />}
-          rightSection={loading ? <Loader size="xs" /> : undefined}
-        />
+      <TextInput
+        placeholder="Start typing to search..."
+        size="lg"
+        style={{ width: "100%" }}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        leftSection={<IconSearch size={20} />}
+        rightSection={loading ? <Loader size="xs" /> : undefined}
+      />
 
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} title="Notice" color="red" style={{ width: "100%" }}>
-            {error}
-          </Alert>
-        )}
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Notice" color="red" style={{ width: "100%" }}>
+          {error}
+        </Alert>
+      )}
 
-        {hasSearched && results.length > 0 && (
-          <SearchResults results={results} />
-        )}
+      {hasSearched && results.length > 0 && (
+        <SearchResults results={results} />
+      )}
 
-        {!loading && hasSearched && results.length === 0 && !error && (
-          <EmptyState query={query} />
-        )}
-      </Stack>
-    </CollapseDesktop>
+      {!loading && hasSearched && results.length === 0 && !error && (
+        <EmptyState query={query} />
+      )}
+    </Stack>
   );
 }

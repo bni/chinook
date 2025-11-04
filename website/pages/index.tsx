@@ -4,6 +4,7 @@ import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
 import { authClient } from "@lib/client";
 import { HeadComponent } from "@components/HeadComponent";
+import { SemanticSearch } from "@components/search/SemanticSearch";
 
 export default function IndexPage() {
   const [authModalOpened, setAuthModalOpened] = useState(false);
@@ -28,6 +29,10 @@ export default function IndexPage() {
             .
           </Text>
         </Stack>
+      )}
+
+      {session.data && (
+        <SemanticSearch/>
       )}
     </CollapseDesktop>
   );
