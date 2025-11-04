@@ -41,7 +41,9 @@ export default async function handler(
     const searchResult: ArtistSearchResult = await listArtists(
       prefs.artistsFromYear,
       prefs.artistsToYear,
-      prefs.artistsFilter
+      prefs.artistsFilter,
+      prefs.artistsPageSize,
+      false
     );
 
     return res.status(200).json(searchResult);

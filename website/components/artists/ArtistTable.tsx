@@ -7,6 +7,8 @@ import orderBy from "lodash/orderBy";
 import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 
+const RECORDS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50, 100];
+
 interface ArtistTableProps {
   fromYear: number,
   toYear: number,
@@ -16,8 +18,6 @@ interface ArtistTableProps {
 }
 
 export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }: ArtistTableProps) {
-  const [ fetching, setFetching ] = useState(true);
-
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -34,7 +34,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   const [ page, setPage ] = useState(1);
   const [ recordsPerPage, setRecordsPerPage ] = useState(pageSize);
 
-  const [ editingId, setEditingId ] = useState<string | null>(null);
+  const [ editingId, setEditingId ] = useState<string | undefined>(undefined);
   const [ editingName, setEditingName ] = useState("");
 
   // Fetch artists when any search criteria changes
@@ -62,7 +62,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
 
           setArtists(artistSearchResult.artists);
           setTotalRecords(artistSearchResult.total);
-          setFetching(false);
         }
       } catch (error) {
         console.error("Failed to fetch artists", error);
@@ -97,7 +96,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   };
 
   const handleCancel = () => {
-    setEditingId(null);
+    setEditingId(undefined);
     setEditingName("");
   };
 
@@ -126,7 +125,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           : artist
       ));
 
-      setEditingId(null);
+      setEditingId(undefined);
       setEditingName("");
     } catch (error) {
       console.error("Failed to save artist", error);
@@ -236,16 +235,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         totalRecords={ totalRecords }
         page={ page }
         onPageChange={ setPage }
-        recordsPerPageOptions={ [10, 20, 30, 40, 50, 100] }
+        recordsPerPageOptions={ RECORDS_PER_PAGE_OPTIONS }
         recordsPerPage={ recordsPerPage }
         onRecordsPerPageChange={ setRecordsPerPage }
         sortStatus={ sortStatus }
         onSortStatusChange={ setSortStatus }
-        fetching={fetching}
-        loaderBackgroundBlur={0}
-        loaderType="bars"
-        loaderSize="sm"
-        loaderColor="orange"
         columns={
           [
             { accessor: "artistId", hidden: true },

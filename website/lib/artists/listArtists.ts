@@ -15,11 +15,18 @@ interface ResultRow {
 export async function listArtists(
   fromYear: number,
   toYear: number,
-  filter: string
+  filter: string,
+  pageSize: number,
+  onlyFirstPage: boolean
 ): Promise<ArtistSearchResult> {
   const artists: Artist[] = [];
 
   const years = buildYearsList(fromYear, toYear);
+
+  let limit = undefined;
+  if (onlyFirstPage) {
+    limit = pageSize;
+  }
 
   try {
     const result: Result<ResultRow> = await query(`
@@ -67,9 +74,12 @@ export async function listArtists(
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
-        "mostRecentAlbumYear" ASC
+        "mostRecentAlbumYear" ASC,
+        "nrAlbums" DESC,
+        "mostRecentAlbumTitle" ASC
+      FETCH FIRST $2 ROWS ONLY
 
-    `, [ years ]);
+    `, [ years, limit ]);
 
     if (result.rows) {
       for (const row of result.rows) {
