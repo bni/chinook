@@ -7,7 +7,8 @@ export async function register() {
     await workJobs();
 
     const mode = process.env.NODE_ENV;
+    const env = process.env.APP_ENV;
 
-    console.log(`Job worker started. Running on ${ os.hostname }, in ${ mode } mode.`);
+    console.log(`Job worker started. Running on ${ os.hostname }, in ${ mode } mode, ${ env } env.`);
   }
 }
