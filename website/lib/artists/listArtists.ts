@@ -64,7 +64,7 @@ export async function listArtists(
       FROM
         artist ar
       LEFT JOIN
-        album al ON ar.artist_id = al.artist_id
+        album al ON al.artist_id = ar.artist_id
       WHERE
         EXISTS (
           SELECT

@@ -47,7 +47,7 @@ export async function searchAlbums(searchQuery: string): Promise<AlbumSearchResu
       FROM
         similarity_calculation
       WHERE
-        similarity > 0.5
+        similarity > 0.4
       ORDER BY
         similarity DESC
 

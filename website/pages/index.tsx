@@ -29,14 +29,6 @@ export default function IndexPage() {
           </Text>
         </Stack>
       )}
-
-      {session.data && (
-        <Stack mt={50} align="center" gap="md">
-          <Text size="xl" fw={500}>
-            Welcome, {session.data.user.name}!
-          </Text>
-        </Stack>
-      )}
     </CollapseDesktop>
   );
 }
