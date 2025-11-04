@@ -247,7 +247,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
               accessor: "artistName",
               title: "Artist",
               sortable: true,
-              width: "500px",
+              width: "350px",
               ellipsis: true,
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {

@@ -2,7 +2,6 @@ import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 import { buildYearsList } from "@lib/artists/buildYearsList";
-import { buildArtistSearchResult } from "@lib/artists/buildArtistSearchResult";
 
 interface ResultRow {
   artistId: string,
@@ -22,6 +21,11 @@ export async function listArtists(
   const artists: Artist[] = [];
 
   const years = buildYearsList(fromYear, toYear);
+
+  let comparator = "";
+  if (filter) {
+    comparator = `%${filter}%`;
+  }
 
   let limit = undefined;
   if (onlyFirstPage) {
@@ -70,16 +74,21 @@ export async function listArtists(
           WHERE
             al2.artist_id = ar.artist_id AND
             al2.release = ANY($1::INT[])
-        )
+        ) AND
+        CASE WHEN $2 <> '' THEN
+          ar.name ILIKE $2
+        ELSE
+          TRUE
+        END
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
         "mostRecentAlbumYear" ASC,
         "nrAlbums" DESC,
         "mostRecentAlbumTitle" ASC
-      FETCH FIRST $2 ROWS ONLY
+      FETCH FIRST $3 ROWS ONLY
 
-    `, [ years, limit ]);
+    `, [ years, comparator, limit ]);
 
     if (result.rows) {
       for (const row of result.rows) {
@@ -100,5 +109,8 @@ export async function listArtists(
     throw error;
   }
 
-  return buildArtistSearchResult(artists, filter);
+  return {
+    artists: artists,
+    total: artists.length
+  };
 }

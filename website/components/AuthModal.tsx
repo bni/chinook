@@ -130,8 +130,10 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
                 onClick={handleMicrosoftLogin}
                 disabled={loading}
                 variant="default"
-                leftSection={<IconBrandAzure size="1.2rem" stroke={1.5} />}
+                leftSection={<IconBrandAzure size="14" stroke={1.5} />}
+                rightSection={<span />}
                 fullWidth
+                justify="space-between"
               >
                 Microsoft
               </Button>
@@ -140,8 +142,10 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
                 onClick={handleGoogleLogin}
                 disabled={loading}
                 variant="default"
-                leftSection={<IconBrandGoogle size="1.2rem" stroke={1.5} />}
+                leftSection={<IconBrandGoogle size="14" stroke={1.5} />}
+                rightSection={<span />}
                 fullWidth
+                justify="space-between"
               >
                 Google
               </Button>
@@ -150,8 +154,10 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
                 onClick={handleGithubLogin}
                 disabled={loading}
                 variant="default"
-                leftSection={<IconBrandGithub size="1.2rem" stroke={1.5} />}
+                leftSection={<IconBrandGithub size="14" stroke={1.5} />}
+                rightSection={<span />}
                 fullWidth
+                justify="space-between"
               >
                 GitHub
               </Button>
