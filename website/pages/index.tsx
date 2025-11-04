@@ -1,10 +1,9 @@
+import { Text, Stack } from "@mantine/core";
 import { CollapseDesktop } from "@components/CollapseDesktop";
-import { Stack, Text } from "@mantine/core";
 import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
-import { authClient } from "@lib/client";
 import { HeadComponent } from "@components/HeadComponent";
-import { SemanticSearch } from "@components/search/SemanticSearch";
+import { authClient } from "@lib/client";
 
 export default function IndexPage() {
   const [authModalOpened, setAuthModalOpened] = useState(false);
@@ -14,6 +13,7 @@ export default function IndexPage() {
     <CollapseDesktop>
       <HeadComponent pageName={"Welcome"}/>
       <AuthModal opened={authModalOpened} onClose={() => setAuthModalOpened(false)} />
+
       {!session.data && (
         <Stack mt={50} align="center" gap="md">
           <Text size="xl" fw={500}>
@@ -32,7 +32,11 @@ export default function IndexPage() {
       )}
 
       {session.data && (
-        <SemanticSearch/>
+        <Stack mt={50} align="center" gap="md">
+          <Text size="xl" fw={500}>
+            Welcome, {session.data.user.name}!
+          </Text>
+        </Stack>
       )}
     </CollapseDesktop>
   );
