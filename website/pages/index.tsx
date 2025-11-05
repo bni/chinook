@@ -4,7 +4,7 @@ import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
 import { HeadComponent } from "@components/HeadComponent";
 import { authClient } from "@lib/client";
-import { IconUsers, IconBriefcase, IconSearch } from "@tabler/icons-react";
+import { IconSearch, IconMusic, IconUsersGroup } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
 export default function IndexPage() {
@@ -21,13 +21,13 @@ export default function IndexPage() {
     },
     {
       title: "Artists",
-      icon: IconUsers,
+      icon: IconMusic,
       path: "/artists",
       color: "blue"
     },
     {
       title: "Employees",
-      icon: IconBriefcase,
+      icon: IconUsersGroup,
       path: "/employees",
       color: "green"
     }

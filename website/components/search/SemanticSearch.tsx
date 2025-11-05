@@ -87,7 +87,7 @@ export function SemanticSearch() {
   return (
     <Stack mt={50} align="center" gap="xl" style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px" }}>
       <Text size="xl" fw={700}>
-        Search
+        Search by feeling
       </Text>
 
       <TextInput

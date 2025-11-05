@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { updateArtist } from "@lib/artists/updateArtist";
 import { deleteArtist } from "@lib/artists/deleteArtist";
+import { getArtistDetail } from "@lib/artists/getArtistDetail";
 import { logger, traceRequest } from "@lib/util/logger";
 
 export default async function handler(
@@ -14,7 +15,21 @@ export default async function handler(
     return res.status(400).json({ error: "Artist id is required" });
   }
 
-  if (req.method === "PUT") {
+  if (req.method === "GET") {
+    try {
+      const artistDetail = await getArtistDetail(id);
+
+      if (!artistDetail) {
+        return res.status(404).json({ error: "Artist not found" });
+      }
+
+      res.status(200).json(artistDetail);
+    } catch (error) {
+      logger.error(error, "Failed to get artist detail");
+
+      res.status(500).json({ error: "Failed to get artist detail" });
+    }
+  } else if (req.method === "PUT") {
     const { artistName } = req.body;
     if (!artistName || typeof artistName !== "string") {
       return res.status(400).json({ error: "Artist name is required" });

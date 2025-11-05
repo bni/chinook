@@ -6,6 +6,7 @@ import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
 import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
+import { useRouter } from "next/router";
 
 const RECORDS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50, 100];
 
@@ -18,6 +19,8 @@ interface ArtistTableProps {
 }
 
 export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }: ArtistTableProps) {
+  const router = useRouter();
+
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "mostRecentAlbumTitle",
     direction: "asc"
@@ -202,7 +205,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   return (
     <Box>
       <Group ml="md" mr="md" grow>
-        <YearSlider selectedRange={selectedRange} setSelectedRange={setSelectedRange}/>
+        <YearSlider selectedRange={ selectedRange } setSelectedRange={ setSelectedRange }/>
       </Group>
       <Group>
         <Text size="lg">
@@ -240,6 +243,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         onRecordsPerPageChange={ setRecordsPerPage }
         sortStatus={ sortStatus }
         onSortStatusChange={ setSortStatus }
+        onCellClick={ async ({ event, record, index, column, columnIndex }) => {
+          if (columnIndex <= 3) {
+            await router.push(`/artists/${record.artistId}`);
+          }
+        } }
         columns={
           [
             { accessor: "artistId", hidden: true },
