@@ -1,4 +1,4 @@
-import { Text, Stack, Card, Grid, Group, ThemeIcon } from "@mantine/core";
+import { Text, Stack, Card, Grid, ThemeIcon } from "@mantine/core";
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
