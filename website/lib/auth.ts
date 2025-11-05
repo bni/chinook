@@ -33,7 +33,7 @@ export const auth = betterAuth({
   },
   advanced: {
     cookiePrefix: "chinook",
-    useSecureCookies: process.env.NODE_ENV !== "development",
+    useSecureCookies: process.env.APP_ENV !== "local",
     defaultCookieAttributes: {
       sameSite: "strict"
     }

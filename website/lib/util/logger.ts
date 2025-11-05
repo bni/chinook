@@ -20,7 +20,7 @@ const logger = pino({
           batching: false,
           labels: {
             app: "chinook",
-            namespace: process.env.NODE_ENV || "development",
+            namespace: process.env.APP_ENV || "local",
             source: "pino",
             runtime: `nodejs/${process.version}`
           },
@@ -43,7 +43,7 @@ const traceRequest = PinoHttp({
     }
   },
   customLogLevel: (() => {
-    return process.env.NODE_ENV === "development" ? "silent" : "info";
+    return process.env.APP_ENV === "local" ? "silent" : "info";
   })
 });
 
