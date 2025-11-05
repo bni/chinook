@@ -26,6 +26,13 @@ ALTER TABLE album ADD CONSTRAINT album_artist_id_fkey
 
 CREATE INDEX album_artist_id_idx ON album (artist_id);
 
-CREATE INDEX artist_name_idx ON artist (name);
+-- Composite index for finding most recent album per artist (optimizes subqueries in listArtists)
+CREATE INDEX album_artist_id_release_idx ON album (artist_id, release DESC);
+
+-- Index for filtering albums by release year (optimizes EXISTS clause with ANY)
+CREATE INDEX album_release_idx ON album (release);
+
+-- Case-insensitive index for artist name searches (optimizes ILIKE queries)
+CREATE INDEX artist_name_lower_idx ON artist (LOWER(name));
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO chinook;
