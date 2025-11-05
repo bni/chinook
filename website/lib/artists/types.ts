@@ -1,34 +1,28 @@
-import { z } from "zod";
+export type Artist = {
+  artistId: string,
+  artistName: string,
+  mostRecentAlbumTitle?: string,
+  mostRecentAlbumYear?: number,
+  nrAlbums: number
+};
 
-const Artist = z.object({
-  artistId: z.uuidv4(),
-  artistName: z.string(),
-  mostRecentAlbumTitle: z.string().optional(),
-  mostRecentAlbumYear: z.number().optional(),
-  nrAlbums: z.number()
-});
-export type Artist = z.infer<typeof Artist>;
+export type AlbumDetail = {
+  albumId: string,
+  albumTitle: string,
+  releaseYear: number,
+  label?: string,
+  genre?: string,
+  criticScore: number,
+  userScore: number
+};
 
-const AlbumDetail = z.object({
-  albumId: z.uuidv4(),
-  albumTitle: z.string(),
-  releaseYear: z.int(),
-  label: z.string().nullable(),
-  genre: z.string().nullable(),
-  criticScore: z.int(),
-  userScore: z.number()
-});
-export type AlbumDetail = z.infer<typeof AlbumDetail>;
+export type ArtistDetail = {
+  artistId: string,
+  artistName: string,
+  albums: AlbumDetail[]
+};
 
-const ArtistDetail = z.object({
-  artistId: z.uuidv4(),
-  artistName: z.string(),
-  albums: AlbumDetail.array()
-});
-export type ArtistDetail = z.infer<typeof ArtistDetail>;
-
-const ArtistSearchResult = z.object({
-  artists: Artist.array(),
-  total: z.number()
-});
-export type ArtistSearchResult = z.infer<typeof ArtistSearchResult>;
+export type ArtistSearchResult = {
+  artists: Artist[],
+  total: number
+};

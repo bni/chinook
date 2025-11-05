@@ -56,8 +56,8 @@ export async function getArtistDetail(artistId: string): Promise<ArtistDetail | 
     albumId: row.albumId as string,
     albumTitle: row.albumTitle as string,
     releaseYear: row.releaseYear as number,
-    label: row.label as string | null,
-    genre: row.genre as string | null,
+    label: row.label as string | undefined,
+    genre: row.genre as string | undefined,
     criticScore: row.criticScore as number,
     userScore: row.userScore as number
   }));
