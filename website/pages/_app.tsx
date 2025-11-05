@@ -9,7 +9,7 @@ import "mantine-datatable/styles.layer.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <MantineProvider theme={mantineTheme} defaultColorScheme="auto">
+    <MantineProvider theme={mantineTheme} defaultColorScheme="dark">
       <ModalsProvider>
         <Component {...pageProps} />
       </ModalsProvider>
