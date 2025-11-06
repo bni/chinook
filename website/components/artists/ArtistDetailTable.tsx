@@ -10,7 +10,7 @@ interface ArtistSummaryProps {
   artistsAlbums: AlbumDetail[];
 }
 
-export function ArtistSummary({ artistName, artistsAlbums }: ArtistSummaryProps) {
+export function ArtistDetailTable({ artistName, artistsAlbums }: ArtistSummaryProps) {
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus<AlbumDetail>>({
     columnAccessor: "releaseYear",
     direction: "desc"
@@ -46,6 +46,20 @@ export function ArtistSummary({ artistName, artistsAlbums }: ArtistSummaryProps)
             width: "40%"
           },
           {
+            accessor: "label",
+            title: "Label",
+            sortable: true,
+            width: "20%",
+            render: (album: AlbumDetail) => album.label
+          },
+          {
+            accessor: "genre",
+            title: "Genre",
+            sortable: true,
+            width: "15%",
+            render: (album: AlbumDetail) => album.genre
+          },
+          {
             accessor: "releaseYear",
             title: "Release Year",
             sortable: true,
@@ -59,20 +73,6 @@ export function ArtistSummary({ artistName, artistsAlbums }: ArtistSummaryProps)
                 </Group>
               );
             }
-          },
-          {
-            accessor: "label",
-            title: "Label",
-            sortable: true,
-            width: "20%",
-            render: (album: AlbumDetail) => album.label
-          },
-          {
-            accessor: "genre",
-            title: "Genre",
-            sortable: true,
-            width: "15%",
-            render: (album: AlbumDetail) => album.genre
           },
           {
             accessor: "criticScore",

@@ -76,8 +76,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   useEffect(() => {
     if (sortStatus.columnAccessor === "nrAlbums") {
       setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
-    } else if (sortStatus.columnAccessor === "activeYears") {
-      setRecords(orderBy(artists, "latestReleaseYear", sortStatus.direction));
+    } else if (sortStatus.columnAccessor === "yearRange") {
+      setRecords(orderBy(artists, "minYear", sortStatus.direction));
     } else {
       setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
     }
@@ -255,6 +255,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
               accessor: "artistName",
               title: "Artist",
               sortable: true,
+              textAlign: "left",
+              ellipsis: true,
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
                   return (
@@ -281,27 +283,38 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
               }
             },
             {
-              accessor: "mostlyInGenre",
-              title: "Mostly in genre",
-              sortable: true
+              accessor: "mainlyOnLabel",
+              title: "Mainly on Label",
+              sortable: true,
+              textAlign: "left",
+              width: "350px",
+              ellipsis: true
             },
             {
-              accessor: "activeYears",
-              title: "Active years",
+              accessor: "mostlyInGenre",
+              title: "Mostly in genre",
+              sortable: true,
+              textAlign: "left",
+              width: "250px",
+              ellipsis: true
+            },
+            {
+              accessor: "yearRange",
+              title: "Years",
               sortable: true,
               textAlign: "right",
               width: "150px",
               render: (artist: Artist) => {
-                if (artist.earliestReleaseYear === artist.latestReleaseYear) {
+                if (artist.minYear === artist.maxYear) {
                   return (
                     <Badge color="orange" variant="light">
-                      {artist.earliestReleaseYear}
+                      {artist.minYear}
                     </Badge>
                   );
                 } else {
                   return (
                     <Badge color="orange" variant="light">
-                      {artist.earliestReleaseYear} - {artist.latestReleaseYear}
+                      {artist.minYear} - {artist.maxYear}
                     </Badge>
                   );
                 }

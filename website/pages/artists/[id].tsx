@@ -1,6 +1,6 @@
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { ActionIcon, Group } from "@mantine/core";
-import { ArtistSummary } from "@components/artists/ArtistSummary";
+import { ArtistDetailTable } from "@components/artists/ArtistDetailTable";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { HeadComponent } from "@components/HeadComponent";
 import { getArtistDetail } from "@lib/artists/getArtistDetail";
@@ -65,7 +65,7 @@ export default function ArtistDetailPage({
         <IconArrowLeft stroke={1.5} />
       </ActionIcon>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ArtistSummary
+        <ArtistDetailTable
           artistId={artistDetail.artistId}
           artistName={artistDetail.artistName}
           artistsAlbums={artistDetail.albums}

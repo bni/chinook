@@ -1,9 +1,10 @@
 export type Artist = {
   artistId: string,
   artistName: string,
+  mainlyOnLabel?: string,
   mostlyInGenre?: string,
-  earliestReleaseYear?: number,
-  latestReleaseYear?: number,
+  minYear?: number,
+  maxYear?: number,
   nrAlbums: number
 };
 

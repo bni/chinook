@@ -6,9 +6,10 @@ import { buildYearsList } from "@lib/artists/buildYearsList";
 interface ResultRow {
   artistId: string,
   artistName: string,
+  mainlyOnLabel?: string,
   mostlyInGenre?: string,
-  earliestReleaseYear?: number,
-  latestReleaseYear?: number,
+  minYear?: number,
+  maxYear?: number,
   nrAlbums: number
 }
 
@@ -39,10 +40,35 @@ export async function listArtists(
       SELECT
         ar.artist_id AS "artistId",
         ar.name AS "artistName",
+        MODE() WITHIN GROUP (ORDER BY al.label DESC) AS "mainlyOnLabel",
         MODE() WITHIN GROUP (ORDER BY al.genre DESC) AS "mostlyInGenre",
-        MIN(al.release) AS "earliestReleaseYear",
-        MAX(al.release) AS "latestReleaseYear",
-        COUNT(al.album_id) AS "nrAlbums"
+        (
+          SELECT
+            MIN(al2.release)
+          FROM
+            album al2
+          WHERE
+            al2.artist_id = ar.artist_id AND
+            al2.release = ANY($1::INT[])
+        ) AS "minYear",
+        (
+          SELECT
+            MAX(al2.release)
+          FROM
+            album al2
+          WHERE
+            al2.artist_id = ar.artist_id AND
+            al2.release = ANY($1::INT[])
+        ) AS "maxYear",
+        (
+          SELECT
+            COUNT(al2.album_id)
+          FROM
+            album al2
+          WHERE
+            al2.artist_id = ar.artist_id AND
+            al2.release = ANY($1::INT[])
+        ) AS "nrAlbums"
       FROM
         artist ar
       LEFT JOIN
@@ -66,8 +92,8 @@ export async function listArtists(
         ar.artist_id, ar.name
       ORDER BY
         "nrAlbums" DESC,
-        "earliestReleaseYear" ASC,
-        "latestReleaseYear" ASC
+        "minYear" ASC,
+        "maxYear" ASC
       FETCH FIRST $3 ROWS ONLY
 
     `, [ years, comparator, limit ]);
@@ -77,9 +103,10 @@ export async function listArtists(
         const artist: Artist = {
           artistId: row.artistId,
           artistName: row.artistName,
+          mainlyOnLabel: row.mainlyOnLabel,
           mostlyInGenre: row.mostlyInGenre,
-          earliestReleaseYear: row.earliestReleaseYear,
-          latestReleaseYear: row.latestReleaseYear,
+          minYear: row.minYear,
+          maxYear: row.maxYear,
           nrAlbums: row.nrAlbums
         };
 
