@@ -1,70 +1,69 @@
 import { query, Result } from "@lib/util/postgres";
 import { ArtistDetail, AlbumDetail } from "@lib/artists/types";
 
-export interface ResultRow1 {
+interface ResultRow {
   artistId: string;
   artistName: string;
+  albumId: string;
+  albumTitle: string;
+  releaseYear: number;
+  label?: string;
+  genre?: string;
+  criticScore: number;
+  userScore: number;
 }
 
-export interface ResultRow2 {
-  albumId: string,
-  albumTitle: string,
-  releaseYear: number,
-  label: string,
-  genre: string,
-  criticScore: number,
-  userScore: number
-}
+export async function getArtistDetail(artistId: string): Promise<ArtistDetail | undefined> {
+  const result: Result<ResultRow> = await query(`
 
-export async function getArtistDetail(artistId: string): Promise<ArtistDetail | null> {
-  // First, get the artist information
-  const artistResult: Result<ResultRow1> = await query(`
     SELECT
-      artist_id AS "artistId",
-      name AS "artistName"
+      a.artist_id AS "artistId",
+      a.name AS "artistName",
+      al.album_id AS "albumId",
+      al.title AS "albumTitle",
+      al.release AS "releaseYear",
+      al.label AS "label",
+      al.genre AS "genre",
+      al.critic_score AS "criticScore",
+      al.user_score AS "userScore"
     FROM
-      artist
+      artist a
+    INNER JOIN
+      album al ON al.artist_id = a.artist_id
     WHERE
-      artist_id = $1
-  `, [artistId]);
-
-  if (artistResult.rows.length === 0) {
-    return null;
-  }
-
-  const artist = artistResult.rows[0];
-
-  // Then, get all albums for this artist, sorted by release year descending
-  const albumsResult: Result<ResultRow2> = await query(`
-    SELECT
-      album_id AS "albumId",
-      title AS "albumTitle",
-      release AS "releaseYear",
-      label,
-      genre,
-      critic_score AS "criticScore",
-      user_score AS "userScore"
-    FROM
-      album
-    WHERE
-      artist_id = $1
+      a.artist_id = $1
     ORDER BY
-      release DESC
+      al.release DESC
+
   `, [artistId]);
 
-  const albums: AlbumDetail[] = albumsResult.rows.map(row => ({
-    albumId: row.albumId as string,
-    albumTitle: row.albumTitle as string,
-    releaseYear: row.releaseYear as number,
-    label: row.label as string | undefined,
-    genre: row.genre as string | undefined,
-    criticScore: row.criticScore as number,
-    userScore: row.userScore as number
-  }));
+  if (result.rows) {
+    const rows = result.rows;
 
-  return {
-    artistId: artist.artistId as string,
-    artistName: artist.artistName as string,
-    albums
-  };
+    const albums: AlbumDetail[] = [];
+
+    // Get artist info from first row
+    const artistDetail: ArtistDetail = {
+      artistId: rows[0].artistId,
+      artistName: rows[0].artistName,
+      albums: albums
+    };
+
+    // Build albums array from all rows
+    for (const row of rows) {
+      const album: AlbumDetail = {
+        albumId: row.albumId,
+        albumTitle: row.albumTitle,
+        releaseYear: row.releaseYear,
+        criticScore: row.criticScore,
+        userScore: row.userScore,
+        ...(row.label && { label: row.label }),
+        ...(row.genre && { genre: row.genre })
+      };
+
+      albums.push(album);
+    }
+
+    return artistDetail;
+  }
 }
