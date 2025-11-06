@@ -22,8 +22,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   const router = useRouter();
 
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
-    columnAccessor: "mostRecentAlbumTitle",
-    direction: "asc"
+    columnAccessor: "nrAlbums",
+    direction: "desc"
   });
 
   const [ artists, setArtists ] = useState(searchResult.artists);
@@ -76,8 +76,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   useEffect(() => {
     if (sortStatus.columnAccessor === "nrAlbums") {
       setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
-    } else if (sortStatus.columnAccessor === "mostRecentAlbumTitle") {
-      setRecords(orderBy(artists, "mostRecentAlbumYear", sortStatus.direction));
+    } else if (sortStatus.columnAccessor === "activeYears") {
+      setRecords(orderBy(artists, "latestReleaseYear", sortStatus.direction));
     } else {
       setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
     }
@@ -255,8 +255,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
               accessor: "artistName",
               title: "Artist",
               sortable: true,
-              width: "350px",
-              ellipsis: true,
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
                   return (
@@ -283,36 +281,44 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
               }
             },
             {
-              accessor: "mostRecentAlbumTitle",
-              title: "Most recent release",
+              accessor: "mostlyInGenre",
+              title: "Mostly in genre",
+              sortable: true
+            },
+            {
+              accessor: "activeYears",
+              title: "Active years",
               sortable: true,
-              width: "300px",
-              noWrap: true,
+              textAlign: "right",
+              width: "150px",
               render: (artist: Artist) => {
-                return (
-                  <Group justify="space-between">
-                    <Text>
-                      {artist.mostRecentAlbumTitle}
-                    </Text>
+                if (artist.earliestReleaseYear === artist.latestReleaseYear) {
+                  return (
                     <Badge color="orange" variant="light">
-                      {artist.mostRecentAlbumYear}
+                      {artist.earliestReleaseYear}
                     </Badge>
-                  </Group>
-                );
+                  );
+                } else {
+                  return (
+                    <Badge color="orange" variant="light">
+                      {artist.earliestReleaseYear} - {artist.latestReleaseYear}
+                    </Badge>
+                  );
+                }
               }
             },
             {
               accessor: "nrAlbums",
-              title: "Nr releases",
+              title: "Releases",
               sortable: true,
-              noWrap: true,
-              width: "80px"
+              textAlign: "right",
+              width: "130px"
             },
             {
               accessor: "actions",
               title: "",
               textAlign: "center",
-              width: "60px",
+              width: "80px",
               render: (artist: Artist) => {
                 if (editingId === artist.artistId) {
                   return (

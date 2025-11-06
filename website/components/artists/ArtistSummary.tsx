@@ -65,14 +65,14 @@ export function ArtistSummary({ artistName, artistsAlbums }: ArtistSummaryProps)
             title: "Label",
             sortable: true,
             width: "20%",
-            render: (album: AlbumDetail) => album.label || "-"
+            render: (album: AlbumDetail) => album.label
           },
           {
             accessor: "genre",
             title: "Genre",
             sortable: true,
             width: "15%",
-            render: (album: AlbumDetail) => album.genre || "-"
+            render: (album: AlbumDetail) => album.genre
           },
           {
             accessor: "criticScore",

@@ -6,8 +6,9 @@ import { buildYearsList } from "@lib/artists/buildYearsList";
 interface ResultRow {
   artistId: string,
   artistName: string,
-  mostRecentAlbumTitle?: string,
-  mostRecentAlbumYear?: number,
+  mostlyInGenre?: string,
+  earliestReleaseYear?: number,
+  latestReleaseYear?: number,
   nrAlbums: number
 }
 
@@ -38,28 +39,9 @@ export async function listArtists(
       SELECT
         ar.artist_id AS "artistId",
         ar.name AS "artistName",
-        (
-          SELECT
-            al2.title
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id
-          ORDER BY
-            al2.release DESC
-          FETCH FIRST 1 ROWS ONLY
-        ) AS "mostRecentAlbumTitle",
-        (
-          SELECT
-            al2.release
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id
-          ORDER BY
-            al2.release DESC
-          FETCH FIRST 1 ROWS ONLY
-        ) AS "mostRecentAlbumYear",
+        MODE() WITHIN GROUP (ORDER BY al.genre DESC) AS "mostlyInGenre",
+        MIN(al.release) AS "earliestReleaseYear",
+        MAX(al.release) AS "latestReleaseYear",
         COUNT(al.album_id) AS "nrAlbums"
       FROM
         artist ar
@@ -83,9 +65,9 @@ export async function listArtists(
       GROUP BY
         ar.artist_id, ar.name
       ORDER BY
-        "mostRecentAlbumYear" ASC,
         "nrAlbums" DESC,
-        "mostRecentAlbumTitle" ASC
+        "earliestReleaseYear" ASC,
+        "latestReleaseYear" ASC
       FETCH FIRST $3 ROWS ONLY
 
     `, [ years, comparator, limit ]);
@@ -95,8 +77,9 @@ export async function listArtists(
         const artist: Artist = {
           artistId: row.artistId,
           artistName: row.artistName,
-          mostRecentAlbumTitle: row.mostRecentAlbumTitle,
-          mostRecentAlbumYear: row.mostRecentAlbumYear,
+          mostlyInGenre: row.mostlyInGenre,
+          earliestReleaseYear: row.earliestReleaseYear,
+          latestReleaseYear: row.latestReleaseYear,
           nrAlbums: row.nrAlbums
         };
 
