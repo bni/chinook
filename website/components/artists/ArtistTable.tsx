@@ -1,6 +1,6 @@
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
-import { ActionIcon, TextInput, Group, Button, Box, Text, Badge } from "@mantine/core";
+import { ActionIcon, TextInput, Group, Button, Box, Text, Badge, Anchor } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
@@ -273,8 +273,13 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
                       autoFocus
                     />
                   );
+                } else {
+                  return (
+                    <Anchor href={`/artists/${artist.artistId}`}>
+                      {artist.artistName}
+                    </Anchor>
+                  );
                 }
-                return artist.artistName;
               }
             },
             {
