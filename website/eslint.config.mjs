@@ -22,7 +22,8 @@ const eslintConfig = defineConfig([
       "no-multiple-empty-lines": ["warn", { "max": 1 }],
       "keyword-spacing": ["warn", { "before": true }],
       "space-before-blocks": "warn",
-      "eol-last": "warn"
+      "eol-last": "warn",
+      "react-hooks/set-state-in-effect": "off" // https://github.com/facebook/react/issues/34743
     }
   }
 ]);

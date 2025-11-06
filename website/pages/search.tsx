@@ -1,7 +1,7 @@
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
 import { SemanticSearch } from "@components/search/SemanticSearch";
-import { Text, Button, Modal } from "@mantine/core";
+import { Text, Modal, ActionIcon } from "@mantine/core";
 import { useState } from "react";
 
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
@@ -29,8 +29,8 @@ export default function SearchPage({
 
       <SemanticSearch/>
 
-      <Button
-        size="compact-sm"
+      <ActionIcon
+        size="lg"
         onClick={() => setOpened(true)}
         style={{
           position: "fixed",
@@ -40,7 +40,7 @@ export default function SearchPage({
         }}
       >
         π
-      </Button>
+      </ActionIcon>
 
       <Modal
         opened={opened}

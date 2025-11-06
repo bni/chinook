@@ -1,10 +1,13 @@
 import { CollapseDesktop } from "@components/CollapseDesktop";
-import { Group } from "@mantine/core";
+import { ActionIcon, Group } from "@mantine/core";
 import { ArtistSummary } from "@components/artists/ArtistSummary";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { HeadComponent } from "@components/HeadComponent";
 import { getArtistDetail } from "@lib/artists/getArtistDetail";
 import { ArtistDetail } from "@lib/artists/types";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 interface ArtistDetailPageProps {
   artistDetail: ArtistDetail
@@ -37,9 +40,30 @@ export const getServerSideProps = (async (context: GetServerSidePropsContext) =>
 export default function ArtistDetailPage({
   artistDetail
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+
+  const [hasHistory, setHasHistory] = useState<boolean>(false);
+
+  useEffect(() => {
+    setHasHistory(!!(window.history?.length && window.history.length > 1));
+  }, [ hasHistory ]);
+
   return (
     <CollapseDesktop>
       <HeadComponent pageName={"Artists"} subPageName={artistDetail.artistName}/>
+      <ActionIcon
+        mt={25} ml={25}
+        variant="subtle" aria-label="Go back"
+        size="lg"
+        onClick={() => {
+          if (hasHistory) {
+            router.back();
+          }
+        }}
+        disabled={!hasHistory}
+      >
+        <IconArrowLeft stroke={1.5} />
+      </ActionIcon>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
         <ArtistSummary
           artistId={artistDetail.artistId}
