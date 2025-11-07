@@ -1,4 +1,5 @@
 import pino from "pino";
+//import "pino-pretty";
 import PinoHttp from "pino-http";
 //import { secret } from "@lib/util/secrets";
 
