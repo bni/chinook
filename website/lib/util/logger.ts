@@ -1,10 +1,13 @@
 import pino from "pino";
 import PinoHttp from "pino-http";
-import { secret } from "@lib/util/secrets";
+//import { secret } from "@lib/util/secrets";
+
+// Define the transport configuration only when the output stream is connected to a TTY
+//const transport = process.stdout.isTTY ? { transport: { target: "pino-pretty" } } : {};
 
 const logger = pino({
   level: process.env.PINO_LOG_LEVEL || "info",
-  transport: {
+  /*transport: {
     targets: [
       {
         target: "pino-pretty",
@@ -28,7 +31,7 @@ const logger = pino({
         }
       }
     ]
-  },
+  },*/
   redact: {
     paths: ["password"]
   }
