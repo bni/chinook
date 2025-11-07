@@ -1,12 +1,12 @@
 import pino from "pino";
 import PinoHttp from "pino-http";
-//import { secret } from "@lib/util/secrets";
+import { secret } from "@lib/util/secrets";
 
 const logger = pino({
   level: process.env.PINO_LOG_LEVEL || "info",
   transport: {
     targets: [
-      /*{
+      {
         target: "pino-pretty",
         options: {
           colorize: true,
@@ -26,7 +26,7 @@ const logger = pino({
           },
           host: await secret("LOKI_HOST")
         }
-      }*/
+      }
     ]
   },
   redact: {
