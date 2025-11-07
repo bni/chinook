@@ -1,5 +1,5 @@
 # Chinook
-It has to be called something.
+It has to be called something. Trigger.
 
 ### The allowed values for NODE_ENV are:
 
