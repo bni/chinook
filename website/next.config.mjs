@@ -4,7 +4,10 @@ const nextConfig = {
   serverExternalPackages: ["pino"],
   output: "standalone",
   outputFileTracingIncludes: {
-    "/search": ["./node_modules/onnxruntime-node/bin/**/*"]
+    "/search": [
+      "./node_modules/onnxruntime-node/bin/**/*",
+      "./node_modules/pino-loki/dist/*"
+    ]
   }
 };
 
