@@ -57,9 +57,9 @@ const traceRequest = PinoHttp({
       return req;
     }
   },
-  /*customLogLevel: (() => {
+  customLogLevel: (() => {
     return process.env.APP_ENV === "local" ? "silent" : "info";
-  })*/
+  })
 });
 
 export { logger, traceRequest };
