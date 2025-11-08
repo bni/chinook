@@ -1,7 +1,7 @@
 const nextConfig = {
   devIndicators: false,
   reactStrictMode: true,
-  serverExternalPackages: ["pino", "pino-http", "pino-loki"],
+  serverExternalPackages: ["pino"],
   output: "standalone",
   outputFileTracingIncludes: {
     "/search": ["./node_modules/onnxruntime-node/bin/**/*"]
