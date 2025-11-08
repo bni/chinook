@@ -108,7 +108,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
             <Stack>
               <Button
                 onClick={handleGoogleLogin}
-                disabled
                 variant="default"
                 leftSection={<IconBrandGoogle size="14" stroke={1.5} />}
                 rightSection={<span />}

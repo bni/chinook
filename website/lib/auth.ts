@@ -18,6 +18,7 @@ export const auth = betterAuth({
   },
   socialProviders: {
     google: {
+      prompt: "select_account",
       clientId: await secret("GOOGLE_CLIENT_ID"),
       clientSecret: await secret("GOOGLE_CLIENT_SECRET")
     }
