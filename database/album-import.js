@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 const { Pool } = pg;
-import { pipeline } from "@xenova/transformers";
+import { pipeline } from "@huggingface/transformers";
 
 // https://www.kaggle.com/datasets/kauvinlucas/30000-albums-aggregated-review-ratings
 // Fixed mangled chars: LC_ALL=C grep '[^ -~]' album_ratings.csv
