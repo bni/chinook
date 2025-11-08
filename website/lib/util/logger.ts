@@ -1,3 +1,4 @@
+import "pino-loki";
 import pino from "pino";
 import PinoHttp from "pino-http";
 import { secret } from "@lib/util/secrets";
