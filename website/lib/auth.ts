@@ -28,6 +28,14 @@ export const auth = betterAuth({
     useSecureCookies: process.env.APP_ENV !== "local",
     defaultCookieAttributes: {
       sameSite: "strict"
+    },
+    cookies: {
+      state: {
+        attributes: {
+          sameSite: "none", // Required for Google social login
+          secure: process.env.APP_ENV !== "local"
+        }
+      }
     }
   },
   session: {
