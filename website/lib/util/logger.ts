@@ -1,6 +1,5 @@
 import pino from "pino";
 import PinoHttp from "pino-http";
-import "pino-loki";
 import { secret } from "@lib/util/secrets";
 
 const targets = [];
