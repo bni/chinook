@@ -1,38 +1,49 @@
 import pino from "pino";
-//import "pino-pretty";
 import PinoHttp from "pino-http";
-//import { secret } from "@lib/util/secrets";
+import { secret } from "@lib/util/secrets";
 
-// Define the transport configuration only when the output stream is connected to a TTY
-//const transport = process.stdout.isTTY ? { transport: { target: "pino-pretty" } } : {};
+const targets = [];
+
+// Only enable this for local development
+if (process.env.NODE_ENV === "development" && process.stdout.isTTY) {
+  targets.push({
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+      levelFirst: true,
+      translateTime: "yyyy-mm-dd HH:MM:ss Z"
+    }
+  });
+}
+
+const lokiHost = await secret("LOKI_HOST");
+const lokiUsername = await secret("LOKI_USERNAME");
+const lokiToken = await secret("LOKI_TOKEN");
+
+if (lokiHost && lokiUsername && lokiToken) {
+  targets.push({
+    target: "pino-loki",
+    options: {
+      batching: false,
+      labels: {
+        app: "chinook",
+        namespace: process.env.APP_ENV || "local",
+        source: "pino",
+        runtime: `nodejs/${process.version}`
+      },
+      host: lokiHost,
+      headers: {
+        Authorization: `Bearer ${lokiUsername}:${lokiToken}`
+      }
+    }
+  });
+}
 
 const logger = pino({
   level: process.env.PINO_LOG_LEVEL || "info",
-  /*transport: {
-    targets: [
-      {
-        target: "pino-pretty",
-        options: {
-          colorize: true,
-          levelFirst: true,
-          translateTime: "yyyy-mm-dd HH:MM:ss Z"
-        }
-      },
-      {
-        target: "pino-loki",
-        options: {
-          batching: false,
-          labels: {
-            app: "chinook",
-            namespace: process.env.APP_ENV || "local",
-            source: "pino",
-            runtime: `nodejs/${process.version}`
-          },
-          host: await secret("LOKI_HOST")
-        }
-      }
-    ]
-  },*/
+  transport: {
+    targets: targets
+  },
   redact: {
     paths: ["password"]
   }

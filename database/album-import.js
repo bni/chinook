@@ -17,7 +17,10 @@ const pool = new Pool({
   password: process.env.CHINOOK_PGPASSWORD,
   host: process.env.CHINOOK_PGHOST,
   port: parseInt(process.env.CHINOOK_PGPORT, 10),
-  database: process.env.CHINOOK_PGDATABASE
+  database: process.env.CHINOOK_PGDATABASE,
+  ssl: {
+    rejectUnauthorized : false
+  }
 });
 
 const extractor = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");

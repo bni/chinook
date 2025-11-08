@@ -2,7 +2,7 @@ import { Modal, TextInput, Button, Stack, Text, Divider, Title, ActionIcon } fro
 import { useState } from "react";
 import { authClient } from "@lib/client";
 import { useRouter } from "next/router";
-import { IconBrandGithub, IconBrandGoogle, IconBrandAzure, IconUser } from "@tabler/icons-react";
+import { IconBrandGoogle, IconUser } from "@tabler/icons-react";
 
 interface AuthModalProps {
   opened: boolean;
@@ -75,16 +75,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
     }
   };
 
-  const handleGithubLogin = async () => {
-    try {
-      await authClient.signIn.social({
-        provider: "github"
-      });
-    } catch (err) {
-      alert("GitHub Login Error: " + JSON.stringify(err));
-    }
-  };
-
   const handleGoogleLogin = async () => {
     try {
       await authClient.signIn.social({
@@ -92,16 +82,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
       });
     } catch (err) {
       alert("Google Login Error: " + JSON.stringify(err));
-    }
-  };
-
-  const handleMicrosoftLogin = async () => {
-    try {
-      await authClient.signIn.social({
-        provider: "microsoft"
-      });
-    } catch (err) {
-      alert("Microsoft Login Error: " + JSON.stringify(err));
     }
   };
 
@@ -127,18 +107,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
 
             <Stack>
               <Button
-                onClick={handleMicrosoftLogin}
-                disabled
-                variant="default"
-                leftSection={<IconBrandAzure size="14" stroke={1.5} />}
-                rightSection={<span />}
-                fullWidth
-                justify="space-between"
-              >
-                Microsoft
-              </Button>
-
-              <Button
                 onClick={handleGoogleLogin}
                 disabled
                 variant="default"
@@ -148,18 +116,6 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
                 justify="space-between"
               >
                 Google
-              </Button>
-
-              <Button
-                onClick={handleGithubLogin}
-                disabled
-                variant="default"
-                leftSection={<IconBrandGithub size="14" stroke={1.5} />}
-                rightSection={<span />}
-                fullWidth
-                justify="space-between"
-              >
-                GitHub
               </Button>
 
             </Stack>

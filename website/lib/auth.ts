@@ -17,18 +17,9 @@ export const auth = betterAuth({
     enabled: true
   },
   socialProviders: {
-    microsoft: {
-      clientId: await secret("MICROSOFT_CLIENT_ID"),
-      clientSecret: await secret("MICROSOFT_CLIENT_SECRET"),
-      tenantId: await secret("MICROSOFT_TENANT_ID")
-    },
     google: {
       clientId: await secret("GOOGLE_CLIENT_ID"),
       clientSecret: await secret("GOOGLE_CLIENT_SECRET")
-    },
-    github: {
-      clientId: await secret("GITHUB_CLIENT_ID"),
-      clientSecret: await secret("GITHUB_CLIENT_SECRET")
     }
   },
   advanced: {
