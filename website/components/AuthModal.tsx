@@ -2,7 +2,7 @@ import { Modal, TextInput, Button, Stack, Text, Divider, Title, ActionIcon } fro
 import { useState } from "react";
 import { authClient } from "@lib/client";
 import { useRouter } from "next/router";
-import { IconBrandGoogle, IconUser } from "@tabler/icons-react";
+import { IconBrandGoogle, IconBrandAzure, IconBrandApple, IconUser } from "@tabler/icons-react";
 
 interface AuthModalProps {
   opened: boolean;
@@ -117,6 +117,27 @@ export function AuthModal({ opened, onClose }: AuthModalProps) {
                 Google
               </Button>
 
+              <Button
+                disabled
+                variant="default"
+                leftSection={<IconBrandAzure size="14" stroke={1.5} />}
+                rightSection={<span />}
+                fullWidth
+                justify="space-between"
+              >
+                Microsoft
+              </Button>
+
+              <Button
+                disabled
+                variant="default"
+                leftSection={<IconBrandApple size="14" stroke={1.5} />}
+                rightSection={<span />}
+                fullWidth
+                justify="space-between"
+              >
+                Apple
+              </Button>
             </Stack>
 
             <Divider label="OR" labelPosition="center" my="md" />

@@ -6,10 +6,10 @@
     .digest().toBase64();
   request.variables.set("signature", signature)
 %}
-POST https://chinook.loca.lt/api/external/v1/artists
+POST {{baseUrl}}/api/external/v1/artists
 Content-Type: application/json
 x-chinook-hmac-sha256: {{signature}}
 
 {
-  "artistName": "The Boss 11"
+  "artistName": "The Boss 12"
 }
