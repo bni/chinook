@@ -6,10 +6,6 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/search": [
       "./node_modules/onnxruntime-node/bin/**/*"
-    ],
-    "/api/internal/artists": [
-      "./node_modules/pino-loki/dist/**/*",
-      "./node_modules/pino-abstract-transport/**/*"
     ]
   }
 };

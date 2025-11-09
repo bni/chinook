@@ -1,18 +1,21 @@
 import pino from "pino";
+import type { LokiOptions } from "pino-loki";
+import pinoLoki from "pino-loki";
+import pinoPretty from "pino-pretty";
 import PinoHttp from "pino-http";
 import { secret } from "@lib/util/secrets";
 
-const targets = [];
+const streams: (pino.DestinationStream | pino.StreamEntry<pino.Level>)[] = [];
 
 // Only enable this for local development
 if (process.env.NODE_ENV === "development" && process.stdout.isTTY) {
-  targets.push({
-    target: "pino-pretty",
-    options: {
+  streams.push({
+    level: "debug",
+    stream: pinoPretty({
       colorize: true,
       levelFirst: true,
       translateTime: "yyyy-mm-dd HH:MM:ss Z"
-    }
+    })
   });
 }
 
@@ -28,9 +31,9 @@ if (lokiHost) {
     };
   }
 
-  targets.push({
-    target: "pino-loki",
-    options: {
+  streams.push({
+    level: "info",
+    stream: pinoLoki({
       batching: false,
       labels: {
         app: "chinook",
@@ -40,19 +43,19 @@ if (lokiHost) {
       },
       host: lokiHost,
       headers: headers
-    }
+    } satisfies LokiOptions)
   });
 }
 
-const logger = pino({
-  level: process.env.PINO_LOG_LEVEL || "info",
-  transport: {
-    targets: targets
+const logger = pino(
+  {
+    level: process.env.PINO_LOG_LEVEL || "info",
+    redact: {
+      paths: ["password"]
+    }
   },
-  redact: {
-    paths: ["password"]
-  }
-});
+  pino.multistream(streams)
+);
 
 const traceRequest = PinoHttp({
   logger: logger,
