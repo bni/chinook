@@ -20,7 +20,14 @@ const lokiHost = await secret("LOKI_HOST");
 const lokiUsername = await secret("LOKI_USERNAME");
 const lokiToken = await secret("LOKI_TOKEN");
 
-if (lokiHost && lokiUsername && lokiToken) {
+if (lokiHost) {
+  let headers = undefined;
+  if (lokiUsername && lokiToken) {
+    headers = {
+      Authorization: `Bearer ${lokiUsername}:${lokiToken}`
+    };
+  }
+
   targets.push({
     target: "pino-loki",
     options: {
@@ -32,9 +39,7 @@ if (lokiHost && lokiUsername && lokiToken) {
         runtime: `nodejs/${process.version}`
       },
       host: lokiHost,
-      headers: {
-        Authorization: `Bearer ${lokiUsername}:${lokiToken}`
-      }
+      headers: headers
     }
   });
 }
@@ -58,7 +63,7 @@ const traceRequest = PinoHttp({
     }
   },
   customLogLevel: (() => {
-    return process.env.APP_ENV === "local" ? "silent" : "info";
+    return lokiHost ? "info" : "silent";
   })
 });
 
