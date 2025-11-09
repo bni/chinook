@@ -244,7 +244,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         sortStatus={ sortStatus }
         onSortStatusChange={ setSortStatus }
         onCellClick={ async ({ record, columnIndex }) => {
-          if (columnIndex <= 3) {
+          if (!editingId && columnIndex <= 3) {
             await router.push(`/artists/${record.artistId}`);
           }
         } }

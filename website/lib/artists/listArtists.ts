@@ -92,8 +92,7 @@ export async function listArtists(
         ar.artist_id, ar.name
       ORDER BY
         "nrAlbums" DESC,
-        "minYear" ASC,
-        "maxYear" ASC
+        "artistName" ASC
       FETCH FIRST $3 ROWS ONLY
 
     `, [ years, comparator, limit ]);
