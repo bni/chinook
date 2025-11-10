@@ -2,6 +2,7 @@ import { broker } from "@lib/util/broker";
 import { logger } from "@lib/util/logger";
 import { artistQueue } from "@lib/worker/queues";
 import { createArtist } from "@lib/artists/createArtist";
+import { secret } from "@lib/util/secrets";
 
 const workJobs = async () => {
   broker.on("error", (error) => {
@@ -10,6 +11,8 @@ const workJobs = async () => {
 
   await broker.createQueue(artistQueue);
   logger.info({ queue: artistQueue }, "Worker created queue");
+  logger.info({ value: await secret("MY_SECRET") }, "MY_SECRET");
+  logger.info({ value: await secret("MY_OTHER") }, "MY_OTHER");
 
   await broker.work(artistQueue, async ([job]) => {
     logger.info({ id: job.id, data: job.data }, "Worker received job");
