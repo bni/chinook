@@ -4,7 +4,6 @@ import { logger, traceRequest } from "@lib/util/logger";
 import { listArtists } from "@lib/artists/listArtists";
 import { getPrefs, savePrefs } from "@lib/util/prefs";
 import { ArtistSearchResult } from "@lib/artists/types";
-import { secret } from "@lib/util/secrets";
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,9 +37,6 @@ export default async function handler(
     prefs.artistsFilter = searchFilter;
     prefs.artistsPageSize = parseInt(pageSize, 10);
     await savePrefs(prefs);
-
-    logger.info({ value: await secret("MY_SECRET") }, "MY_SECRET");
-    logger.info({ value: await secret("MY_OTHER") }, "MY_OTHER");
 
     const searchResult: ArtistSearchResult = await listArtists(
       prefs.artistsFromYear,
