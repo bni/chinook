@@ -1,31 +1,35 @@
 import { broker } from "@lib/util/broker";
+import { logger } from "@lib/util/logger";
 import { artistQueue } from "@lib/worker/queues";
 import { createArtist } from "@lib/artists/createArtist";
+import { secret } from "@lib/util/secrets";
 
 const workJobs = async () => {
   broker.on("error", (error) => {
-    console.error("Got an error in Worker", error);
+    logger.error(error, "Got an error in Worker");
   });
 
   await broker.createQueue(artistQueue);
-  console.info("Worker created queue", { queue: artistQueue });
+  logger.info({ queue: artistQueue }, "Worker created queue");
+  logger.info({ value: await secret("MY_SECRET") }, "MY_SECRET");
+  logger.info({ value: await secret("MY_OTHER") }, "MY_OTHER");
 
   await broker.work(artistQueue, async ([job]) => {
-    console.info("Worker received job", { id: job.id, data: job.data });
+    logger.info({ id: job.id, data: job.data }, "Worker received job");
 
     try {
       const data = job.data as { artistName: string };
 
-      console.info("Worker received artist", data);
+      logger.info(data, "Worker received artist");
 
       await createArtist(data.artistName);
 
       await broker.deleteJob(artistQueue, job.id);
     } catch (error) {
-      console.error("Failed to create artist from the queue", error);
+      logger.error(error, "Failed to create artist form the queue");
     }
 
-    console.info("Worker deleted job", { id: job.id });
+    logger.info({ id: job.id }, "Worker deleted job");
   });
 };
 

@@ -7,12 +7,21 @@ import { secret } from "@lib/util/secrets";
 
 const streams: (pino.DestinationStream | pino.StreamEntry<pino.Level>)[] = [];
 
-// Only enable this for local development
+// Only enable pretty printing for local development
 if (process.env.NODE_ENV === "development" && process.stdout.isTTY) {
   streams.push({
     level: "debug",
     stream: pinoPretty({
       colorize: true,
+      levelFirst: true,
+      translateTime: "yyyy-mm-dd HH:MM:ss Z"
+    })
+  });
+} else {
+  streams.push({
+    level: "info",
+    stream: pinoPretty({
+      colorize: false,
       levelFirst: true,
       translateTime: "yyyy-mm-dd HH:MM:ss Z"
     })
