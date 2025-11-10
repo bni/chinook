@@ -9,6 +9,8 @@ const pool = new Pool({
   database: await secret("CHINOOK_PGDATABASE")
 });
 
+console.log(`CREATED NEW POOL. totalCount: ${pool.totalCount} idleCount: ${pool.idleCount}`);
+
 const query = (queryText: string, values?: unknown[]): Promise<Result> => {
   return pool.query(queryText, values);
 };

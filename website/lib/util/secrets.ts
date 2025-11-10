@@ -14,11 +14,17 @@ if (process.env.GOOGLE_SECRETS_PATH) {
   });
 
   if (version?.payload?.data) {
-    const content = version.payload.data.toString("utf8");
+    let content;
+    try {
+      content = JSON.parse(version.payload.data.toString("utf8"));
+    } catch (error) {
+      console.log("Could not parse the secret as JSON", error);
 
-    console.log(`SM Content: ${content}`);
-  } else {
-    console.error(`Could not fetch secret: ${version}`);
+      content = {};
+    }
+
+    // Everything becomes strings. Overwrite if already there
+    Object.entries(content).map(([key, value]) => secrets[key] = `${value}`);
   }
 }
 
