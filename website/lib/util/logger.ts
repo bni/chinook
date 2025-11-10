@@ -8,7 +8,7 @@ import { secret } from "@lib/util/secrets";
 const streams: (pino.DestinationStream | pino.StreamEntry<pino.Level>)[] = [];
 
 // Only enable pretty printing for local development
-if (process.env.NODE_ENV === "development" && process.stdout.isTTY) {
+if (process.env.APP_ENV === "local" && process.stdout.isTTY) {
   streams.push({
     level: "debug",
     stream: pinoPretty({
@@ -70,12 +70,19 @@ const traceRequest = PinoHttp({
   logger: logger,
   serializers: {
     req(req) {
+      req.headers["cookie"] = "REMOVED";
       req.body = req.raw.body;
+
       return req;
+    },
+    res(res) {
+      res.headers["set-cookie"] = "REMOVED";
+
+      return res;
     }
   },
   customLogLevel: (() => {
-    return lokiHost ? "info" : "silent";
+    return process.env.APP_ENV === "local" ? "silent" : "info";
   })
 });
 
