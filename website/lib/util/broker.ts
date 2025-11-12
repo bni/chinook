@@ -1,4 +1,4 @@
-import PgBoss from "pg-boss";
+import { PgBoss } from "pg-boss";
 import { secret } from "@lib/util/secrets";
 
 const broker = new PgBoss({
