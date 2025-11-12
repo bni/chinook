@@ -15,3 +15,10 @@
 | local      | When running on a developer machine        |
 | staging    | When running in the pre-prod environment   |
 | production | When running in the production environment |
+
+TODO:
+TanStack Query
+
+Do column sorting server-side. After that it is possible to do server-side pagination.
+
+Send telemetry to ClickHouse. Docker ClickHouse first.
