@@ -1,7 +1,7 @@
 import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import ColorSchemeToggler from "./ColorSchemeToggler";
-import { IconHome, IconMusic, IconSearch, IconUser, IconUsersGroup } from "@tabler/icons-react";
+import { IconHome, IconMusic, IconSearch, IconUser, IconUsersGroup, IconComet } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { AuthModal } from "./AuthModal";
 import { authClient } from "@lib/client";
@@ -45,6 +45,7 @@ export function CollapseDesktop({ children }: { children: ReactNode }) {
         {session && <NavLink href={"/search"} label="Search" leftSection={<IconSearch size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/artists"} label="Artists" leftSection={<IconMusic size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size={14} stroke={1.5} />} />}
+        {session && <NavLink href={"/complex"} label="Complex" leftSection={<IconComet size={14} stroke={1.5} />} />}
 
       </AppShell.Navbar>
 
