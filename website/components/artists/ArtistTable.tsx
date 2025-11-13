@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { ActionIcon, TextInput, Group, Button, Box, Text, Badge, Anchor } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
-import orderBy from "lodash/orderBy";
 import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 import { useRouter } from "next/router";
@@ -27,7 +26,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   });
 
   const [ artists, setArtists ] = useState(searchResult.artists);
-  const [ records, setRecords ] = useState(artists);
   const [ totalRecords, setTotalRecords ] = useState(searchResult.total);
 
   const [ selectedRange, setSelectedRange ] = useState<[number, number]>([fromYear, toYear]);
@@ -48,6 +46,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           fromYear: selectedRange[0].toString(),
           toYear: selectedRange[1].toString(),
           searchFilter: searchFilter,
+          sortColumn: sortStatus.columnAccessor,
+          sortDirection: sortStatus.direction,
           pageSize: recordsPerPage.toString()
         });
 
@@ -70,23 +70,13 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         console.error("Failed to fetch artists", error);
       }
     })();
-  }, [ selectedRange, searchFilter, recordsPerPage ]);
+  }, [ selectedRange, searchFilter, sortStatus, recordsPerPage ]);
 
-  // Sort records when artists or sortStatus changes
-  useEffect(() => {
-    if (sortStatus.columnAccessor === "nrAlbums") {
-      setRecords(orderBy(artists, (artist: Artist) => { return Number(artist.nrAlbums); }, sortStatus.direction));
-    } else if (sortStatus.columnAccessor === "yearRange") {
-      setRecords(orderBy(artists, "minYear", sortStatus.direction));
-    } else {
-      setRecords(orderBy(artists, sortStatus.columnAccessor, sortStatus.direction));
-    }
-  }, [ artists, sortStatus ]);
-
+  // TODO Do this server side
   // Calculate paginated records
   const from = (page - 1) * recordsPerPage;
   const to = from + recordsPerPage;
-  const paginatedRecords = records.slice(from, to);
+  const paginatedRecords = artists.slice(from, to);
 
   // When user write a filter we need to reset to page 1
   useEffect(() => {
@@ -301,7 +291,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
             {
               accessor: "yearRange",
               title: "Years",
-              sortable: true,
+              sortable: false,
               textAlign: "right",
               width: "150px",
               render: (artist: Artist) => {

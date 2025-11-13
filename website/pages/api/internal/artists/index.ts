@@ -12,7 +12,7 @@ export default async function handler(
   traceRequest(req, res);
 
   if (req.method === "GET") {
-    const { fromYear, toYear, searchFilter, pageSize } = req.query;
+    const { fromYear, toYear, searchFilter, sortColumn, sortDirection, pageSize } = req.query;
 
     if (!fromYear || typeof fromYear !== "string" || Number.isNaN(fromYear)) {
       return res.status(400).json({ error: "From year is required, and to be numeric" });
@@ -23,7 +23,15 @@ export default async function handler(
     }
 
     if (typeof searchFilter !== "string") {
-      return res.status(400).json({ error: "Page is required to be numeric" });
+      return res.status(400).json({ error: "Search filter is required to be string" });
+    }
+
+    if (typeof sortColumn !== "string") {
+      return res.status(400).json({ error: "Sort column is required to be string" });
+    }
+
+    if (typeof sortDirection !== "string") {
+      return res.status(400).json({ error: "Sort direction is required to be string" });
     }
 
     if (!pageSize || typeof pageSize !== "string" || Number.isNaN(pageSize)) {
@@ -35,6 +43,8 @@ export default async function handler(
     prefs.artistsFromYear = parseInt(fromYear, 10);
     prefs.artistsToYear = parseInt(toYear, 10);
     prefs.artistsFilter = searchFilter;
+    prefs.sortColumn = sortColumn;
+    prefs.sortDirection = sortDirection;
     prefs.artistsPageSize = parseInt(pageSize, 10);
     await savePrefs(prefs);
 
@@ -42,6 +52,8 @@ export default async function handler(
       prefs.artistsFromYear,
       prefs.artistsToYear,
       prefs.artistsFilter,
+      prefs.sortColumn,
+      prefs.sortDirection,
       prefs.artistsPageSize,
       false
     );

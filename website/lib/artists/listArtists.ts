@@ -17,6 +17,8 @@ export async function listArtists(
   fromYear: number,
   toYear: number,
   filter: string,
+  sortColumn: string,
+  sortDirection: string,
   pageSize: number,
   onlyFirstPage: boolean
 ): Promise<ArtistSearchResult> {
@@ -34,68 +36,83 @@ export async function listArtists(
     limit = pageSize;
   }
 
+  logger.info({ sortColumn }, "!!!! sortColumn !!!!");
+  logger.info({ sortDirection }, "!!!! sortDirection !!!!");
+
   try {
     const result: Result<ResultRow> = await query(`
 
+      WITH artists AS (
+        SELECT
+          ar.artist_id AS "artistId",
+          ar.name AS "artistName",
+          MODE() WITHIN GROUP (ORDER BY al.label DESC) AS "mainlyOnLabel",
+          MODE() WITHIN GROUP (ORDER BY al.genre DESC) AS "mostlyInGenre",
+          (
+            SELECT
+              MIN(al2.release)
+            FROM
+              album al2
+            WHERE
+              al2.artist_id = ar.artist_id AND
+              al2.release = ANY($1::INT[])
+          ) AS "minYear",
+          (
+            SELECT
+              MAX(al2.release)
+            FROM
+              album al2
+            WHERE
+              al2.artist_id = ar.artist_id AND
+              al2.release = ANY($1::INT[])
+          ) AS "maxYear",
+          (
+            SELECT
+              COUNT(al2.album_id)
+            FROM
+              album al2
+            WHERE
+              al2.artist_id = ar.artist_id AND
+              al2.release = ANY($1::INT[])
+          ) AS "nrAlbums"
+        FROM
+          artist ar
+        LEFT JOIN
+          album al ON al.artist_id = ar.artist_id
+        WHERE
+          EXISTS (
+            SELECT
+              1
+            FROM
+              album al2
+            WHERE
+              al2.artist_id = ar.artist_id AND
+              al2.release = ANY($1::INT[])
+          ) AND
+          CASE WHEN $2 <> '' THEN
+            ar.name ILIKE $2
+          ELSE
+            TRUE
+          END
+        GROUP BY
+          ar.artist_id, ar.name
+      )
       SELECT
-        ar.artist_id AS "artistId",
-        ar.name AS "artistName",
-        MODE() WITHIN GROUP (ORDER BY al.label DESC) AS "mainlyOnLabel",
-        MODE() WITHIN GROUP (ORDER BY al.genre DESC) AS "mostlyInGenre",
-        (
-          SELECT
-            MIN(al2.release)
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id AND
-            al2.release = ANY($1::INT[])
-        ) AS "minYear",
-        (
-          SELECT
-            MAX(al2.release)
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id AND
-            al2.release = ANY($1::INT[])
-        ) AS "maxYear",
-        (
-          SELECT
-            COUNT(al2.album_id)
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id AND
-            al2.release = ANY($1::INT[])
-        ) AS "nrAlbums"
+        *
       FROM
-        artist ar
-      LEFT JOIN
-        album al ON al.artist_id = ar.artist_id
-      WHERE
-        EXISTS (
-          SELECT
-            1
-          FROM
-            album al2
-          WHERE
-            al2.artist_id = ar.artist_id AND
-            al2.release = ANY($1::INT[])
-        ) AND
-        CASE WHEN $2 <> '' THEN
-          ar.name ILIKE $2
-        ELSE
-          TRUE
-        END
-      GROUP BY
-        ar.artist_id, ar.name
+        artists
       ORDER BY
-        "nrAlbums" DESC,
-        "artistName" ASC
-      FETCH FIRST $3 ROWS ONLY
+        (CASE WHEN $3 = 'artistName' AND $4 = 'asc' THEN "artistName" END) ASC,
+        (CASE WHEN $3 = 'artistName' AND $4 = 'desc' THEN "artistName" END) DESC,
+        (CASE WHEN $3 = 'mainlyOnLabel' AND $4 = 'asc' THEN "mainlyOnLabel" END) ASC,
+        (CASE WHEN $3 = 'mainlyOnLabel' AND $4 = 'desc' THEN "mainlyOnLabel" END) DESC,
+        (CASE WHEN $3 = 'mostlyInGenre' AND $4 = 'asc' THEN "mostlyInGenre" END) ASC,
+        (CASE WHEN $3 = 'mostlyInGenre' AND $4 = 'desc' THEN "mostlyInGenre" END) DESC,
+        (CASE WHEN $3 = 'nrAlbums' AND $4 = 'asc' THEN "nrAlbums" END) ASC,
+        (CASE WHEN $3 = 'nrAlbums' AND $4 = 'desc' THEN "nrAlbums" END) DESC
+      FETCH FIRST $5 ROWS ONLY
 
-    `, [ years, comparator, limit ]);
+    `, [ years, comparator, sortColumn, sortDirection, limit ]);
 
     if (result.rows) {
       for (const row of result.rows) {
