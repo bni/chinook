@@ -4,7 +4,7 @@ import { AuthModal } from "@components/AuthModal";
 import { useState } from "react";
 import { HeadComponent } from "@components/HeadComponent";
 import { authClient } from "@lib/client";
-import { IconSearch, IconMusic, IconUsersGroup, IconComet } from "@tabler/icons-react";
+import { IconSearch, IconMusic, IconUsersGroup } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
 export default function IndexPage() {
@@ -29,12 +29,6 @@ export default function IndexPage() {
       title: "Employees",
       icon: IconUsersGroup,
       path: "/employees",
-      color: "green"
-    },
-    {
-      title: "Complex",
-      icon: IconComet,
-      path: "/complex",
       color: "orange"
     }
   ];

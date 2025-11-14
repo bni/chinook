@@ -85,7 +85,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
       sortStatus.direction,
       page,
       recordsPerPage
-    )
+    ),
+    placeholderData: (previousData) => previousData
   });
 
   // When user use filter or change the number of records to display we need to reset to page 1
@@ -228,7 +229,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
         </Button>
       </Group>
       <DataTable
-        minHeight={950}
+        minHeight={ recordsPerPage * 47}
         withTableBorder
         withColumnBorders
         striped
@@ -239,7 +240,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
         loaderType="dots"
         loaderSize="xs"
         loaderColor="orange"
-        loaderBackgroundBlur={4}
         records={ data?.artists }
         totalRecords={ data?.total }
         page={ page }
