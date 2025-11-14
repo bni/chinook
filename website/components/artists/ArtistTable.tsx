@@ -6,6 +6,7 @@ import { modals } from "@mantine/modals";
 import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
 
 const RECORDS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50, 100];
 
@@ -13,20 +14,16 @@ interface ArtistTableProps {
   fromYear: number,
   toYear: number,
   filter: string,
-  pageSize: number,
-  searchResult: ArtistSearchResult
+  pageSize: number
 }
 
-export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableProps) {
   const router = useRouter();
 
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
     columnAccessor: "nrAlbums",
     direction: "desc"
   });
-
-  const [ artists, setArtists ] = useState(searchResult.artists);
-  const [ totalRecords, setTotalRecords ] = useState(searchResult.total);
 
   const [ selectedRange, setSelectedRange ] = useState<[number, number]>([fromYear, toYear]);
 
@@ -38,40 +35,58 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
   const [ editingId, setEditingId ] = useState<string | undefined>(undefined);
   const [ editingName, setEditingName ] = useState("");
 
-  // Fetch artists when any search criteria changes
-  useEffect(() => {
-    (async () => {
-      try {
-        const params = new URLSearchParams({
-          fromYear: selectedRange[0].toString(),
-          toYear: selectedRange[1].toString(),
-          searchFilter: searchFilter,
-          sortColumn: sortStatus.columnAccessor,
-          sortDirection: sortStatus.direction,
-          page: page.toString(),
-          pageSize: recordsPerPage.toString()
-        });
+  const fetchArtists = async (
+    fromYear: number,
+    toYear: number,
+    searchFilter: string,
+    sortColumn: string,
+    sortDirection: string,
+    page: number,
+    pageSize: number
+  ) => {
+    try {
+      const params = new URLSearchParams({
+        fromYear: fromYear.toString(),
+        toYear: toYear.toString(),
+        searchFilter: searchFilter,
+        sortColumn: sortColumn,
+        sortDirection: sortDirection,
+        page: page.toString(),
+        pageSize: pageSize.toString()
+      });
 
-        const response = await fetch(`/api/internal/artists/?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (!response.ok) {
-          console.error("Failed to list artists");
-        } else {
-          const artistSearchResult: ArtistSearchResult = await response.json();
-
-          setArtists(artistSearchResult.artists);
-          setTotalRecords(artistSearchResult.total);
+      const response = await fetch(`/api/internal/artists/?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-      } catch (error) {
-        console.error("Failed to fetch artists", error);
+      });
+
+      if (!response.ok) {
+        console.error("Failed to list artists");
+      } else {
+        const artistSearchResult: ArtistSearchResult = await response.json();
+
+        return artistSearchResult;
       }
-    })();
-  }, [ selectedRange, searchFilter, sortStatus, page, recordsPerPage ]);
+    } catch (error) {
+      console.error("Failed to fetch artists", error);
+    }
+  };
+
+  // Fetch artists when any search criteria changes
+  const { data, isFetching } = useQuery({
+    queryKey: ["artists", selectedRange, searchFilter, sortStatus, page, recordsPerPage],
+    queryFn: () => fetchArtists(
+      selectedRange[0],
+      selectedRange[1],
+      searchFilter,
+      sortStatus.columnAccessor,
+      sortStatus.direction,
+      page,
+      recordsPerPage
+    )
+  });
 
   // When user use filter or change the number of records to display we need to reset to page 1
   useEffect(() => {
@@ -107,11 +122,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
       }
 
       // Update local state
-      setArtists(prev => prev.map(artist =>
+      /*setArtists(prev => prev.map(artist =>
         artist.artistId === artistId
           ? { ...artist, artistName: editingName }
           : artist
-      ));
+      ));*/
 
       setEditingId(undefined);
       setEditingName("");
@@ -137,7 +152,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           }
 
           // Remove from local state
-          setArtists(prev => prev.filter(a => a.artistId !== artist.artistId));
+          //setArtists(prev => prev.filter(a => a.artistId !== artist.artistId));
         } catch (error) {
           console.error("Failed to delete artist", error);
         }
@@ -179,7 +194,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           }
 
           // Add it first in the table
-          setArtists([ { artistId: "", artistName, nrAlbums: 0 }, ...artists ]);
+          //setArtists([ { artistId: "", artistName, nrAlbums: 0 }, ...artists ]);
         } catch (error) {
           console.error("Failed to create artist", error);
         }
@@ -213,14 +228,20 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         </Button>
       </Group>
       <DataTable
+        minHeight={950}
         withTableBorder
         withColumnBorders
         striped
         highlightOnHover
         fz="md"
         idAccessor="artistId"
-        records={ artists }
-        totalRecords={ totalRecords }
+        fetching={ isFetching }
+        loaderType="dots"
+        loaderSize="xs"
+        loaderColor="orange"
+        loaderBackgroundBlur={4}
+        records={ data?.artists }
+        totalRecords={ data?.total }
         page={ page }
         onPageChange={ setPage }
         recordsPerPageOptions={ RECORDS_PER_PAGE_OPTIONS }
