@@ -12,7 +12,7 @@ export default async function handler(
   traceRequest(req, res);
 
   if (req.method === "GET") {
-    const { fromYear, toYear, searchFilter, sortColumn, sortDirection, pageSize } = req.query;
+    const { fromYear, toYear, searchFilter, sortColumn, sortDirection, page, pageSize } = req.query;
 
     if (!fromYear || typeof fromYear !== "string" || Number.isNaN(fromYear)) {
       return res.status(400).json({ error: "From year is required, and to be numeric" });
@@ -34,8 +34,12 @@ export default async function handler(
       return res.status(400).json({ error: "Sort direction is required to be string" });
     }
 
-    if (!pageSize || typeof pageSize !== "string" || Number.isNaN(pageSize)) {
+    if (!page || typeof page !== "string" || Number.isNaN(page)) {
       return res.status(400).json({ error: "Page is required, and to be numeric" });
+    }
+
+    if (!pageSize || typeof pageSize !== "string" || Number.isNaN(pageSize)) {
+      return res.status(400).json({ error: "Page size is required, and to be numeric" });
     }
 
     // Save prefs
@@ -43,8 +47,9 @@ export default async function handler(
     prefs.artistsFromYear = parseInt(fromYear, 10);
     prefs.artistsToYear = parseInt(toYear, 10);
     prefs.artistsFilter = searchFilter;
-    prefs.sortColumn = sortColumn;
-    prefs.sortDirection = sortDirection;
+    prefs.artistsSortColumn = sortColumn;
+    prefs.artistsSortDirection = sortDirection;
+    prefs.artistsPage = parseInt(page, 10);
     prefs.artistsPageSize = parseInt(pageSize, 10);
     await savePrefs(prefs);
 
@@ -52,10 +57,10 @@ export default async function handler(
       prefs.artistsFromYear,
       prefs.artistsToYear,
       prefs.artistsFilter,
-      prefs.sortColumn,
-      prefs.sortDirection,
-      prefs.artistsPageSize,
-      false
+      prefs.artistsSortColumn,
+      prefs.artistsSortDirection,
+      prefs.artistsPage,
+      prefs.artistsPageSize
     );
 
     return res.status(200).json(searchResult);

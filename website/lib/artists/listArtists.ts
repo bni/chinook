@@ -10,7 +10,8 @@ interface ResultRow {
   mostlyInGenre?: string,
   minYear?: number,
   maxYear?: number,
-  nrAlbums: number
+  nrAlbums: number,
+  total: number
 }
 
 export async function listArtists(
@@ -19,8 +20,8 @@ export async function listArtists(
   filter: string,
   sortColumn: string,
   sortDirection: string,
-  pageSize: number,
-  onlyFirstPage: boolean
+  page: number,
+  pageSize: number
 ): Promise<ArtistSearchResult> {
   const artists: Artist[] = [];
 
@@ -31,13 +32,10 @@ export async function listArtists(
     comparator = `%${filter}%`;
   }
 
-  let limit = undefined;
-  if (onlyFirstPage) {
-    limit = pageSize;
-  }
+  const limit = pageSize;
+  const offset = (page - 1) * pageSize;
 
-  logger.info({ sortColumn }, "!!!! sortColumn !!!!");
-  logger.info({ sortDirection }, "!!!! sortDirection !!!!");
+  let total = 0;
 
   try {
     const result: Result<ResultRow> = await query(`
@@ -98,7 +96,14 @@ export async function listArtists(
           ar.artist_id, ar.name
       )
       SELECT
-        *
+        "artistId",
+        "artistName",
+        "mainlyOnLabel",
+        "mostlyInGenre",
+        "minYear",
+        "maxYear",
+        "nrAlbums",
+        count(*) OVER() AS "total"
       FROM
         artists
       ORDER BY
@@ -110,9 +115,9 @@ export async function listArtists(
         (CASE WHEN $3 = 'mostlyInGenre' AND $4 = 'desc' THEN "mostlyInGenre" END) DESC,
         (CASE WHEN $3 = 'nrAlbums' AND $4 = 'asc' THEN "nrAlbums" END) ASC,
         (CASE WHEN $3 = 'nrAlbums' AND $4 = 'desc' THEN "nrAlbums" END) DESC
-      FETCH FIRST $5 ROWS ONLY
+      LIMIT $5 OFFSET $6
 
-    `, [ years, comparator, sortColumn, sortDirection, limit ]);
+    `, [ years, comparator, sortColumn, sortDirection, limit, offset ]);
 
     if (result.rows) {
       for (const row of result.rows) {
@@ -127,6 +132,9 @@ export async function listArtists(
         };
 
         artists.push(artist);
+
+        // Will be set on each row
+        total = row.total;
       }
     }
   } catch (error) {
@@ -137,6 +145,6 @@ export async function listArtists(
 
   return {
     artists: artists,
-    total: artists.length
+    total: total
   };
 }

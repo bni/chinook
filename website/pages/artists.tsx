@@ -21,10 +21,10 @@ export const getServerSideProps = (async (context: GetServerSidePropsContext) =>
     prefs.artistsFromYear,
     prefs.artistsToYear,
     prefs.artistsFilter,
-    prefs.sortColumn,
-    prefs.sortDirection,
-    prefs.artistsPageSize,
-    true
+    prefs.artistsSortColumn,
+    prefs.artistsSortDirection,
+    prefs.artistsPage,
+    prefs.artistsPageSize
   );
 
   return {

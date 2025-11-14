@@ -6,8 +6,9 @@ interface Prefs {
   artistsFromYear: number;
   artistsToYear: number;
   artistsFilter: string;
-  sortColumn: string;
-  sortDirection: string;
+  artistsSortColumn: string;
+  artistsSortDirection: string;
+  artistsPage: number;
   artistsPageSize: number;
 }
 
@@ -15,8 +16,9 @@ const defaultPrefs: Prefs = {
   artistsFromYear: 1991,
   artistsToYear: 2004,
   artistsFilter: "",
-  sortColumn: "nrAlbums",
-  sortDirection: "desc",
+  artistsSortColumn: "nrAlbums",
+  artistsSortDirection: "desc",
+  artistsPage: 1,
   artistsPageSize: 20
 };
 

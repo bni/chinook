@@ -48,6 +48,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
           searchFilter: searchFilter,
           sortColumn: sortStatus.columnAccessor,
           sortDirection: sortStatus.direction,
+          page: page.toString(),
           pageSize: recordsPerPage.toString()
         });
 
@@ -70,18 +71,12 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         console.error("Failed to fetch artists", error);
       }
     })();
-  }, [ selectedRange, searchFilter, sortStatus, recordsPerPage ]);
+  }, [ selectedRange, searchFilter, sortStatus, page, recordsPerPage ]);
 
-  // TODO Do this server side
-  // Calculate paginated records
-  const from = (page - 1) * recordsPerPage;
-  const to = from + recordsPerPage;
-  const paginatedRecords = artists.slice(from, to);
-
-  // When user write a filter we need to reset to page 1
+  // When user use filter or change the number of records to display we need to reset to page 1
   useEffect(() => {
     setPage(1);
-  }, [ searchFilter ]);
+  }, [ searchFilter, recordsPerPage ]);
 
   const handleEdit = (artist: Artist) => {
     setEditingId(artist.artistId);
@@ -224,7 +219,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, searchResult }
         highlightOnHover
         fz="md"
         idAccessor="artistId"
-        records={ paginatedRecords }
+        records={ artists }
         totalRecords={ totalRecords }
         page={ page }
         onPageChange={ setPage }
