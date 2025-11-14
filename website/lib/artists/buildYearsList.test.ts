@@ -1,6 +1,7 @@
+import { test, expect } from "vitest";
 import { buildYearsList } from "./buildYearsList";
 
-test("Build years list", async () => {
+test("Build years list", () => {
   const fromYear = 1961;
   const toYear = 1965;
 
