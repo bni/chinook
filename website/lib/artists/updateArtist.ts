@@ -34,7 +34,7 @@ export async function updateArtist(artistId: string, artistName: string): Promis
         WHERE
           album_id = $2
 
-      `, [ embedding, album.albumId]);
+      `, [ embedding, album.albumId ]);
     }
 
     await client.query("COMMIT");

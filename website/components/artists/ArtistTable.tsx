@@ -6,7 +6,7 @@ import { modals } from "@mantine/modals";
 import { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const RECORDS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50, 100];
 
@@ -74,6 +74,8 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
     }
   };
 
+  const queryClient = useQueryClient();
+
   // Fetch artists when any search criteria changes
   const { data, isFetching } = useQuery({
     queryKey: ["artists", selectedRange, searchFilter, sortStatus, page, recordsPerPage],
@@ -104,37 +106,62 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
     setEditingName("");
   };
 
+  const updateMutation = useMutation({
+    mutationFn: async (updatedArtist: Artist) => {
+      try {
+        const response = await fetch(`/api/internal/artists/${updatedArtist.artistId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ artistName: updatedArtist.artistName })
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update artist");
+        }
+
+        return updatedArtist;
+      } catch (error) {
+        console.error("Failed to update artist", error);
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["artists"] });
+    }
+  });
+
   const handleSave = async (artistId: string) => {
     if (!editingName.trim()) {
       return;
     }
 
-    try {
-      const response = await fetch(`/api/internal/artists/${artistId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ artistName: editingName })
-      });
+    updateMutation.mutate({ artistId: artistId, artistName: editingName, nrAlbums: 0 });
 
-      if (!response.ok) {
-        throw new Error("Failed to update artist");
-      }
-
-      // Update local state
-      /*setArtists(prev => prev.map(artist =>
-        artist.artistId === artistId
-          ? { ...artist, artistName: editingName }
-          : artist
-      ));*/
-
-      setEditingId(undefined);
-      setEditingName("");
-    } catch (error) {
-      console.error("Failed to save artist", error);
-    }
+    setEditingId(undefined);
+    setEditingName("");
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: async (deletedArtist: Artist) => {
+      try {
+        const response = await fetch(`/api/internal/artists/${deletedArtist.artistId}`, {
+          method: "DELETE"
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete artist");
+        }
+
+        return deletedArtist;
+      } catch (error) {
+        console.error("Failed to delete artist", error);
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["artists"] });
+    }
+  });
 
   const handleDelete = (artist: Artist) => {
     modals.openConfirmModal({
@@ -143,23 +170,35 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
       labels: { confirm: "Delete", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onConfirm: async () => {
-        try {
-          const response = await fetch(`/api/internal/artists/${artist.artistId}`, {
-            method: "DELETE"
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to delete artist");
-          }
-
-          // Remove from local state
-          //setArtists(prev => prev.filter(a => a.artistId !== artist.artistId));
-        } catch (error) {
-          console.error("Failed to delete artist", error);
-        }
+        deleteMutation.mutate(artist);
       }
     });
   };
+
+  const createMutation = useMutation({
+    mutationFn: async (createdArtist: Artist) => {
+      try {
+        const response = await fetch("/api/internal/artists", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(createdArtist)
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to create artist");
+        }
+
+        return createdArtist;
+      } catch (error) {
+        console.error("Failed to create artist", error);
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["artists"] });
+    }
+  });
 
   const handleCreate = () => {
     modals.openConfirmModal({
@@ -173,7 +212,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
         />
       ),
       labels: { confirm: "Create", cancel: "Cancel" },
-      onConfirm: async () => {
+      onConfirm: () => {
         const input = document.getElementById("create-artist-input") as HTMLInputElement;
         const artistName = input?.value.trim();
 
@@ -181,24 +220,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
           return;
         }
 
-        try {
-          const response = await fetch("/api/internal/artists", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ artistName })
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to create artist");
-          }
-
-          // Add it first in the table
-          //setArtists([ { artistId: "", artistName, nrAlbums: 0 }, ...artists ]);
-        } catch (error) {
-          console.error("Failed to create artist", error);
-        }
+        createMutation.mutate({ artistId: "", artistName: artistName, nrAlbums: 0 });
       }
     });
   };

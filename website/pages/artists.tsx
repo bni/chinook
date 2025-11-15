@@ -4,7 +4,6 @@ import { ArtistTable } from "@components/artists/ArtistTable";
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getPrefs } from "@lib/util/prefs";
 import { HeadComponent } from "@components/HeadComponent";
-import { ArtistTableWrapper } from "@components/artists/ArtistTableWrapper";
 
 interface ArtistsPageProps {
   fromYear: number,
@@ -32,9 +31,7 @@ export default function ArtistsPage({
     <CollapseDesktop>
       <HeadComponent pageName={"Artists"}/>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ArtistTableWrapper>
-          <ArtistTable fromYear={fromYear} toYear={toYear} filter={filter} pageSize={pageSize}/>
-        </ArtistTableWrapper>
+        <ArtistTable fromYear={fromYear} toYear={toYear} filter={filter} pageSize={pageSize}/>
       </Group>
     </CollapseDesktop>
   );
