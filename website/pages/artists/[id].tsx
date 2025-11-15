@@ -51,20 +51,20 @@ export default function ArtistDetailPage({
   return (
     <CollapseDesktop>
       <HeadComponent pageName={"Artists"} subPageName={artistDetail.artistName}/>
+      <ActionIcon
+        mt={25} ml={25}
+        variant="subtle" aria-label="Go back"
+        size="lg"
+        onClick={() => {
+          if (hasHistory) {
+            router.back();
+          }
+        }}
+        disabled={!hasHistory}
+      >
+        <IconArrowLeft stroke={1.5} />
+      </ActionIcon>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <ActionIcon
-          mt={25} ml={25}
-          variant="subtle" aria-label="Go back"
-          size="lg"
-          onClick={() => {
-            if (hasHistory) {
-              router.back();
-            }
-          }}
-          disabled={!hasHistory}
-        >
-          <IconArrowLeft stroke={1.5} />
-        </ActionIcon>
         <ArtistDetailTable
           artistId={artistDetail.artistId}
           artistName={artistDetail.artistName}
