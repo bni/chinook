@@ -14,10 +14,11 @@ interface ArtistTableProps {
   fromYear: number,
   toYear: number,
   filter: string,
-  pageSize: number
+  pageSize: number,
+  placeholderResult: ArtistSearchResult
 }
 
-export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableProps) {
+export function ArtistTable({ fromYear, toYear, filter, pageSize, placeholderResult }: ArtistTableProps) {
   const router = useRouter();
 
   const [ sortStatus, setSortStatus ] = useState<DataTableSortStatus<Artist>>({
@@ -88,7 +89,13 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
       page,
       recordsPerPage
     ),
-    placeholderData: (previousData) => previousData
+    placeholderData: (previousData) => {
+      if (!previousData) {
+        return placeholderResult;
+      }
+
+      return previousData;
+    }
   });
 
   // When user use filter or change the number of records to display we need to reset to page 1
@@ -251,7 +258,6 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
         </Button>
       </Group>
       <DataTable
-        minHeight={ recordsPerPage * 47}
         withTableBorder
         withColumnBorders
         striped
@@ -333,7 +339,11 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
               textAlign: "right",
               width: "150px",
               render: (artist: Artist) => {
-                if (artist.minYear === artist.maxYear) {
+                if (!artist.minYear || !artist.maxYear) {
+                  return (
+                    <Text/>
+                  );
+                } else if (artist.minYear === artist.maxYear) {
                   return (
                     <Badge color="orange" variant="light">
                       {artist.minYear}
@@ -353,7 +363,20 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize }: ArtistTableP
               title: "Releases",
               sortable: true,
               textAlign: "right",
-              width: "130px"
+              width: "130px",
+              render: (artist: Artist) => {
+                if (artist.nrAlbums > 0) {
+                  return (
+                    <Text>
+                      {artist.nrAlbums}
+                    </Text>
+                  );
+                } else {
+                  return (
+                    <Text/>
+                  );
+                }
+              }
             },
             {
               accessor: "actions",
