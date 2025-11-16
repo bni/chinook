@@ -103,7 +103,7 @@ export async function listArtists(
         "minYear",
         "maxYear",
         "nrAlbums",
-        count(*) OVER() AS "total"
+        COUNT(*) OVER() AS "total"
       FROM
         artists
       ORDER BY
