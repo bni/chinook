@@ -52,18 +52,18 @@ ORDER BY
 LIMIT ${limit} OFFSET ${offset}
 ```
 
-### TansStack query
+### TanStack query
 
 ```javascript
 // Fetch artists when any search criteria changes
 const { data, isFetching } = useQuery({
-queryKey: ["artists", searchFilter, sortColumn, sortDirection, page, recordsPerPage],
-queryFn: () => fetchArtists(
-  searchFilter,
-  sortColumn,
-  sortDirection,
-  page,
-  recordsPerPage
-)
+  queryKey: ["artists", searchFilter, sortColumn, sortDirection, page, recordsPerPage],
+  queryFn: () => fetchArtists(
+    searchFilter,
+    sortColumn,
+    sortDirection,
+    page,
+    recordsPerPage
+  )
 });
 ```

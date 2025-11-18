@@ -78,6 +78,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, placeholderRes
   const queryClient = useQueryClient();
 
   // Fetch artists when any search criteria changes
+  // noinspection JSUnusedGlobalSymbols
   const { data, isFetching } = useQuery({
     queryKey: ["artists", selectedRange, searchFilter, sortStatus, page, recordsPerPage],
     queryFn: () => fetchArtists(
