@@ -8,7 +8,7 @@
     "start": "node album-import.js"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.7.6",
+    "@huggingface/transformers": "^3.8.0",
     "dotenv": "^17.2.3",
     "pg": "^8.16.3"
   },
