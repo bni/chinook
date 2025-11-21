@@ -1,5 +1,4 @@
 .DS_Store
-.gitconfig
 .idea
 .vscode
 http-client.private.env.json
