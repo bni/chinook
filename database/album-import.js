@@ -23,7 +23,7 @@ const pool = new Pool({
   }
 });
 
-const extractor = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+const extractor = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2", { dtype: "fp32" });
 
 const parseCSVLine = (line) => {
   const result = [];

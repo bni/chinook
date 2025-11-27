@@ -1,6 +1,6 @@
 import { pipeline } from "@huggingface/transformers";
 
-const extractor = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+const extractor = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2", { dtype: "fp32" });
 
 const extractEmbedding = async (embeddingInput: string) => {
   const response = await extractor([embeddingInput], { pooling: "mean", normalize: true });
