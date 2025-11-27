@@ -3,3 +3,5 @@ gcloud projects create chinook-staging
 gcloud config set project chinook-staging
 
 gcloud auth application-default login
+
+source .env && terraform init | plan | apply

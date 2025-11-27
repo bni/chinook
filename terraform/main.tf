@@ -10,6 +10,7 @@ variable "environment" {
 variable "postgres_password" {
   description = "Postgres root user password"
   type        = string
+  sensitive   = true
   validation {
     condition     = var.postgres_password != ""
     error_message = "Postgres password must be set."
@@ -62,7 +63,7 @@ resource "google_project_service" "artifactregistry_api" {
 # Create Artifact Registry repository for Docker images
 resource "google_artifact_registry_repository" "chinook_repo" {
   location      = "europe-north2"
-  repository_id = local.full_environment
+  repository_id = "${local.full_environment}-repository"
   description   = "Docker repository for Chinook ${var.environment}"
   format        = "DOCKER"
   depends_on    = [google_project_service.artifactregistry_api]
