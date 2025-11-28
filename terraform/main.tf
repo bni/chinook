@@ -48,27 +48,6 @@ resource "google_project_service" "cloudrun_api" {
   disable_on_destroy = false
 }
 
-# Enable Cloud Build API
-resource "google_project_service" "cloudbuild_api" {
-  service            = "cloudbuild.googleapis.com"
-  disable_on_destroy = false
-}
-
-# Enable Artifact Registry API
-resource "google_project_service" "artifactregistry_api" {
-  service            = "artifactregistry.googleapis.com"
-  disable_on_destroy = false
-}
-
-# Create Artifact Registry repository for Docker images
-resource "google_artifact_registry_repository" "chinook_repo" {
-  location      = "europe-north2"
-  repository_id = "${local.full_environment}-repository"
-  description   = "Docker repository for Chinook ${var.environment}"
-  format        = "DOCKER"
-  depends_on    = [google_project_service.artifactregistry_api]
-}
-
 # Creates DB instance
 resource "google_sql_database_instance" "default" {
   name             = "${local.full_environment}-database"
@@ -111,80 +90,6 @@ resource "google_secret_manager_secret_iam_member" "secretaccess_compute_chinook
   secret_id = google_secret_manager_secret.chinook_secret.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-
-# Grant service account permission to push to Artifact Registry
-resource "google_artifact_registry_repository_iam_member" "cloudbuild_artifactregistry" {
-  location   = google_artifact_registry_repository.chinook_repo.location
-  repository = google_artifact_registry_repository.chinook_repo.name
-  role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-
-# Grant service account permission to deploy to Cloud Run
-resource "google_project_iam_member" "cloudbuild_cloudrun" {
-  project = data.google_project.project.project_id
-  role    = "roles/run.admin"
-  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-
-# Cloud Build trigger for GitHub repository
-resource "google_cloudbuild_trigger" "github_trigger" {
-  name        = "${local.full_environment}-build"
-  description = "Build and deploy Chinook ${var.environment} from GitHub"
-  location    = "europe-north2"
-
-  github {
-    owner = "bni"
-    name  = "chinook"
-    push {
-      branch = "^main$"
-    }
-  }
-
-  build {
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = [
-        "build",
-        "-t",
-        "${google_artifact_registry_repository.chinook_repo.location}-docker.pkg.dev/${data.google_project.project.project_id}/${google_artifact_registry_repository.chinook_repo.repository_id}/chinook-website:$COMMIT_SHA",
-        "-t",
-        "${google_artifact_registry_repository.chinook_repo.location}-docker.pkg.dev/${data.google_project.project.project_id}/${google_artifact_registry_repository.chinook_repo.repository_id}/chinook-website:latest",
-        "-f",
-        "website/Dockerfile",
-        "./website"
-      ]
-    }
-
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = [
-        "push",
-        "--all-tags",
-        "${google_artifact_registry_repository.chinook_repo.location}-docker.pkg.dev/${data.google_project.project.project_id}/${google_artifact_registry_repository.chinook_repo.repository_id}/chinook-website"
-      ]
-    }
-
-    step {
-      name = "gcr.io/google.com/cloudsdktool/cloud-sdk"
-      entrypoint = "gcloud"
-      args = [
-        "run",
-        "services",
-        "update",
-        google_cloud_run_v2_service.default.name,
-        "--image=${google_artifact_registry_repository.chinook_repo.location}-docker.pkg.dev/${data.google_project.project.project_id}/${google_artifact_registry_repository.chinook_repo.repository_id}/chinook-website:$COMMIT_SHA",
-        "--region=${google_cloud_run_v2_service.default.location}"
-      ]
-    }
-  }
-
-  depends_on = [
-    google_project_service.cloudbuild_api,
-    google_artifact_registry_repository.chinook_repo,
-    google_cloud_run_v2_service.default
-  ]
 }
 
 resource "google_cloud_run_v2_service" "default" {
