@@ -4,4 +4,10 @@ gcloud config set project chinook-staging
 
 gcloud auth application-default login
 
-source .env && terraform init | plan | apply
+
+
+terraform workspace new staging
+terraform workspace new production
+terraform workspace select staging
+
+terraform plan -var-file="staging.tfvars"

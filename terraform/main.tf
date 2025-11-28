@@ -1,12 +1,3 @@
-variable "environment" {
-  description = "Environment to deploy to (staging or production)"
-  type        = string
-  validation {
-    condition     = contains(["staging", "production"], var.environment)
-    error_message = "Environment must be either 'staging' or 'production'."
-  }
-}
-
 variable "postgres_password" {
   description = "Postgres root user password"
   type        = string
@@ -18,11 +9,11 @@ variable "postgres_password" {
 }
 
 locals {
-  full_environment = "chinook-${var.environment}"
+  project_id = "chinook-${terraform.workspace}"
 }
 
 provider "google" {
-  project = local.full_environment
+  project = local.project_id
   region  = "europe-north2"
   zone    = "europe-north2-c"
 }
@@ -50,14 +41,14 @@ resource "google_project_service" "cloudrun_api" {
 
 # Creates DB instance
 resource "google_sql_database_instance" "default" {
-  name             = "${local.full_environment}-database"
+  name             = "${local.project_id}-database"
   region           = "europe-north2"
   database_version = "POSTGRES_18"
   root_password    = var.postgres_password
 
   settings {
     edition = "ENTERPRISE"
-    tier = "db-f1-micro"
+    tier    = "db-f1-micro"
     password_validation_policy {
       min_length                  = 6
       complexity                  = "COMPLEXITY_DEFAULT"
@@ -72,7 +63,7 @@ resource "google_sql_database_instance" "default" {
 
 # Create chinook_secret secret
 resource "google_secret_manager_secret" "chinook_secret" {
-  secret_id = "${local.full_environment}-secret"
+  secret_id = "${local.project_id}-secret"
   replication {
     auto {}
   }
@@ -93,7 +84,7 @@ resource "google_secret_manager_secret_iam_member" "secretaccess_compute_chinook
 }
 
 resource "google_cloud_run_v2_service" "default" {
-  name     = "${local.full_environment}-service"
+  name     = "${local.project_id}-service"
   location = "europe-north2"
 
   deletion_protection = false
@@ -107,7 +98,7 @@ resource "google_cloud_run_v2_service" "default" {
       # Set environment variables (only non-secrets!)
       env {
         name  = "APP_ENV"
-        value = var.environment
+        value = terraform.workspace
       }
 
       volume_mounts {
