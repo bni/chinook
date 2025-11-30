@@ -15,9 +15,9 @@ const schema = {
 
 for await (const message of query({
   //prompt: "Is it still possible to book on monday?",
-  //prompt: "How many guests are there on tuesday?",
+  prompt: "How many guests are there on tuesday?",
   //prompt: "What's for lunch on tuesday?",
-  prompt: "What's for lunch on tuesday? How many guests are there? Is it still possible to book?",
+  //prompt: "What's for lunch on tuesday? How many guests are there? Is it still possible to book?",
   options: {
     cwd: process.cwd(),
     settingSources: ["project"],

@@ -17,5 +17,10 @@ description: Find out how many guests there are a specific day
 
 ### Number of guests
 * Count the nr of guests, it is specified on the row marked "Total".
-* In the same column on the rows below there is freeform text about additional guests. Count these in the result also.
-* There can be additional guest specified on the format "Person + 2" etc. In this case count it as 1 + 2 = 3.
+
+### Additional guests
+* In the same column on the rows below there is freeform text about additional guests. These should be added to the total.
+
+### Additional guests parsing rules
+* If specified as "Person + n", it counts as n + 1.
+* If specified as "n (Person)", it counts as n.
