@@ -1,29 +1,26 @@
 ---
 name: whats-for-lunch
-description: Find out what's for lunch
+description: Find out what's for lunch a specific date
 ---
 
 # What's for Lunch
 
 ## Instructions
-The user will ask you for what's for lunch a specific day.
 
-The user and restaurant is located in the CET timezone.
+### Days date
+* Find out what date is asked for.
+* On the weekend no lunch is served, then answer "Restaurant is closed on weekends".
 
-First figure out what date the user is asking for.
+### Google sheet
+* From the Google sheet specified in environment variable $LUNCH_GOOGLE_SHEET find out what is served for lunch.
+* Download the sheet as a CSV. Find the column for the day the user asks for and use that column going forward.
 
-On the weekend no lunch is served. In those cases return "Restaurant is closed on weekends.".
+### Closed days
+* If the column contains the text "STÄNGT", then answer "Restaurant is closed".
+* If the column contains the text "FULLBOKAT", then answer "Restaurant is fully booked".
+* If the restaurant is closed, never answer with what is for lunch.
 
-From the Google sheet specified in environment variable $LUNCH_GOOGLE_SHEET find out what is served for lunch.
-
-Download the sheet as a CSV. In the CSV, find the column for the day the user asks for.
-
-The lunches for a week are written inside a single column for the week. Usually in the column for Monday of that week.
-
-The lunches are written in a single column on the last row, or close to the last row.
-
-If the result contains the text "STÄNGT" or similar, then anwser "Restaurant is closed that day.".
-
-If you cant find what's for lunch answer with "I don't know what's for lunch.".
-
-Otherwise, answer with the days lunch.
+### Lunch menu
+* Exists inside a single column for the entire week. Usually the monday column.
+* Is located in the monday column for the week.
+* Exists in a single column on the last row.

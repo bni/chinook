@@ -8,15 +8,16 @@ const schema = {
     date: { type: "string" },
     weekDay: { type: "string" },
     nrGuests: { type: "number" },
-    canStillBeBooked: { type: "boolean" },
+    isBookable: { type: "boolean" }
   },
   required: ["date", "weekDay"]
 };
 
 for await (const message of query({
-  //prompt: "Is it still possible to book on monday next week?",
-  //prompt: "How many guests are there on tuesday next week?",
-  prompt: "What is for lunch on friday next week? How many guests are there? Is it still bookable?",
+  //prompt: "Is it still possible to book on monday?",
+  //prompt: "How many guests are there on tuesday?",
+  //prompt: "What's for lunch on tuesday?",
+  prompt: "What's for lunch on tuesday? How many guests are there? Is it still possible to book?",
   options: {
     cwd: process.cwd(),
     settingSources: ["project"],
