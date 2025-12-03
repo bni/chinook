@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "tsc && node dist/agent.js",
-    "report": "tsc && node dist/report.js"
+    "report": "tsc && node dist/report.js",
+    "hints": "tsc && node dist/hints.js"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.1.55",
