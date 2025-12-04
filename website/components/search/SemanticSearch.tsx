@@ -1,9 +1,9 @@
+import { Alert, Loader, Stack, Text, TextInput } from "@mantine/core";
+import { IconAlertCircle, IconSearch } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
-import { TextInput, Text, Stack, Loader, Alert } from "@mantine/core";
-import { IconSearch, IconAlertCircle } from "@tabler/icons-react";
-import { SearchResults } from "@components/search/SearchResults";
-import { EmptyState } from "@components/search/EmptyState";
 import type { AlbumSearchResult } from "@lib/albums/types";
+import { EmptyState } from "@components/search/EmptyState";
+import { SearchResults } from "@components/search/SearchResults";
 
 export function SemanticSearch() {
   const [query, setQuery] = useState("");

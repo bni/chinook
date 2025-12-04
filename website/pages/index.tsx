@@ -1,11 +1,11 @@
-import { Text, Stack, Card, Grid, ThemeIcon } from "@mantine/core";
-import { CollapseDesktop } from "@components/CollapseDesktop";
+import { Card, Grid, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconMusic, IconSearch, IconUsersGroup } from "@tabler/icons-react";
 import { AuthModal } from "@components/AuthModal";
-import { useState } from "react";
+import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
 import { authClient } from "@lib/client";
-import { IconSearch, IconMusic, IconUsersGroup } from "@tabler/icons-react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function IndexPage() {
   const [authModalOpened, setAuthModalOpened] = useState(false);

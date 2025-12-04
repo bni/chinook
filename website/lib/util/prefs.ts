@@ -1,7 +1,6 @@
-import { getIronSession } from "iron-session";
-import type { IronSession, SessionOptions } from "iron-session";
-import { secret } from "@lib/util/secrets";
 import { IncomingMessage, ServerResponse } from "node:http";
+import { type IronSession, type SessionOptions, getIronSession } from "iron-session";
+import { secret } from "@lib/util/secrets";
 
 interface Prefs {
   artistsFromYear: number;

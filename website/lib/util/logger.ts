@@ -1,8 +1,7 @@
-import pino from "pino";
-import type { LokiOptions } from "pino-loki";
-import pinoLoki from "pino-loki";
-import pinoPretty from "pino-pretty";
+import pinoLoki, { type LokiOptions } from "pino-loki";
 import PinoHttp from "pino-http";
+import pino from "pino";
+import pinoPretty from "pino-pretty";
 import { secret } from "@lib/util/secrets";
 
 const streams: (pino.DestinationStream | pino.StreamEntry<pino.Level>)[] = [];

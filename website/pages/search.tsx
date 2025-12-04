@@ -1,10 +1,9 @@
+import { ActionIcon, Modal, Text } from "@mantine/core";
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
 import { SemanticSearch } from "@components/search/SemanticSearch";
-import { Text, Modal, ActionIcon } from "@mantine/core";
 import { useState } from "react";
-
-import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 
 interface SearchPageProps {
   headers: object

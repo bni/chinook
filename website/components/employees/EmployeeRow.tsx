@@ -1,7 +1,7 @@
 import { IconChevronRight, IconUser, IconX } from "@tabler/icons-react";
-import clsx from "clsx";
-import classes from "./EmployeeTable.module.css";
 import { Fragment } from "react";
+import classes from "./EmployeeTable.module.css";
+import clsx from "clsx";
 
 interface EmployeeRowProps {
   hasCustomers: boolean,

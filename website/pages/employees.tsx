@@ -1,10 +1,10 @@
-import { CollapseDesktop } from "@components/CollapseDesktop";
-import { Group } from "@mantine/core";
-import { EmployeeTable } from "@components/employees/EmployeeTable";
-import { listEmployees } from "@lib/employees/listEmployees";
-import type { Employee } from "@lib/employees/types";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { CollapseDesktop } from "@components/CollapseDesktop";
+import type { Employee } from "@lib/employees/types";
+import { EmployeeTable } from "@components/employees/EmployeeTable";
+import { Group } from "@mantine/core";
 import { HeadComponent } from "@components/HeadComponent";
+import { listEmployees } from "@lib/employees/listEmployees";
 
 interface EmployeesPageProps {
   employees: Employee[]

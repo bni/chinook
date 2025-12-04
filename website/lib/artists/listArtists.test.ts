@@ -1,7 +1,7 @@
-import { test, expect, vi } from "vitest";
-import { listArtists } from "./listArtists";
+import { expect, test, vi } from "vitest";
 import type { ArtistSearchResult } from "./types";
 import { Pool } from "pg";
+import { listArtists } from "./listArtists";
 
 test("List artists with filter and pagination", async () => {
   const testRows = [

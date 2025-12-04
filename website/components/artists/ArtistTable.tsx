@@ -1,13 +1,12 @@
-import { DataTable } from "mantine-datatable";
-import type { DataTableSortStatus } from "mantine-datatable";
-import React, { useEffect, useState } from "react";
-import { ActionIcon, TextInput, Group, Button, Box, Text, Badge, Anchor } from "@mantine/core";
-import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
-import { modals } from "@mantine/modals";
+import { ActionIcon, Anchor, Badge, Box, Button, Group, Text, TextInput } from "@mantine/core";
 import type { Artist, ArtistSearchResult } from "@lib/artists/types";
-import { YearSlider } from "./YearSlider";
-import { useRouter } from "next/router";
+import { DataTable, type DataTableSortStatus } from "mantine-datatable";
+import { IconCheck, IconEdit, IconPlus, IconSearch, IconTrash, IconX } from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { YearSlider } from "./YearSlider";
+import { modals } from "@mantine/modals";
+import { useRouter } from "next/router";
 
 const RECORDS_PER_PAGE_OPTIONS = [10, 20, 30, 40, 50, 100];
 

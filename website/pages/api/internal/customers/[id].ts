@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { updateCustomerSupportRep } from "@lib/customers/updateCustomerSupportRep";
 import { logger, traceRequest } from "@lib/util/logger";
+import { updateCustomerSupportRep } from "@lib/customers/updateCustomerSupportRep";
 
 export default async function handler(
   req: NextApiRequest,

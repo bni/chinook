@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { updateAlbum } from "@lib/albums/updateAlbum";
-import type { UpdateAlbumParams } from "@lib/albums/updateAlbum";
-import { deleteAlbum } from "@lib/albums/deleteAlbum";
+import { type UpdateAlbumParams, updateAlbum } from "@lib/albums/updateAlbum";
 import { logger, traceRequest } from "@lib/util/logger";
+import { deleteAlbum } from "@lib/albums/deleteAlbum";
 
 export default async function handler(
   req: NextApiRequest,

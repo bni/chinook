@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { updateArtist } from "@lib/artists/updateArtist";
+import { logger, traceRequest } from "@lib/util/logger";
 import { deleteArtist } from "@lib/artists/deleteArtist";
 import { getArtistDetail } from "@lib/artists/getArtistDetail";
-import { logger, traceRequest } from "@lib/util/logger";
+import { updateArtist } from "@lib/artists/updateArtist";
 
 export default async function handler(
   req: NextApiRequest,

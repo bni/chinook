@@ -1,8 +1,8 @@
-import { Modal, TextInput, Button, Stack, Text, Divider, Title, ActionIcon } from "@mantine/core";
-import { useState } from "react";
+import { ActionIcon, Button, Divider, Modal, Stack, Text, TextInput, Title } from "@mantine/core";
+import { IconBrandApple, IconBrandAzure, IconBrandGoogle, IconUser } from "@tabler/icons-react";
 import { authClient } from "@lib/client";
 import { useRouter } from "next/router";
-import { IconBrandGoogle, IconBrandAzure, IconBrandApple, IconUser } from "@tabler/icons-react";
+import { useState } from "react";
 
 interface AuthModalProps {
   opened: boolean;

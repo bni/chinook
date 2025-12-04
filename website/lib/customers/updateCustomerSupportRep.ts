@@ -1,5 +1,5 @@
-import { query } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
+import { query } from "@lib/util/postgres";
 
 export async function updateCustomerSupportRep(customerId: number, supportRepId: number): Promise<void> {
   try {

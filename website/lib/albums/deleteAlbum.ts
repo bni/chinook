@@ -1,5 +1,5 @@
-import { query } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
+import { query } from "@lib/util/postgres";
 
 export async function deleteAlbum(albumId: string): Promise<void> {
   logger.warn("Deleting album");

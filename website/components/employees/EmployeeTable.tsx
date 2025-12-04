@@ -1,10 +1,9 @@
-import { DataTable } from "mantine-datatable";
-import type { DataTableSortStatus } from "mantine-datatable";
-import type { Employee, Customer } from "@lib/employees/types";
+import type { Customer, Employee } from "@lib/employees/types";
+import { DataTable, type DataTableSortStatus } from "mantine-datatable";
 import { useEffect, useState } from "react";
-import orderBy from "lodash/orderBy";
-import { EmployeeRow } from "./EmployeeRow";
 import { EmployeeCustomerRow } from "./EmployeeCustomerRow";
+import { EmployeeRow } from "./EmployeeRow";
+import orderBy from "lodash/orderBy";
 
 interface EmployeeTableProps {
   employees: Employee[]

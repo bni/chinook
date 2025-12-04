@@ -1,7 +1,7 @@
-import { broker } from "@lib/util/broker";
-import { logger } from "@lib/util/logger";
 import { artistQueue } from "@lib/worker/queues";
+import { broker } from "@lib/util/broker";
 import { createArtist } from "@lib/artists/createArtist";
+import { logger } from "@lib/util/logger";
 
 const workJobs = async () => {
   broker.on("error", (error) => {

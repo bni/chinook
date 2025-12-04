@@ -1,6 +1,6 @@
+import { Pool } from "pg";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { Pool } from "pg";
 import { secret } from "@lib/util/secrets";
 
 export const auth = betterAuth({

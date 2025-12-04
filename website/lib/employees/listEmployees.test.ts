@@ -1,9 +1,9 @@
-import { test, expect, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 import type { Employee } from "./types";
-import { listEmployees } from "./listEmployees";
 import { Pool } from "pg";
-import testRows from "./testRows.json" with { type: "json" };
 import expectedResult from "./expectedResult.json" with { type: "json" };
+import { listEmployees } from "./listEmployees";
+import testRows from "./testRows.json" with { type: "json" };
 
 test("List employees", async () => {
   const queryResult = {

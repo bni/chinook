@@ -1,6 +1,6 @@
-import { pool } from "@lib/util/postgres";
-import { logger } from "@lib/util/logger";
 import { extractEmbedding } from "@lib/util/extractor";
+import { logger } from "@lib/util/logger";
+import { pool } from "@lib/util/postgres";
 
 export async function createArtist(artistName: string): Promise<void> {
   const client = await pool.connect();

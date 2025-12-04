@@ -1,8 +1,7 @@
+import { Result, query } from "@lib/util/postgres";
 import type { AlbumSearchResult } from "@lib/albums/types";
-import { query, Result } from "@lib/util/postgres";
-import { logger } from "@lib/util/logger";
-
 import { extractEmbedding } from "@lib/util/extractor";
+import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   albumId: string,

@@ -1,6 +1,6 @@
-import { query, Result } from "@lib/util/postgres";
-import { logger } from "@lib/util/logger";
+import { Result, query } from "@lib/util/postgres";
 import type { Album } from "@lib/albums/types";
+import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   albumId: string,

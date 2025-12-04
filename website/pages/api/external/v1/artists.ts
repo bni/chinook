@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger, traceRequest } from "@lib/util/logger";
-import { broker } from "@lib/util/broker";
-import { artistQueue } from "@lib/worker/queues";
-import { secret } from "@lib/util/secrets";
-
-import crypto from "crypto";
 import { Readable } from "node:stream";
+import { artistQueue } from "@lib/worker/queues";
+import { broker } from "@lib/util/broker";
+import crypto from "crypto";
+import { secret } from "@lib/util/secrets";
 
 // noinspection JSUnusedGlobalSymbols
 export const config = {

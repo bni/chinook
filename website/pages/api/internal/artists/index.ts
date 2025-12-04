@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createArtist } from "@lib/artists/createArtist";
-import { logger, traceRequest } from "@lib/util/logger";
-import { listArtists } from "@lib/artists/listArtists";
 import { getPrefs, savePrefs } from "@lib/util/prefs";
+import { logger, traceRequest } from "@lib/util/logger";
 import type { ArtistSearchResult } from "@lib/artists/types";
+import { createArtist } from "@lib/artists/createArtist";
+import { listArtists } from "@lib/artists/listArtists";
 
 export default async function handler(
   req: NextApiRequest,

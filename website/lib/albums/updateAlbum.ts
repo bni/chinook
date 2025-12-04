@@ -1,6 +1,6 @@
-import { query } from "@lib/util/postgres";
-import { logger } from "@lib/util/logger";
 import { extractEmbedding } from "@lib/util/extractor";
+import { logger } from "@lib/util/logger";
+import { query } from "@lib/util/postgres";
 
 export interface UpdateAlbumParams {
   albumId: string;

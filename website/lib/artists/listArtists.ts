@@ -1,7 +1,7 @@
 import type { Artist, ArtistSearchResult } from "@lib/artists/types";
-import { query, Result } from "@lib/util/postgres";
-import { logger } from "@lib/util/logger";
+import { Result, query } from "@lib/util/postgres";
 import { buildYearsList } from "@lib/artists/buildYearsList";
+import { logger } from "@lib/util/logger";
 
 interface ResultRow {
   artistId: string,

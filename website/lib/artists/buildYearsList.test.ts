@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { expect, test } from "vitest";
 import { buildYearsList } from "./buildYearsList";
 
 test("Build years list", () => {

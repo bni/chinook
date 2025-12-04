@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { auth } from "@lib/auth";
+import { headers } from "next/headers";
 
 // noinspection JSUnusedGlobalSymbols
 export async function proxy(request: NextRequest) {

@@ -1,5 +1,5 @@
-import { pool } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
+import { pool } from "@lib/util/postgres";
 
 export async function deleteArtist(artistId: string): Promise<void> {
   logger.warn("Deleting artist");
