@@ -3,7 +3,7 @@ import { TextInput, Text, Stack, Loader, Alert } from "@mantine/core";
 import { IconSearch, IconAlertCircle } from "@tabler/icons-react";
 import { SearchResults } from "@components/search/SearchResults";
 import { EmptyState } from "@components/search/EmptyState";
-import { AlbumSearchResult } from "@lib/albums/types";
+import type { AlbumSearchResult } from "@lib/albums/types";
 
 export function SemanticSearch() {
   const [query, setQuery] = useState("");

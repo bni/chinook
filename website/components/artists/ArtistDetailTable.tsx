@@ -1,10 +1,11 @@
-import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { DataTable } from "mantine-datatable";
+import type { DataTableSortStatus } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
 import { Badge, Box, Group, Title, ActionIcon, TextInput, Button, NumberInput } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import orderBy from "lodash/orderBy";
-import { AlbumDetail } from "@lib/artists/types";
+import type { AlbumDetail } from "@lib/artists/types";
 
 interface ArtistSummaryProps {
   artistId: string;

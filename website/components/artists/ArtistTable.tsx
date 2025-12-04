@@ -1,9 +1,10 @@
-import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { DataTable } from "mantine-datatable";
+import type { DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import { ActionIcon, TextInput, Group, Button, Box, Text, Badge, Anchor } from "@mantine/core";
 import { IconEdit, IconCheck, IconX, IconTrash, IconPlus, IconSearch } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
-import { Artist, ArtistSearchResult } from "@lib/artists/types";
+import type { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { YearSlider } from "./YearSlider";
 import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -269,7 +270,7 @@ export function ArtistTable({ fromYear, toYear, filter, pageSize, placeholderRes
         loaderType="dots"
         loaderSize="xs"
         loaderColor="orange"
-        records={ data?.artists }
+        records={ data?.artists ? data.artists : [] }
         totalRecords={ data?.total }
         page={ page }
         onPageChange={ setPage }

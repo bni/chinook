@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { createAlbum, CreateAlbumParams } from "@lib/albums/createAlbum";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { createAlbum } from "@lib/albums/createAlbum";
+import type { CreateAlbumParams } from "@lib/albums/createAlbum";
 import { logger, traceRequest } from "@lib/util/logger";
 
 export default async function handler(

@@ -2,7 +2,7 @@ import { pool } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 import { extractEmbedding } from "@lib/util/extractor";
 import { listAlbumsByArtist } from "@lib/albums/listAlbumsByArtist";
-import { Album } from "@lib/albums/types";
+import type { Album } from "@lib/albums/types";
 
 export async function updateArtist(artistId: string, artistName: string): Promise<void> {
   const client = await pool.connect();

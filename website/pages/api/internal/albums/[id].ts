@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { updateAlbum, UpdateAlbumParams } from "@lib/albums/updateAlbum";
+import { updateAlbum } from "@lib/albums/updateAlbum";
+import type { UpdateAlbumParams } from "@lib/albums/updateAlbum";
 import { deleteAlbum } from "@lib/albums/deleteAlbum";
 import { logger, traceRequest } from "@lib/util/logger";
 

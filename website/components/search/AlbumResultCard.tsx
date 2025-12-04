@@ -1,5 +1,5 @@
 import { Card, Text, Group, Badge } from "@mantine/core";
-import { AlbumSearchResult } from "@lib/albums/types";
+import type { AlbumSearchResult } from "@lib/albums/types";
 
 interface AlbumResultCardProps {
   result: AlbumSearchResult;

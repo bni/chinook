@@ -1,10 +1,10 @@
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { ActionIcon, Group } from "@mantine/core";
 import { ArtistDetailTable } from "@components/artists/ArtistDetailTable";
-import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { HeadComponent } from "@components/HeadComponent";
 import { getArtistDetail } from "@lib/artists/getArtistDetail";
-import { ArtistDetail } from "@lib/artists/types";
+import type { ArtistDetail } from "@lib/artists/types";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";

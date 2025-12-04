@@ -1,4 +1,4 @@
-import { Artist, ArtistSearchResult } from "@lib/artists/types";
+import type { Artist, ArtistSearchResult } from "@lib/artists/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 import { buildYearsList } from "@lib/artists/buildYearsList";

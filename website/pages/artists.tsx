@@ -1,10 +1,10 @@
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { Group } from "@mantine/core";
 import { ArtistTable } from "@components/artists/ArtistTable";
-import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getPrefs } from "@lib/util/prefs";
 import { HeadComponent } from "@components/HeadComponent";
-import { ArtistSearchResult } from "@lib/artists/types";
+import type { ArtistSearchResult } from "@lib/artists/types";
 import { uuidv7 } from "uuidv7";
 
 interface ArtistsPageProps {

@@ -1,5 +1,5 @@
 import { Stack, Text } from "@mantine/core";
-import { AlbumSearchResult } from "@lib/albums/types";
+import type { AlbumSearchResult } from "@lib/albums/types";
 import { AlbumResultCard } from "./AlbumResultCard";
 
 interface SearchResultsProps {

@@ -1,5 +1,5 @@
 import { test, expect, vi } from "vitest";
-import { Employee } from "./types";
+import type { Employee } from "./types";
 import { listEmployees } from "./listEmployees";
 import { Pool } from "pg";
 import testRows from "./testRows.json" with { type: "json" };

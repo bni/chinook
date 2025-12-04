@@ -1,5 +1,6 @@
-import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import { Employee, Customer } from "@lib/employees/types";
+import { DataTable } from "mantine-datatable";
+import type { DataTableSortStatus } from "mantine-datatable";
+import type { Employee, Customer } from "@lib/employees/types";
 import { useEffect, useState } from "react";
 import orderBy from "lodash/orderBy";
 import { EmployeeRow } from "./EmployeeRow";
@@ -130,7 +131,7 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
                 )
               }
             ]}
-            records={ employee.record.supportRepForCustomers }
+            records={ employee.record.supportRepForCustomers ? employee.record.supportRepForCustomers : [] }
           />
         )
       }}

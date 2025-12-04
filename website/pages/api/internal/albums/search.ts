@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger, traceRequest } from "@lib/util/logger";
-import { AlbumSearchResult } from "@lib/albums/types";
+import type { AlbumSearchResult } from "@lib/albums/types";
 import { searchAlbums } from "@lib/albums/searchAlbums";
 
 export default async function handler(

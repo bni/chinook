@@ -1,4 +1,4 @@
-import { Customer, Employee } from "@lib/employees/types";
+import type { Customer, Employee } from "@lib/employees/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 import orderBy from "lodash/orderBy";

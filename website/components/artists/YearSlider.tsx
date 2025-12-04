@@ -1,5 +1,6 @@
 import { RangeSlider } from "@mantine/core";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 const MIN_YEAR = 1940;
 const MAX_YEAR = 2030;

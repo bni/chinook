@@ -1,4 +1,4 @@
-import { AlbumSearchResult } from "@lib/albums/types";
+import type { AlbumSearchResult } from "@lib/albums/types";
 import { query, Result } from "@lib/util/postgres";
 import { logger } from "@lib/util/logger";
 

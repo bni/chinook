@@ -51,7 +51,7 @@ if (lokiHost) {
         runtime: `nodejs/${process.version}`
       },
       host: lokiHost,
-      headers: headers
+      headers: headers ? headers : {}
     } satisfies LokiOptions)
   });
 }

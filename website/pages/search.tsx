@@ -4,7 +4,7 @@ import { SemanticSearch } from "@components/search/SemanticSearch";
 import { Text, Modal, ActionIcon } from "@mantine/core";
 import { useState } from "react";
 
-import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 
 interface SearchPageProps {
   headers: object

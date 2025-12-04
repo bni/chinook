@@ -1,5 +1,5 @@
 import { query, Result } from "@lib/util/postgres";
-import { ArtistDetail, AlbumDetail } from "@lib/artists/types";
+import type { ArtistDetail, AlbumDetail } from "@lib/artists/types";
 
 interface ResultRow {
   artistId: string;
