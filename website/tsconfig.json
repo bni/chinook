@@ -1,30 +1,29 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
-    "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "allowJs": true,
+    "skipLibCheck": true,
     "paths": {
       "@components/*": ["./components/*"],
       "@lib/*": ["./lib/*"]
-    }
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ]
   },
   "include": [
     "next-env.d.ts",
