@@ -44,8 +44,8 @@ beforeAll(async () => {
       ('3', 'Led Zeppelin'),
       ('4', 'Queen');
 
-    -- The Beatles albums (1963-1970)
     INSERT INTO album (album_id, title, release, label, genre, critic_score, user_score, artist_id) VALUES
+      -- The Beatles albums (1963-1970)              
       ('a1', 'Please Please Me', 1963, 'Apple Records', 'Rock', 85, 4.5, '1'),
       ('a2', 'With the Beatles', 1963, 'Apple Records', 'Rock', 87, 4.6, '1'),
       ('a3', 'A Hard Day''s Night', 1964, 'Apple Records', 'Rock', 90, 4.7, '1'),
@@ -59,8 +59,8 @@ beforeAll(async () => {
       ('a11', 'Abbey Road', 1969, 'Apple Records', 'Rock', 97, 4.9, '1'),
       ('a12', 'Let It Be', 1970, 'Apple Records', 'Rock', 80, 4.3, '1'),
 
-    -- Pink Floyd albums (1967-1994)
-    ('b1', 'The Piper at the Gates of Dawn', 1967, 'EMI', 'Progressive Rock', 88, 4.5, '2'),
+      -- Pink Floyd albums (1967-1994)
+      ('b1', 'The Piper at the Gates of Dawn', 1967, 'EMI', 'Progressive Rock', 88, 4.5, '2'),
       ('b2', 'A Saucerful of Secrets', 1968, 'EMI', 'Progressive Rock', 85, 4.4, '2'),
       ('b3', 'More', 1969, 'EMI', 'Progressive Rock', 75, 4.0, '2'),
       ('b4', 'Ummagumma', 1969, 'EMI', 'Progressive Rock', 78, 4.2, '2'),
@@ -76,8 +76,8 @@ beforeAll(async () => {
       ('b14', 'The Division Bell', 1994, 'EMI', 'Progressive Rock', 78, 4.2, '2'),
       ('b15', 'Delicate Sound of Thunder', 1988, 'EMI', 'Progressive Rock', 72, 3.9, '2'),
 
-    -- Led Zeppelin albums (1969-1982)
-    ('c1', 'Led Zeppelin', 1969, 'Atlantic', 'Hard Rock', 92, 4.7, '3'),
+      -- Led Zeppelin albums (1969-1982)
+      ('c1', 'Led Zeppelin', 1969, 'Atlantic', 'Hard Rock', 92, 4.7, '3'),
       ('c2', 'Led Zeppelin II', 1969, 'Atlantic', 'Hard Rock', 95, 4.8, '3'),
       ('c3', 'Led Zeppelin III', 1970, 'Atlantic', 'Hard Rock', 88, 4.5, '3'),
       ('c4', 'Led Zeppelin IV', 1971, 'Atlantic', 'Hard Rock', 100, 5.0, '3'),
@@ -87,8 +87,8 @@ beforeAll(async () => {
       ('c8', 'In Through the Out Door', 1979, 'Atlantic', 'Hard Rock', 82, 4.3, '3'),
       ('c9', 'Coda', 1982, 'Atlantic', 'Hard Rock', 75, 4.0, '3'),
 
-    -- Queen albums (1973-1995)
-    ('d1', 'Queen', 1973, 'EMI', 'Rock', 85, 4.4, '4'),
+      -- Queen albums (1973-1995)
+      ('d1', 'Queen', 1973, 'EMI', 'Rock', 85, 4.4, '4'),
       ('d2', 'Queen II', 1974, 'EMI', 'Rock', 87, 4.5, '4'),
       ('d3', 'Sheer Heart Attack', 1974, 'EMI', 'Rock', 90, 4.6, '4'),
       ('d4', 'A Night at the Opera', 1975, 'EMI', 'Rock', 98, 4.9, '4'),
@@ -126,15 +126,7 @@ afterAll(async () => {
 });
 
 test("List artists with filter and pagination", async () => {
-  const result: ArtistSearchResult = await listArtists(
-    1960,
-    2000,
-    "Beatles",
-    "artistName",
-    "asc",
-    1,
-    10
-  );
+  const result: ArtistSearchResult = await listArtists(1960, 2000, "Beatles", "artistName", "asc", 1, 10);
 
   expect(result.artists).toHaveLength(1);
   expect(result.artists[0].artistName).toBe("The Beatles");
@@ -147,15 +139,7 @@ test("List artists with filter and pagination", async () => {
 });
 
 test("List artists with no filter", async () => {
-  const result: ArtistSearchResult = await listArtists(
-    1960,
-    2000,
-    "",
-    "nrAlbums",
-    "desc",
-    1,
-    10
-  );
+  const result: ArtistSearchResult = await listArtists(1960, 2000, "", "nrAlbums", "desc", 1, 10);
 
   // Should return all artists sorted by number of albums descending
   expect(result.artists).toHaveLength(4);
@@ -171,44 +155,20 @@ test("List artists with no filter", async () => {
 });
 
 test("List artists with empty result", async () => {
-  const result: ArtistSearchResult = await listArtists(
-    1960,
-    2000,
-    "NonExistentArtist",
-    "artistName",
-    "asc",
-    1,
-    10
-  );
+  const result: ArtistSearchResult = await listArtists(1960, 2000, "Not Existing", "artistName", "asc", 1, 10);
 
   expect(result.artists).toHaveLength(0);
   expect(result.total).toBe(0);
 });
 
 test("List artists handles pagination", async () => {
-  const result: ArtistSearchResult = await listArtists(
-    1970,
-    2000,
-    "",
-    "artistName",
-    "asc",
-    1,
-    2
-  );
+  const result: ArtistSearchResult = await listArtists(1970, 2000, "", "artistName", "asc", 1, 2);
 
   // Page 1 with page size 2 should return first 2 artists
   expect(result.artists).toHaveLength(2);
   expect(result.total).toBe(4); // Total of 4 artists in the year range
 
-  const result2: ArtistSearchResult = await listArtists(
-    1970,
-    2000,
-    "",
-    "artistName",
-    "asc",
-    2,
-    2
-  );
+  const result2: ArtistSearchResult = await listArtists(1970, 2000, "", "artistName", "asc", 2, 2);
 
   // Page 2 with page size 2 should return next 2 artists
   expect(result2.artists).toHaveLength(2);
@@ -217,15 +177,7 @@ test("List artists handles pagination", async () => {
 
 test("List artists filters by year range", async () => {
   // Only Led Zeppelin and Queen released albums in the 1970s
-  const result: ArtistSearchResult = await listArtists(
-    1970,
-    1979,
-    "",
-    "artistName",
-    "asc",
-    1,
-    10
-  );
+  const result: ArtistSearchResult = await listArtists(1970, 1979, "", "artistName", "asc", 1, 10);
 
   expect(result.artists).toHaveLength(4);
 

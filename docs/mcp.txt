@@ -1,0 +1,1 @@
+claude mcp add --transport stdio cats node ./agent/mcp/dist/cats.js
