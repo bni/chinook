@@ -26,6 +26,7 @@ const schema = {
 // npm run start -- --prompt "What's for lunch tomorrow?"
 // npm run start -- --prompt "What's for lunch tomorrow? How many guests are there? Is it still possible to book?"
 // npm run start -- --prompt "How is Bill the cat doing?"
+// npm run start -- --prompt "I want to listen to some moody music"
 
 for await (const message of query({
   prompt: `${argv.prompt}`,
@@ -35,10 +36,25 @@ for await (const message of query({
     mcpServers: {
       cats: {
         command: "node",
-        args: ["./mcp/dist/cats.js"]
+        args: ["../mcp/dist/cats.js"]
+      },
+      albums: {
+        command: "node",
+        args: ["../mcp/dist/albums.js"],
+        env: {
+          "CHINOOK_BASE_URL": process.env.CHINOOK_BASE_URL || "",
+          "SHARED_SECRET_FOR_HMAC": process.env.SHARED_SECRET_FOR_HMAC || ""
+        }
       }
     },
-    allowedTools: ["Skill", "Read", "Write", "Bash", "mcp__cats__get-cat-status"],
+    allowedTools: [
+      "Skill",
+      "Read",
+      "Write",
+      "Bash",
+      "mcp__cats__get-cat-status",
+      "mcp__albums__search-artist-albums"
+    ],
     outputFormat: {
       type: "json_schema",
       schema: schema

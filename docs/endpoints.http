@@ -13,3 +13,19 @@ x-chinook-hmac-sha256: {{signature}}
 {
   "artistName": "The Boss 12"
 }
+
+### Semantic search
+< {%
+  const signature = crypto.hmac.sha256()
+    .withTextSecret(request.environment.get("secret"))
+    .updateWithText(request.body.tryGetSubstituted())
+    .digest().toBase64();
+  request.variables.set("signature", signature)
+%}
+POST {{baseUrl}}/api/external/v1/search
+Content-Type: application/json
+x-chinook-hmac-sha256: {{signature}}
+
+{
+  "query": "Billy"
+}

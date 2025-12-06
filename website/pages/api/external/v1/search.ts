@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger, traceRequest } from "@lib/util/logger";
-import { artistQueue } from "@lib/worker/queues";
-import { broker } from "@lib/util/broker";
+import type { AlbumSearchResult } from "@lib/albums/types";
+import { searchAlbums } from "@lib/albums/searchAlbums";
 import { getRawBody, validateHMAC } from "@lib/util/utils";
 
 // noinspection JSUnusedGlobalSymbols
@@ -31,22 +31,22 @@ export default async function handler(
 
       const body = JSON.parse(Buffer.from(rawBody).toString("utf8"));
 
-      const artistName = body.artistName;
+      const searchQuery = body.query;
 
-      if (!artistName || typeof artistName !== "string") {
-        return res.status(400).json({ error: "Artist name is required" });
+      if (!searchQuery || typeof searchQuery !== "string") {
+        return res.status(400).json({ error: "Query is required" });
       }
 
       try {
-        const id = await broker.send(artistQueue, { artistName: artistName });
+        logger.info({ searchQuery: searchQuery }, "Search Query");
 
-        logger.info({ id: id, queue: artistQueue }, "Put artist on queue");
+        const albumSearchResults: AlbumSearchResult[] = await searchAlbums(searchQuery);
 
-        res.status(200).json({ success: true });
+        res.status(200).json({ results: albumSearchResults });
       } catch (error) {
-        logger.error(error, "Failed to receive artist");
+        logger.error(error, "Failed to query");
 
-        res.status(500).json({ error: "Failed to receive artist" });
+        res.status(500).json({ error: "Failed to query" });
       }
     } else {
       return res.status(405).json({ error: "Method not allowed" });

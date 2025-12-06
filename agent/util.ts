@@ -15,5 +15,7 @@ export const printMessage = (message: SDKMessage) => {
     } else if (message.subtype === "error_max_structured_output_retries") {
       console.error("Could not produce valid output");
     }
+  } else if (message.type === "tool_progress") {
+    console.log(message.tool_name);
   }
 };
