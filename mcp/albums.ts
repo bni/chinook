@@ -1,8 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { search } from "./search.js";
-import type { Input, Output } from "./types.js";
-import { InputZod, OutputZod } from "./types.js";
+import { InputSchema, OutputSchema, type Input, type Output } from "./types.js";
 
 const server = new McpServer({
   name: "albums",
@@ -13,8 +12,8 @@ server.registerTool(
   "search-artist-albums",
   {
     title: "Search music, artist, albums by feeling",
-    inputSchema: InputZod,
-    outputSchema: OutputZod
+    inputSchema: InputSchema,
+    outputSchema: OutputSchema
   },
   async ({ query } : Input) => {
     const output: Output = await search(query);

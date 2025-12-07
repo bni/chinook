@@ -1,7 +1,6 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
-    "strict": true,
     "outDir": "dist"
   },
   "include": [

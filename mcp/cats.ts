@@ -8,7 +8,7 @@ const server = new McpServer({
 });
 
 const Input = z.object({
-  catName: z.string().optional().describe('The cats name')
+  catName: z.string().optional().describe("The cats name")
 });
 
 export type Input = z.infer<typeof Input>;

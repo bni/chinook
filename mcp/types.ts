@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const InputZod = z.object({
-  query: z.string().describe('The album search query')
+export const InputSchema = z.object({
+  query: z.string().describe("The album search query")
 });
 
-export type Input = z.infer<typeof InputZod>;
+export type Input = z.infer<typeof InputSchema>;
 
-export const OutputZod = z.object({
+export const OutputSchema = z.object({
   results: z.array(
     z.object({
       albumTitle: z.string(),
@@ -18,4 +18,4 @@ export const OutputZod = z.object({
   )
 });
 
-export type Output = z.infer<typeof OutputZod>;
+export type Output = z.infer<typeof OutputSchema>;

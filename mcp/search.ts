@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Output } from "./types.js";
+import { type Output } from "./types.js";
 
 export const search = async (query: string): Promise<Output> => {
   if (!query) {
