@@ -27,6 +27,7 @@ const schema = {
 // npm run start -- --prompt "What's for lunch tomorrow? How many guests are there? Is it still possible to book?"
 // npm run start -- --prompt "How is Bill the cat doing?"
 // npm run start -- --prompt "I want to listen to some moody music"
+// npm run start -- --prompt "Stream some notifications, and show them to me"
 
 for await (const message of query({
   prompt: `${argv.prompt}`,
@@ -45,6 +46,10 @@ for await (const message of query({
           "CHINOOK_BASE_URL": process.env.CHINOOK_BASE_URL || "",
           "SHARED_SECRET_FOR_HMAC": process.env.SHARED_SECRET_FOR_HMAC || ""
         }
+      },
+      streaming: {
+        type: "http",
+        url: process.env.STREAMING_MCP_URL || ""
       }
     },
     allowedTools: [
@@ -53,7 +58,8 @@ for await (const message of query({
       "Write",
       "Bash",
       "mcp__cats__get-cat-status",
-      "mcp__albums__search-artist-albums"
+      "mcp__albums__search-artist-albums",
+      "mcp__streaming__start-notification-stream"
     ],
     outputFormat: {
       type: "json_schema",
