@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getRawBody, validateHMAC } from "@lib/util/utils";
 import { logger, traceRequest } from "@lib/util/logger";
 import { artistQueue } from "@lib/worker/queues";
 import { broker } from "@lib/util/broker";
-import { getRawBody, validateHMAC } from "@lib/util/utils";
 
 // noinspection JSUnusedGlobalSymbols
 export const config = {

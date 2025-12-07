@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getRawBody, validateHMAC } from "@lib/util/utils";
 import { logger, traceRequest } from "@lib/util/logger";
 import type { AlbumSearchResult } from "@lib/albums/types";
 import { searchAlbums } from "@lib/albums/searchAlbums";
-import { getRawBody, validateHMAC } from "@lib/util/utils";
 
 // noinspection JSUnusedGlobalSymbols
 export const config = {
