@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "test": "vitest run",
+    "test": "vitest run --typecheck",
     "lint": "eslint",
     "dev": "next dev -p 4000",
     "start": "next start -p 4000"
