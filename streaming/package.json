@@ -1,5 +1,5 @@
 {
-  "name": "streaming-mcp-server",
+  "name": "streaming",
   "type": "module",
   "version": "0.0.1",
   "private": true,

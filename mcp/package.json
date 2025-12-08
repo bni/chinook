@@ -1,11 +1,12 @@
 {
-  "name": "cats-mcp-server",
+  "name": "mcp",
   "version": "0.0.1",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.24.3",
