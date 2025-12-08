@@ -11,18 +11,21 @@ export default $config({
     };
   },
   async run() {
-    const api = new sst.aws.Function("Api", {
-      url: true,
-      streaming: !$dev,
-      handler: "./server/index.handler"
-    });
+    const streamingRouter = new sst.aws.Router("StreamingRouter");
 
-    const apiRouter = new sst.aws.Router("ApiRouter", {
-      routes: { "/*": api.url }
+    new sst.aws.Function("StreamingFunction", {
+      streaming: !$dev,
+      handler: "./server/index.handler",
+      url: {
+        router: {
+          instance: streamingRouter
+        }
+      },
+      link: [streamingRouter]
     });
 
     return {
-      api: apiRouter.url
+      api: streamingRouter.url
     };
   }
 });

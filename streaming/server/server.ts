@@ -26,7 +26,6 @@ const InputSchema = {
     .default(10)
 };
 
-// Register a tool specifically for testing resumability
 server.registerTool(
   "start-notification-stream",
   {

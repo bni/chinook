@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 // Store transports by session ID
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
-export async function getOrCreateTransport({
+export async function findTransport({
   sessionId,
   server,
   isInitializeRequest = false
@@ -18,11 +18,11 @@ export async function getOrCreateTransport({
 
   if (sessionId && transports[sessionId]) {
     // Reuse existing transport
-    console.log("Reuse existing transport!");
+    console.info("Reuse existing transport!");
     transport = transports[sessionId];
   } else if (!sessionId && isInitializeRequest) {
     // New initialization request
-    console.log("New initialization request");
+    console.info("New initialization request");
     transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => randomUUID(),
       onsessioninitialized: (sessionId) => {
