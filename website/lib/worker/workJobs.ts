@@ -3,7 +3,7 @@ import { broker } from "@lib/util/broker";
 import { createArtist } from "@lib/artists/createArtist";
 import { logger } from "@lib/util/logger";
 
-const workJobs = async () => {
+export const workJobs = async () => {
   broker.on("error", (error) => {
     logger.error(error, "Got an error in Worker");
   });
@@ -29,5 +29,3 @@ const workJobs = async () => {
     logger.info({ id: job.id }, "Worker deleted job");
   });
 };
-
-export { workJobs };

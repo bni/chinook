@@ -1,5 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
-
+// noinspection JSAnnotator
 // noinspection JSUnusedGlobalSymbols
 export default $config({
   app(input) {

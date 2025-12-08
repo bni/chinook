@@ -8,4 +8,4 @@
 - `npm run inspect` to launch MCP Inspector
   - Select Transport Type: Streamable HTTP
   - Input the URL to the MCP server: ${CLOUDFRONT_URL}/streaming/notifications/mcp
-  - Need to use 0.16.2 or older for now since we dont handle logging/setLoglevel
+  - Need to use 0.16.2 or older for now since we don't handle logging/setLoglevel
