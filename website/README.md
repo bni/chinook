@@ -71,4 +71,3 @@ const { data, isFetching } = useQuery({
 ### TODO
 * Drop in sst.config.ts to make it deployable in AWS, as well as in Google Cloud Run (Docker).
 * Switch out pino logger to winston to see if it works better in Serverless env without using sync streams.
-* npm workspaces?

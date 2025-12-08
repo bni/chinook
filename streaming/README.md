@@ -1,4 +1,4 @@
-# streaming-mcp-server
+# Streaming
 
 ## Startup
 - `npm run dev` dev mode (streaming does not work in dev mode yet)
