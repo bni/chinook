@@ -111,6 +111,7 @@ const importData = async () => {
         continue;
       }
 
+      // noinspection JSUnresolvedReference
       const client = await pool.connect();
       try {
         await client.query("BEGIN");
