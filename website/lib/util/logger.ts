@@ -1,59 +1,20 @@
-import pinoLoki, { type LokiOptions } from "pino-loki";
-import PinoHttp from "pino-http";
+import type { NextApiRequest, NextApiResponse } from "next";
 import pino from "pino";
 import pinoPretty from "pino-pretty";
-import { secret } from "@lib/util/secrets";
 
 const streams: (pino.DestinationStream | pino.StreamEntry<pino.Level>)[] = [];
 
-// Only enable pretty printing for local development
-if (process.env.APP_ENV === "local" && process.stdout.isTTY) {
-  streams.push({
-    level: "debug",
-    stream: pinoPretty({
-      colorize: true,
-      levelFirst: true,
-      translateTime: "yyyy-mm-dd HH:MM:ss Z"
-    })
-  });
-} else {
-  streams.push({
-    level: "info",
-    stream: pinoPretty({
-      colorize: false,
-      levelFirst: true,
-      translateTime: "yyyy-mm-dd HH:MM:ss Z"
-    })
-  });
-}
+// Only enable pretty printing and debug level for local development
+const isLocal = process.env.APP_ENV === "local" && process.stdout.isTTY;
 
-const lokiHost = await secret("LOKI_HOST");
-const lokiUsername = await secret("LOKI_USERNAME");
-const lokiToken = await secret("LOKI_TOKEN");
-
-if (lokiHost) {
-  let headers = undefined;
-  if (lokiUsername && lokiToken) {
-    headers = {
-      Authorization: `Bearer ${lokiUsername}:${lokiToken}`
-    };
-  }
-
-  streams.push({
-    level: "info",
-    stream: pinoLoki({
-      batching: false,
-      labels: {
-        app: "chinook",
-        namespace: process.env.APP_ENV || "local",
-        source: "pino",
-        runtime: `nodejs/${process.version}`
-      },
-      host: lokiHost,
-      headers: headers ? headers : {}
-    } satisfies LokiOptions)
-  });
-}
+streams.push({
+  level: isLocal ? "debug" : "info",
+  stream: pinoPretty({
+    colorize: isLocal,
+    levelFirst: true,
+    translateTime: "yyyy-mm-dd HH:MM:ss Z"
+  })
+});
 
 const logger = pino(
   {
@@ -65,24 +26,16 @@ const logger = pino(
   pino.multistream(streams)
 );
 
-const traceRequest = PinoHttp({
-  logger: logger,
-  serializers: {
-    req(req) {
-      req.headers["cookie"] = "REMOVED";
-      req.body = req.raw.body;
+const traceRequest = (req: NextApiRequest, res: NextApiResponse) => {
+  req.headers["cookie"] = "REMOVED";
 
-      return req;
-    },
-    res(res) {
-      res.headers["set-cookie"] = "REMOVED";
+  if (req.method !== "GET") {
+    logger.info(req.body);
+  }
 
-      return res;
-    }
-  },
-  customLogLevel: (() => {
-    return process.env.APP_ENV === "local" ? "silent" : "info";
-  })
-});
+  logger.debug(req.headers);
+
+  res.valueOf();
+};
 
 export { logger, traceRequest };
