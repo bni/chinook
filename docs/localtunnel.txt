@@ -1,3 +1,3 @@
 https://github.com/localtunnel/localtunnel
 
-npx localtunnel --port 4000 --subdomain chinook
+npx localtunnel --port 3000 --subdomain chinook

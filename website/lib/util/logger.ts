@@ -25,7 +25,7 @@ if (isLocal) {
   config = baseConfig;
 
   stream = pinoPretty({
-    colorize: isLocal,
+    colorize: true,
     levelFirst: true,
     translateTime: "yyyy-mm-dd HH:MM:ss Z"
   });

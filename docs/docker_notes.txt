@@ -1,3 +1,3 @@
 docker build -t chinook .
 
-docker run --name chinook -p 4000:4000 -d chinook
+docker run --name chinook -p 3000:3000 -d chinook

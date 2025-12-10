@@ -45,7 +45,7 @@ export const auth = betterAuth({
     }
   },
   trustedOrigins: [
-    "http://localhost:4000",
+    "http://localhost:3000",
     "https://chinook.loca.lt"
   ],
   plugins: [nextCookies()]

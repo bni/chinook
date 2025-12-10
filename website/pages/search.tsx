@@ -3,6 +3,7 @@ import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSideP
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
 import { SemanticSearch } from "@components/search/SemanticSearch";
+import { SocketComponent } from "@components/audio/SocketComponent";
 import { useState } from "react";
 
 interface SearchPageProps {
@@ -40,6 +41,8 @@ export default function SearchPage({
       >
         π
       </ActionIcon>
+
+      <SocketComponent/>
 
       <Modal
         opened={opened}
