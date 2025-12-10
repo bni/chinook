@@ -25,6 +25,8 @@ export async function listArtists(
 ): Promise<ArtistSearchResult> {
   const artists: Artist[] = [];
 
+  logger.info({ fromYear: fromYear, toYear: toYear }, "Listing artists");
+
   const years = buildYearsList(fromYear, toYear);
 
   let comparator = "";

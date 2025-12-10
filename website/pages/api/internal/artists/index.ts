@@ -9,7 +9,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  traceRequest(req, res);
+  traceRequest(req);
 
   if (req.method === "GET") {
     const { fromYear, toYear, searchFilter, sortColumn, sortDirection, page, pageSize } = req.query;

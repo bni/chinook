@@ -7,6 +7,9 @@ const nextConfig = {
     "/search": [
       "./node_modules/onnxruntime-node/bin/**/*"
     ]
+  },
+  logging: {
+    incomingRequests: false
   }
 };
 

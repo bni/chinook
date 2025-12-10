@@ -8,7 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  traceRequest(req, res);
+  traceRequest(req);
 
   const { id } = req.query;
   if (!id || typeof id !== "string") {
