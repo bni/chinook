@@ -5,7 +5,7 @@ FROM node:24-slim AS base
 FROM base AS deps
 WORKDIR /app
 COPY package.json ./
-RUN npm ci;
+RUN npm install;
 
 FROM base AS builder
 WORKDIR /app
