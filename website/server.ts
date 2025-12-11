@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { type RawData, WebSocketServer } from "ws";
+import { auth } from "@lib/auth";
 import express from "express";
+import { fromNodeHeaders } from "better-auth/node";
 import { logger } from "@lib/util/logger";
 import next from "next";
 import { parse } from "url";
@@ -33,9 +35,9 @@ server.on("upgrade", (req, socket, head) => {
     nextHmr(req, socket, head).then();
   }
 
-  if (pathname === "/api/ws") {
+  if (pathname === "/api/internal/ws") {
     wss.handleUpgrade(req, socket, head, (client) => {
-      client.on("message", (data: RawData, b: boolean) => {
+      client.on("message", async (data: RawData, b: boolean) => {
         if (b) {
           return;
         }
@@ -47,8 +49,22 @@ server.on("upgrade", (req, socket, head) => {
 
           logger.info(message);
 
-          if (message.event === "ping") {
-            client.send(JSON.stringify({ event: "pong" }));
+          const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers)
+          });
+
+          if (!session) {
+            const errorMessage = "User has no session";
+
+            logger.error(errorMessage);
+
+            throw new Error(errorMessage);
+          } else {
+            logger.info({ userId: session.user.id }, "userId");
+
+            if (message.event === "ping") {
+              client.send(JSON.stringify({ event: "pong" }));
+            }
           }
         } catch (e) {
           logger.error(e);

@@ -7,7 +7,7 @@ export function SocketComponent() {
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 
-    const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`);
+    const ws = new WebSocket(`${protocol}//${window.location.host}/api/internal/ws`);
 
     ws.onopen = () => {
       console.log("Connected to WebSocket.");
