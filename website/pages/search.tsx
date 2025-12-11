@@ -2,8 +2,8 @@ import { ActionIcon, Modal, Text } from "@mantine/core";
 import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
+import { RecordingComponent } from "@components/audio/RecordingComponent";
 import { SemanticSearch } from "@components/search/SemanticSearch";
-import { SocketComponent } from "@components/audio/SocketComponent";
 import { useState } from "react";
 
 interface SearchPageProps {
@@ -42,7 +42,7 @@ export default function SearchPage({
         π
       </ActionIcon>
 
-      <SocketComponent/>
+      <RecordingComponent/>
 
       <Modal
         opened={opened}

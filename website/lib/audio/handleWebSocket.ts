@@ -1,45 +1,103 @@
+import * as fs from "node:fs";
+import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { type RawData, WebSocketServer } from "ws";
 import { Duplex } from "stream";
 import { IncomingMessage } from "http";
 import { auth } from "@lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
 import { logger } from "@lib/util/logger";
+import path from "node:path";
 
 const wss = new WebSocketServer({ noServer: true });
 
 export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+
   wss.handleUpgrade(req, socket, head, (client) => {
+    let isAuthenticated = false;
+
+    let ffmpegProcess: ChildProcessWithoutNullStreams | null;
+
     client.on("message", async (data: RawData, b: boolean) => {
-      if (b) {
-        return;
-      }
-
-      try {
-        const message = JSON.parse(data.toString("utf8")) as {
-          event: "ping";
-        };
-
-        logger.info(message);
-
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(req.headers)
-        });
-
-        if (!session) {
-          const errorMessage = "User has no session";
-
-          logger.error(errorMessage);
-
-          throw new Error(errorMessage);
-        } else {
-          logger.info({ userId: session.user.id }, "userId");
-
-          if (message.event === "ping") {
-            client.send(JSON.stringify({ event: "pong" }));
+      if (isAuthenticated && b) {
+        if (ffmpegProcess) {
+          try {
+            ffmpegProcess.stdin.write(data);
+          } catch (error) {
+            logger.error(`Error writing to FFmpeg stdin: ${error}`);
           }
+        } else {
+          logger.error("FFmpeg process not available. Dropping message.");
         }
-      } catch (e) {
-        logger.error(e);
+      } else {
+        logger.info("Client Connected");
+
+        try {
+          const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers)
+          });
+
+          if (!session) {
+            const errorMessage = "User has no session";
+
+            logger.error(errorMessage);
+
+            throw new Error(errorMessage);
+          } else {
+            isAuthenticated = true;
+
+            const userId = session.user.id;
+
+            logger.info({ userId: userId }, "User is authenticated");
+
+            const basePath = process.env.RECORDINGS_BASE_DIR || "./";
+
+            const time = new Date().toISOString().replaceAll(":", ".");
+
+            const fullPath = path.join(basePath, `${userId}_${time}`);
+
+            fs.mkdir(fullPath, (err) => {
+              if (err) {
+                return console.error(err);
+              }
+
+              logger.info("Working directory created");
+            });
+
+            ffmpegProcess = spawn("ffmpeg", [
+              "-f", "webm",
+              "-i", "pipe:0",
+              "-c:a", "aac",
+              "-b:a", "128k",
+              "-f", "hls",
+              "-hls_time", "1",
+              "-hls_segment_filename", path.join(fullPath, "stream_%03d.ts"),
+              path.join(fullPath, "stream.m3u")
+            ]);
+
+            const message = JSON.parse(data.toString("utf8")) as {
+              event: string;
+            };
+
+            logger.info(message);
+
+            if (message.event === "ping") {
+              client.send(JSON.stringify({ event: "pong" }));
+            }
+          }
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+    });
+
+    client.on("close", () => {
+      logger.info("Client disconnected");
+
+      if (ffmpegProcess) {
+        ffmpegProcess.kill("SIGKILL");
+        ffmpegProcess = null;
+
+        logger.info("FFmpeg process terminated");
       }
     });
   });
