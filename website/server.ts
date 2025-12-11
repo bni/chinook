@@ -1,8 +1,6 @@
 import "dotenv/config";
-import { type RawData, WebSocketServer } from "ws";
-import { auth } from "@lib/auth";
 import express from "express";
-import { fromNodeHeaders } from "better-auth/node";
+import { handleWebSocket } from "@lib/audio/handleWebSocket";
 import { logger } from "@lib/util/logger";
 import next from "next";
 import { parse } from "url";
@@ -16,8 +14,8 @@ await nextApp.prepare();
 const nextHandler = nextApp.getRequestHandler();
 const nextHmr = nextApp.getUpgradeHandler();
 
-app.use((req, res) => {
-  nextHandler(req, res, parse(req.url, true)).then();
+app.use(async (req, res) => {
+  await nextHandler(req, res, parse(req.url, true));
 });
 
 const server = app.listen(3000, () => {
@@ -26,50 +24,14 @@ const server = app.listen(3000, () => {
   }
 });
 
-const wss = new WebSocketServer({ noServer: true });
-
-server.on("upgrade", (req, socket, head) => {
+server.on("upgrade", async (req, socket, head) => {
   const { pathname } = parse(req.url || "/", true);
 
   if (pathname === "/_next/webpack-hmr") {
-    nextHmr(req, socket, head).then();
+    await nextHmr(req, socket, head);
   }
 
   if (pathname === "/api/internal/ws") {
-    wss.handleUpgrade(req, socket, head, (client) => {
-      client.on("message", async (data: RawData, b: boolean) => {
-        if (b) {
-          return;
-        }
-
-        try {
-          const message = JSON.parse(data.toString("utf8")) as {
-            event: "ping";
-          };
-
-          logger.info(message);
-
-          const session = await auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
-          });
-
-          if (!session) {
-            const errorMessage = "User has no session";
-
-            logger.error(errorMessage);
-
-            throw new Error(errorMessage);
-          } else {
-            logger.info({ userId: session.user.id }, "userId");
-
-            if (message.event === "ping") {
-              client.send(JSON.stringify({ event: "pong" }));
-            }
-          }
-        } catch (e) {
-          logger.error(e);
-        }
-      });
-    });
+    handleWebSocket(req, socket, head);
   }
 });
