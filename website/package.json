@@ -20,6 +20,7 @@
     "@huggingface/transformers": "^3.8.1",
     "@google-cloud/secret-manager": "^6.1.1",
     "@tanstack/react-query": "^5.90.12",
+    "dotenv": "^17.2.3",
     "better-auth": "^1.4.6",
     "iron-session": "^8.0.4",
     "clsx": "^2.1.1",
