@@ -1,17 +1,68 @@
-import * as fs from "node:fs";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import { type RawData, WebSocketServer } from "ws";
+import { type RawData, WebSocket, WebSocketServer } from "ws";
+import {
+  StartStreamTranscriptionCommand,
+  type StartStreamTranscriptionCommandInput,
+  TranscribeStreamingClient
+} from "@aws-sdk/client-transcribe-streaming";
 import { Duplex } from "stream";
 import { IncomingMessage } from "http";
+import { PassThrough } from "stream";
 import { auth } from "@lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
+
 import { logger } from "@lib/util/logger";
-import path from "node:path";
 
 const wss = new WebSocketServer({ noServer: true });
 
-const sendToTranscription = (pcmChunk: Buffer<ArrayBuffer>) => {
-  console.log(pcmChunk.toString());
+const transcribe = async (audioStream: PassThrough, client: WebSocket) => {
+  const LanguageCode = "en-US";
+  const MediaEncoding = "pcm";
+  const MediaSampleRateHertz = 16000;
+
+  const transcribeStreamingClient = new TranscribeStreamingClient({
+    region: "eu-west-1"
+  });
+
+  const params: StartStreamTranscriptionCommandInput = {
+    LanguageCode,
+    MediaEncoding,
+    MediaSampleRateHertz,
+    AudioStream: (async function* () {
+      for await (const chunk of audioStream) {
+        yield { AudioEvent: { AudioChunk: chunk } };
+      }
+    })()
+  };
+
+  const command = new StartStreamTranscriptionCommand(params);
+
+  // Send transcription request
+  const response = await transcribeStreamingClient.send(command);
+
+  // Start to print response
+  try {
+    if (response && response.TranscriptResultStream) {
+      for await (const event of response.TranscriptResultStream) {
+        const results = event?.TranscriptEvent?.Transcript?.Results || [];
+
+        for (const result of results) {
+          //logger.info(result);
+
+          const alternatives = result.Alternatives || [];
+
+          for (const alternative of alternatives) {
+            logger.info({ transcript: alternative.Transcript, isPartial: result.IsPartial }, "Transcription");
+
+            client.send(JSON.stringify({ transcript: alternative.Transcript }));
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.log("error");
+    console.log(err);
+  }
 };
 
 export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
@@ -52,20 +103,6 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
             logger.info({ userId: userId }, "User is authenticated");
 
-            const basePath = process.env.RECORDINGS_BASE_DIR || "./";
-
-            const time = new Date().toISOString().replaceAll(":", ".");
-
-            const fullPath = path.join(basePath, `${userId}_${time}`);
-
-            fs.mkdir(fullPath, (err) => {
-              if (err) {
-                return logger.error(err);
-              }
-
-              logger.info("Working directory created");
-            });
-
             ffmpegProcess = spawn("ffmpeg", [
               "-f", "webm",
               "-i", "pipe:0",
@@ -75,32 +112,16 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
               "pipe:1"                  // Stream to stdout
             ]);
 
-            let pcmBuffer = Buffer.alloc(0);
-            const SAMPLES_PER_CHUNK = 16000 * 3; // 3 seconds
-            const BYTES_PER_CHUNK = SAMPLES_PER_CHUNK * 2; // 2 bytes per sample
-
-            ffmpegProcess.stdout.on("data", (chunk: Buffer) => {
-              pcmBuffer = Buffer.concat([pcmBuffer, chunk]);
-
-              while (pcmBuffer.length >= BYTES_PER_CHUNK) {
-                const pcmChunk = pcmBuffer.subarray(0, BYTES_PER_CHUNK);
-                pcmBuffer = Buffer.from(pcmBuffer.subarray(BYTES_PER_CHUNK));
-
-                sendToTranscription(pcmChunk);
-              }
+            // Create a PassThrough stream with controlled chunk size
+            const audioStream = new PassThrough({
+              highWaterMark: 1024  // 1KB chunks
             });
 
-            ffmpegProcess.stderr.on("data", (data) => {
-              logger.debug(`FFmpeg: ${data.toString()}`);
-            });
+            // Pipe FFmpeg output to the stream
+            ffmpegProcess.stdout.pipe(audioStream);
 
-            ffmpegProcess.on("error", (error) => {
-              logger.error(`FFmpeg error: ${error}`);
-            });
-
-            ffmpegProcess.on("close", (code) => {
-              logger.info(`FFmpeg exited: ${code}`);
-            });
+            // Send the stream to transcription service
+            await transcribe(audioStream, client);
 
             const message = JSON.parse(data.toString("utf8")) as {
               event: string;

@@ -2,7 +2,13 @@ import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 
-export function RecordingComponent() {
+interface RecordingComponentProps {
+  onRecordingStart: () => void;
+  // eslint-disable-next-line no-unused-vars
+  onTranscript: (transcript: string) => void;
+}
+
+export function RecordingComponent({ onTranscript, onRecordingStart }: RecordingComponentProps) {
   const [isRecording, setIsRecording] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -10,6 +16,10 @@ export function RecordingComponent() {
 
   const startRecording = () => {
     console.log("Starting recording...");
+
+    if (onRecordingStart) {
+      onRecordingStart();
+    }
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 
@@ -50,6 +60,14 @@ export function RecordingComponent() {
 
     ws.onmessage = (event) => {
       console.log("Message received:", event.data);
+
+      const data = JSON.parse(event.data) as {
+        transcript?: string;
+      };
+
+      if (data.transcript) {
+        onTranscript(data.transcript);
+      }
     };
 
     ws.onclose = () => {
