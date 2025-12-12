@@ -4,6 +4,7 @@ import { type RawData, WebSocketServer } from "ws";
 import { Duplex } from "stream";
 import { IncomingMessage } from "http";
 import { auth } from "@lib/auth";
+import chokidar from "chokidar";
 import { fromNodeHeaders } from "better-auth/node";
 import { logger } from "@lib/util/logger";
 import path from "node:path";
@@ -65,13 +66,29 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
             ffmpegProcess = spawn("ffmpeg", [
               "-f", "webm",
               "-i", "pipe:0",
-              "-c:a", "aac",
-              "-b:a", "128k",
-              "-f", "hls",
-              "-hls_time", "1",
-              "-hls_segment_filename", path.join(fullPath, "stream_%03d.ts"),
-              path.join(fullPath, "stream.m3u")
+              "-ar", "16000",           // 16kHz sample rate (optimal for speech)
+              "-ac", "1",               // Mono audio (speech doesn't need stereo)
+              "-c:a", "pcm_s16le",      // PCM 16-bit (uncompressed, easy to decode)
+              "-f", "segment",          // Output as segments
+              "-segment_time", "3",     // 3-second segments (balance latency vs overhead)
+              "-segment_format", "wav", // Each segment is a complete WAV file
+              "-reset_timestamps", "1", // Reset timestamps for each segment
+              path.join(fullPath, "segment_%03d.wav")
             ]);
+
+            const watcher = chokidar.watch(fullPath, {
+              ignoreInitial: false,
+              awaitWriteFinish: {
+                stabilityThreshold: 500,
+                pollInterval: 100
+              }
+            });
+
+            watcher.on("add", async (segmentPath: string) => {
+              logger.info(`New segment: ${segmentPath}`);
+              // Send segmentPath for transcription
+              // Then optionally delete: fs.unlinkSync(segmentPath);
+            });
 
             const message = JSON.parse(data.toString("utf8")) as {
               event: string;
