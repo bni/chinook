@@ -11,14 +11,13 @@ import path from "node:path";
 const wss = new WebSocketServer({ noServer: true });
 
 export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
-
   wss.handleUpgrade(req, socket, head, (client) => {
     let isAuthenticated = false;
 
     let ffmpegProcess: ChildProcessWithoutNullStreams | null;
 
     client.on("message", async (data: RawData, b: boolean) => {
-      if (isAuthenticated && b) {
+      if (isAuthenticated && b) { // Binary, only accept after authenticated
         if (ffmpegProcess) {
           try {
             ffmpegProcess.stdin.write(data);
@@ -28,8 +27,8 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
         } else {
           logger.error("FFmpeg process not available. Dropping message.");
         }
-      } else {
-        logger.info("Client Connected");
+      } else if (!isAuthenticated) { // First text message
+        logger.info("Client connected");
 
         try {
           const session = await auth.api.getSession({
@@ -57,7 +56,7 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
             fs.mkdir(fullPath, (err) => {
               if (err) {
-                return console.error(err);
+                return logger.error(err);
               }
 
               logger.info("Working directory created");
@@ -82,11 +81,21 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
             if (message.event === "ping") {
               client.send(JSON.stringify({ event: "pong" }));
+            } else {
+              client.send(JSON.stringify(message)); // Echo
             }
           }
         } catch (e) {
           logger.error(e);
         }
+      } else { // Subsequent text messages
+        const message = JSON.parse(data.toString("utf8")) as {
+          event: string;
+        };
+
+        logger.info(message);
+
+        client.send(JSON.stringify(message)); // Echo
       }
     });
 
