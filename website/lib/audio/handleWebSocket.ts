@@ -4,12 +4,15 @@ import { type RawData, WebSocketServer } from "ws";
 import { Duplex } from "stream";
 import { IncomingMessage } from "http";
 import { auth } from "@lib/auth";
-import chokidar from "chokidar";
 import { fromNodeHeaders } from "better-auth/node";
 import { logger } from "@lib/util/logger";
 import path from "node:path";
 
 const wss = new WebSocketServer({ noServer: true });
+
+const sendToTranscription = (pcmChunk: Buffer<ArrayBuffer>) => {
+  console.log(pcmChunk.toString());
+};
 
 export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
   wss.handleUpgrade(req, socket, head, (client) => {
@@ -66,28 +69,37 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
             ffmpegProcess = spawn("ffmpeg", [
               "-f", "webm",
               "-i", "pipe:0",
-              "-ar", "16000",           // 16kHz sample rate (optimal for speech)
-              "-ac", "1",               // Mono audio (speech doesn't need stereo)
-              "-c:a", "pcm_s16le",      // PCM 16-bit (uncompressed, easy to decode)
-              "-f", "segment",          // Output as segments
-              "-segment_time", "3",     // 3-second segments (balance latency vs overhead)
-              "-segment_format", "wav", // Each segment is a complete WAV file
-              "-reset_timestamps", "1", // Reset timestamps for each segment
-              path.join(fullPath, "segment_%03d.wav")
+              "-ar", "16000",           // 16kHz sample rate
+              "-ac", "1",               // Mono
+              "-f", "s16le",            // Signed 16-bit PCM little-endian
+              "pipe:1"                  // Stream to stdout
             ]);
 
-            const watcher = chokidar.watch(fullPath, {
-              ignoreInitial: false,
-              awaitWriteFinish: {
-                stabilityThreshold: 500,
-                pollInterval: 100
+            let pcmBuffer = Buffer.alloc(0);
+            const SAMPLES_PER_CHUNK = 16000 * 3; // 3 seconds
+            const BYTES_PER_CHUNK = SAMPLES_PER_CHUNK * 2; // 2 bytes per sample
+
+            ffmpegProcess.stdout.on("data", (chunk: Buffer) => {
+              pcmBuffer = Buffer.concat([pcmBuffer, chunk]);
+
+              while (pcmBuffer.length >= BYTES_PER_CHUNK) {
+                const pcmChunk = pcmBuffer.subarray(0, BYTES_PER_CHUNK);
+                pcmBuffer = Buffer.from(pcmBuffer.subarray(BYTES_PER_CHUNK));
+
+                sendToTranscription(pcmChunk);
               }
             });
 
-            watcher.on("add", async (segmentPath: string) => {
-              logger.info(`New segment: ${segmentPath}`);
-              // Send segmentPath for transcription
-              // Then optionally delete: fs.unlinkSync(segmentPath);
+            ffmpegProcess.stderr.on("data", (data) => {
+              logger.debug(`FFmpeg: ${data.toString()}`);
+            });
+
+            ffmpegProcess.on("error", (error) => {
+              logger.error(`FFmpeg error: ${error}`);
+            });
+
+            ffmpegProcess.on("close", (code) => {
+              logger.info(`FFmpeg exited: ${code}`);
             });
 
             const message = JSON.parse(data.toString("utf8")) as {
