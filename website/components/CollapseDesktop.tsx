@@ -1,5 +1,5 @@
 import { ActionIcon, AppShell, Burger, Flex, Group, NavLink } from "@mantine/core";
-import { IconHome, IconMusic, IconSearch, IconUser, IconUsersGroup } from "@tabler/icons-react";
+import { IconHome, IconMusic, IconSearch, IconTextGrammar, IconUser, IconUsersGroup } from "@tabler/icons-react";
 import { AuthModal } from "./AuthModal";
 import ColorSchemeToggler from "./ColorSchemeToggler";
 import type { ReactNode } from "react";
@@ -45,7 +45,7 @@ export function CollapseDesktop({ children }: { children: ReactNode }) {
         {session && <NavLink href={"/search"} label="Search" leftSection={<IconSearch size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/artists"} label="Artists" leftSection={<IconMusic size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size={14} stroke={1.5} />} />}
-        {session && <NavLink href={"/translate"} label="Translate" leftSection={<IconUsersGroup size={14} stroke={1.5} />} />}
+        {session && <NavLink href={"/translate"} label="Translate" leftSection={<IconTextGrammar size={14} stroke={1.5} />} />}
 
       </AppShell.Navbar>
 
