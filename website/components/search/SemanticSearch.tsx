@@ -104,7 +104,7 @@ export function SemanticSearch() {
 
       <RecordingComponent
         onRecordingStart={() => setQuery("")}
-        onTranscript={(data) => setQuery(data.transcript || "")}
+        onTranslation={(translation) => setQuery(translation.transcript || "")}
       />
 
       {error && (

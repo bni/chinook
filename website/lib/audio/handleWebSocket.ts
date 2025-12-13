@@ -47,14 +47,12 @@ const transcribe = async (audioStream: PassThrough, client: WebSocket) => {
         const results = event?.TranscriptEvent?.Transcript?.Results || [];
 
         for (const result of results) {
-          logger.debug(result);
-
           const alternatives = result.Alternatives || [];
 
           for (const alternative of alternatives) {
             const data = { transcript: alternative.Transcript, isPartial: result.IsPartial };
 
-            logger.info(data, "Transcription");
+            logger.debug(data, "Transcription");
 
             client.send(JSON.stringify(data));
           }
@@ -92,7 +90,7 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
     client.on("message", async (data: RawData, b: boolean) => {
       if (b) { // Binary
-        logger.info("Binary received");
+        logger.debug("Binary received");
 
         if (ffmpegProcess) {
           try {
@@ -104,7 +102,7 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
           logger.error("FFmpeg process not available. Dropping message.");
         }
       } else { // Text
-        logger.info("Text received");
+        logger.debug("Text received");
 
         const message = JSON.parse(data.toString("utf8")) as {
           event: string;

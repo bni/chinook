@@ -1,5 +1,5 @@
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 
 interface TranscriptionData {
@@ -8,17 +8,25 @@ interface TranscriptionData {
   error?: string | undefined
 }
 
+interface Translation {
+  transcript?: string | undefined
+  translation?: string | undefined
+}
+
 interface RecordingComponentProps {
   onRecordingStart: () => void;
   // eslint-disable-next-line no-unused-vars
-  onTranscript: (data: TranscriptionData) => void;
+  onTranslation: (translation: Translation) => void;
+  autoStart?: boolean;
 }
 
-export function RecordingComponent({ onTranscript, onRecordingStart }: RecordingComponentProps) {
+export function RecordingComponent({ onTranslation, onRecordingStart, autoStart = false }: RecordingComponentProps) {
   const [isRecording, setIsRecording] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  let completeTranscription = "";
 
   const startRecording = () => {
     console.log("Starting recording...");
@@ -80,7 +88,23 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
       }
 
       if (data.transcript) {
-        onTranscript(data);
+        if (data.isPartial) {
+          const translation: Translation = {
+            transcript: completeTranscription + " " +  data.transcript,
+            translation: ""
+          };
+
+          onTranslation(translation);
+        } else {
+          completeTranscription += " " + data.transcript;
+
+          const translation: Translation = {
+            transcript: completeTranscription,
+            translation: ""
+          };
+
+          onTranslation(translation);
+        }
       }
     };
 
@@ -131,6 +155,17 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
       startRecording();
     }
   };
+
+  useEffect(() => {
+    if (autoStart) {
+      startRecording();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (autoStart) {
+    return null;
+  }
 
   return (
     <ActionIcon

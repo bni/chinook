@@ -45,6 +45,7 @@ export function CollapseDesktop({ children }: { children: ReactNode }) {
         {session && <NavLink href={"/search"} label="Search" leftSection={<IconSearch size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/artists"} label="Artists" leftSection={<IconMusic size={14} stroke={1.5} />} />}
         {session && <NavLink href={"/employees"} label="Employees" leftSection={<IconUsersGroup size={14} stroke={1.5} />} />}
+        {session && <NavLink href={"/translate"} label="Translate" leftSection={<IconUsersGroup size={14} stroke={1.5} />} />}
 
       </AppShell.Navbar>
 
