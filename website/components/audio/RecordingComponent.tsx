@@ -2,10 +2,16 @@ import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 
+interface TranscriptionData {
+  transcript?: string | undefined
+  isPartial?: boolean | undefined
+  error?: string | undefined
+}
+
 interface RecordingComponentProps {
   onRecordingStart: () => void;
   // eslint-disable-next-line no-unused-vars
-  onTranscript: (transcript: string) => void;
+  onTranscript: (data: TranscriptionData) => void;
 }
 
 export function RecordingComponent({ onTranscript, onRecordingStart }: RecordingComponentProps) {
@@ -29,7 +35,6 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
 
     ws.onopen = () => {
       console.log("Connected to WebSocket.");
-      ws.send(JSON.stringify({ event: "ping" }));
 
       navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
         streamRef.current = stream;
@@ -51,6 +56,9 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
         mediaRecorder.start(1000);
         setIsRecording(true);
         console.log("MediaRecorder started");
+
+        console.log("Sending ping...");
+        ws.send(JSON.stringify({ event: "ping" }));
       }).catch((error) => {
         console.error("Error accessing media devices:", error);
 
@@ -61,12 +69,18 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
     ws.onmessage = (event) => {
       console.log("Message received:", event.data);
 
-      const data = JSON.parse(event.data) as {
-        transcript?: string;
-      };
+      const data = JSON.parse(event.data) as TranscriptionData;
+
+      if (data.error) {
+        console.error("Server error:", data.error);
+
+        stopRecording();
+
+        return;
+      }
 
       if (data.transcript) {
-        onTranscript(data.transcript);
+        onTranscript(data);
       }
     };
 
@@ -124,12 +138,6 @@ export function RecordingComponent({ onTranscript, onRecordingStart }: Recording
       onClick={ handleMicrophoneClick }
       color={ isRecording ? "red" : "gray" }
       variant={ isRecording ? "filled" : "light" }
-      style={{
-        position: "fixed",
-        bottom: "20px",
-        left: "20px",
-        zIndex: 1000
-      }}
     >
       {isRecording ? <IconMicrophone /> : <IconMicrophoneOff />}
     </ActionIcon>

@@ -47,32 +47,53 @@ const transcribe = async (audioStream: PassThrough, client: WebSocket) => {
         const results = event?.TranscriptEvent?.Transcript?.Results || [];
 
         for (const result of results) {
-          //logger.info(result);
+          logger.debug(result);
 
           const alternatives = result.Alternatives || [];
 
           for (const alternative of alternatives) {
-            logger.info({ transcript: alternative.Transcript, isPartial: result.IsPartial }, "Transcription");
+            const data = { transcript: alternative.Transcript, isPartial: result.IsPartial };
 
-            client.send(JSON.stringify({ transcript: alternative.Transcript }));
+            logger.info(data, "Transcription");
+
+            client.send(JSON.stringify(data));
           }
         }
       }
     }
-  } catch (err) {
-    console.log("error");
-    console.log(err);
+  } catch (error) {
+    logger.error(error, "Error");
   }
 };
 
 export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
-  wss.handleUpgrade(req, socket, head, (client) => {
-    let isAuthenticated = false;
+  wss.handleUpgrade(req, socket, head, async (client: WebSocket) => {
+    logger.info("Upgrading to WebSocket");
 
     let ffmpegProcess: ChildProcessWithoutNullStreams | null;
 
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers)
+    });
+
+    if (!session) {
+      const errorMessage = "User has no session";
+
+      logger.error(errorMessage);
+
+      client.send(JSON.stringify({ error: errorMessage }));
+
+      client.close(1008, errorMessage); // 1008 = Policy Violation
+
+      return;
+    }
+
+    logger.info({ userId: session.user.id }, "User is authenticated");
+
     client.on("message", async (data: RawData, b: boolean) => {
-      if (isAuthenticated && b) { // Binary, only accept after authenticated
+      if (b) { // Binary
+        logger.info("Binary received");
+
         if (ffmpegProcess) {
           try {
             ffmpegProcess.stdin.write(data);
@@ -82,70 +103,20 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
         } else {
           logger.error("FFmpeg process not available. Dropping message.");
         }
-      } else if (!isAuthenticated) { // First text message
-        logger.info("Client connected");
+      } else { // Text
+        logger.info("Text received");
 
-        try {
-          const session = await auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
-          });
-
-          if (!session) {
-            const errorMessage = "User has no session";
-
-            logger.error(errorMessage);
-
-            throw new Error(errorMessage);
-          } else {
-            isAuthenticated = true;
-
-            const userId = session.user.id;
-
-            logger.info({ userId: userId }, "User is authenticated");
-
-            ffmpegProcess = spawn("ffmpeg", [
-              "-f", "webm",
-              "-i", "pipe:0",
-              "-ar", "16000",           // 16kHz sample rate
-              "-ac", "1",               // Mono
-              "-f", "s16le",            // Signed 16-bit PCM little-endian
-              "pipe:1"                  // Stream to stdout
-            ]);
-
-            // Create a PassThrough stream with controlled chunk size
-            const audioStream = new PassThrough({
-              highWaterMark: 1024  // 1KB chunks
-            });
-
-            // Pipe FFmpeg output to the stream
-            ffmpegProcess.stdout.pipe(audioStream);
-
-            // Send the stream to transcription service
-            await transcribe(audioStream, client);
-
-            const message = JSON.parse(data.toString("utf8")) as {
-              event: string;
-            };
-
-            logger.info(message);
-
-            if (message.event === "ping") {
-              client.send(JSON.stringify({ event: "pong" }));
-            } else {
-              client.send(JSON.stringify(message)); // Echo
-            }
-          }
-        } catch (e) {
-          logger.error(e);
-        }
-      } else { // Subsequent text messages
         const message = JSON.parse(data.toString("utf8")) as {
           event: string;
         };
 
         logger.info(message);
 
-        client.send(JSON.stringify(message)); // Echo
+        if (message.event === "ping") {
+          client.send(JSON.stringify({ event: "pong" }));
+        } else {
+          client.send(JSON.stringify(message)); // Echo
+        }
       }
     });
 
@@ -158,6 +129,32 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
         logger.info("FFmpeg process terminated");
       }
+    });
+
+    logger.info("Setting up FFmpeg");
+
+    ffmpegProcess = spawn("ffmpeg", [
+      "-f", "webm",
+      "-i", "pipe:0",
+      "-ar", "16000",           // 16kHz sample rate
+      "-ac", "1",               // Mono
+      "-f", "s16le",            // Signed 16-bit PCM little-endian
+      "pipe:1"                  // Stream to stdout
+    ]);
+
+    // Create a PassThrough stream with controlled chunk size
+    const audioStream = new PassThrough({
+      highWaterMark: 1024  // 1KB chunks
+    });
+
+    // Pipe FFmpeg output to the stream
+    ffmpegProcess.stdout.pipe(audioStream);
+
+    logger.info("Setting up transcribing");
+
+    // Send the stream to transcription (don't await - let it run in background)
+    transcribe(audioStream, client).catch((error) => {
+      logger.error("Transcription error", error);
     });
   });
 };
