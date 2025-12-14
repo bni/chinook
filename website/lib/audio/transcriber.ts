@@ -1,4 +1,4 @@
-import type { AllowedLanguage, Transcript, Translation } from "@lib/audio/types";
+import type { AllowedLanguage, ServerCommand, Transcript } from "@lib/audio/types";
 import {
   StartStreamTranscriptionCommand,
   type StartStreamTranscriptionCommandInput,
@@ -71,12 +71,12 @@ export const transcribe = async (
 
               const completeTranslation = await translate(partialTranscript, sourceLanguage, targetLanguage);
 
-              const translation: Translation = {
+              const serverCommand: ServerCommand = {
                 transcript: partialTranscript,
                 translation: completeTranslation
               };
 
-              client.send(JSON.stringify(translation));
+              client.send(JSON.stringify(serverCommand));
             } else {
               completeTranscription += transcript.transcript + "\n";
 
@@ -86,12 +86,12 @@ export const transcribe = async (
                 translate(transcript.transcript, sourceLanguage, targetLanguage)
               ]);
 
-              const translation: Translation = {
+              const serverCommand: ServerCommand = {
                 transcript: completeTranscription,
                 translation: completeTranslation
               };
 
-              client.send(JSON.stringify(translation));
+              client.send(JSON.stringify(serverCommand));
 
               if (lastParagraphTranslation) {
                 await speak(lastParagraphTranslation, client, targetLanguage);

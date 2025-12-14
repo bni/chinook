@@ -147,13 +147,7 @@ export function RecordingComponent({
 
         const translation = JSON.parse(event.data) as Translation;
 
-        if (translation.error) {
-          console.error("Server error:", translation.error);
-
-          stopRecording();
-        } else {
-          onTranslation(translation);
-        }
+        onTranslation(translation);
       }
     };
 

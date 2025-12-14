@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, ServerCommand } from "@lib/audio/types";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { type RawData, WebSocket, WebSocketServer } from "ws";
 import { Duplex } from "stream";
@@ -99,7 +99,11 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
       logger.error(errorMessage);
 
-      client.send(JSON.stringify({ error: errorMessage }));
+      const serverCommand: ServerCommand = {
+        error: errorMessage
+      };
+
+      client.send(JSON.stringify(serverCommand));
 
       client.close(1008, errorMessage); // 1008 = Policy Violation
 
@@ -124,28 +128,35 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
       } else { // Text
         logger.debug("Text received");
 
-        const message = JSON.parse(data.toString("utf8")) as ClientCommand;
+        const clientCommand: ClientCommand = JSON.parse(data.toString("utf8")) as ClientCommand;
 
-        logger.debug({ message: message }, "Message received");
-
-        if (message.event === "ping") {
-          client.send(JSON.stringify({ event: "pong" }));
-        } else if (message.event === "selectLanguages") {
-          if (message.sourceLanguage) {
-            selectedSourceLanguage = message.sourceLanguage;
+        if (clientCommand.event === "ping") {
+          const serverCommand: ServerCommand = {
+            event: "pong"
+          };
+          client.send(JSON.stringify(serverCommand));
+        } else if (clientCommand.event === "selectLanguages") {
+          if (clientCommand.sourceLanguage) {
+            selectedSourceLanguage = clientCommand.sourceLanguage;
           }
 
-          if (message.targetLanguage) {
-            selectedTargetLanguage = message.targetLanguage;
+          if (clientCommand.targetLanguage) {
+            selectedTargetLanguage = clientCommand.targetLanguage;
           }
 
           logger.info({ selectedSourceLanguage, selectedTargetLanguage }, "Respawning due to source language change");
 
           await respawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
 
-          client.send(JSON.stringify({ event: `Selected languages ${selectedSourceLanguage}, ${selectedTargetLanguage}` }));
+          const serverCommand: ServerCommand = {
+            event: "languagesSelected",
+            selectedSourceLanguage,
+            selectedTargetLanguage
+          };
+
+          client.send(JSON.stringify(serverCommand));
         } else {
-          client.send(JSON.stringify(message)); // Echo
+          client.send(JSON.stringify(clientCommand)); // Echo
         }
       }
     });
