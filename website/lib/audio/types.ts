@@ -1,7 +1,4 @@
-import { WebSocketServer } from "ws";
-import type { ChildProcessWithoutNullStreams } from "node:child_process";
-
-export type AllowedLanguage = "en-GB" | "sv-SE" | "fr-FR" | "de-DE" | "es-ES";
+export type AllowedLanguage = "sv-SE" | "en-GB" | "fr-FR" | "de-DE" | "es-ES";
 
 type AllowedEvents = "ping" | "selectLanguages";
 

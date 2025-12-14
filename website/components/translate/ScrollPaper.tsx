@@ -8,8 +8,8 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: "en-GB", flag: "🇬🇧" },
   { code: "sv-SE", flag: "🇸🇪" },
+  { code: "en-GB", flag: "🇬🇧" },
   { code: "fr-FR", flag: "🇫🇷" },
   { code: "de-DE", flag: "🇩🇪" },
   { code: "es-ES", flag: "🇪🇸" }
@@ -41,6 +41,9 @@ export function ScrollPaper({ flag, text, onLanguageChange }: TranslationPanelPr
       scrollViewportRef.current.scrollTop = scrollViewportRef.current.scrollHeight;
     }
   }, [text]);
+
+  // Remove trailing newlines from text
+  const displayText = text.replace(/\n+$/, "");
 
   return (
     <Paper shadow="sm" pt={0} pb={0} pl="md" pr="md" withBorder style={{ flex: 1, overflow: "hidden", margin: 0, backgroundColor: "#FFF8F0" }}>
@@ -79,7 +82,7 @@ export function ScrollPaper({ flag, text, onLanguageChange }: TranslationPanelPr
         <ScrollArea type="never" style={{ flex: 1, height: "100%" }} viewportRef={scrollViewportRef}>
           <div style={{ height: "0.1rem", visibility: "hidden" }}></div>
           <div>
-            {text.split("\n").map((line, index) => (
+            {displayText.split("\n").map((line, index) => (
               <Text
                 key={index}
                 style={{

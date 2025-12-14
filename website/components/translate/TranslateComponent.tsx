@@ -6,8 +6,8 @@ import { ScrollPaper } from "./ScrollPaper";
 export function TranslateComponent() {
   const [transcript, setTranscript] = useState("");
   const [translation, setTranslation] = useState("");
-  const [sourceLanguage, setSourceLanguage] = useState<AllowedLanguage>("en-GB");
-  const [targetLanguage, setTargetLanguage] = useState<AllowedLanguage>("sv-SE");
+  const [sourceLanguage, setSourceLanguage] = useState<AllowedLanguage>("sv-SE"); // Default
+  const [targetLanguage, setTargetLanguage] = useState<AllowedLanguage>("en-GB"); // Default
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 130px)", gap: "1.7rem", boxSizing: "border-box", paddingTop: "0rem", paddingBottom: "0.7rem" }}>
@@ -26,12 +26,12 @@ export function TranslateComponent() {
       />
 
       <ScrollPaper
-        flag="🇬🇧"
+        flag="🇸🇪"
         text={transcript}
         onLanguageChange={setSourceLanguage}
       />
       <ScrollPaper
-        flag="🇸🇪"
+        flag="🇬🇧"
         text={translation}
         onLanguageChange={setTargetLanguage}
       />

@@ -13,8 +13,8 @@ const wss = new WebSocketServer({ noServer: true });
 
 let ffmpegProcess: ChildProcessWithoutNullStreams | undefined;
 
-let selectedSourceLanguage: AllowedLanguage = "en-GB";
-let selectedTargetLanguage: AllowedLanguage = "sv-SE";
+let selectedSourceLanguage: AllowedLanguage = "sv-SE";
+let selectedTargetLanguage: AllowedLanguage = "en-GB";
 
 const spawnProcess = async (
   client: WebSocket,
@@ -49,10 +49,12 @@ const spawnProcess = async (
 
     logger.info("Setting up transcribing");
 
-    // Send the stream to transcription
-    await transcribe(audioStream, client, selectedSourceLanguage, selectedTargetLanguage).catch((error) => {
-      logger.error("Transcription error", error);
-    });
+    // Send the stream to transcription, translation and finally speech synthesis
+    try {
+      await transcribe(audioStream, client, selectedSourceLanguage, selectedTargetLanguage);
+    } catch (error) {
+      logger.error({ error }, "Transcription, translation or speech synthesis error");
+    }
   });
 };
 

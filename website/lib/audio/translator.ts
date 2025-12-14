@@ -4,15 +4,16 @@ import {
   type TranslateTextCommandInput
 } from "@aws-sdk/client-translate";
 import type { AllowedLanguage } from "@lib/audio/types";
+import { logger } from "@lib/util/logger";
 
 export const translate = async (
   transcript: string,
   sourceLanguage: AllowedLanguage,
   targetLanguage: AllowedLanguage
 ): Promise<string | undefined> => {
-  const translateClient = new TranslateClient({
-    region: "eu-west-1"
-  });
+  const translateClient = new TranslateClient();
+
+  logger.info({ sourceLanguage, targetLanguage }, "Translating");
 
   const params: TranslateTextCommandInput = {
     SourceLanguageCode: sourceLanguage.substring(0, 2),

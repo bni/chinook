@@ -18,9 +18,9 @@ export const transcribe = async (
 ) => {
   let completeTranscription = "";
 
-  const transcribeStreamingClient = new TranscribeStreamingClient({
-    region: "eu-west-1"
-  });
+  logger.info({ sourceLanguage }, "Translating");
+
+  const transcribeStreamingClient = new TranscribeStreamingClient();
 
   const params: StartStreamTranscriptionCommandInput = {
     LanguageCode: sourceLanguage,
@@ -55,6 +55,17 @@ export const transcribe = async (
           logger.debug(transcript, "Transcript");
 
           if (transcript.transcript) {
+            // Filter out spurious transcripts (single punctuation, very short, etc.)
+            const trimmedTranscript = transcript.transcript.trim();
+            const isPunctuationOnly = /^[.,!?;:\s]+$/.test(trimmedTranscript);
+            const isTooShort = trimmedTranscript.length < 2;
+
+            if (isPunctuationOnly || isTooShort) {
+              logger.debug({ transcript: trimmedTranscript }, "Skipping spurious transcript");
+
+              continue;
+            }
+
             if (transcript.isPartial) {
               const partialTranscript = completeTranscription + transcript.transcript;
 
@@ -67,15 +78,13 @@ export const transcribe = async (
 
               client.send(JSON.stringify(translation));
             } else {
-              let ending = transcript.transcript;
+              completeTranscription += transcript.transcript + "\n";
 
-              const regex = /[.?!]$/g;
-
-              ending += regex.test(ending) ? "\n" : ".\n";
-
-              completeTranscription += ending;
-
-              const completeTranslation = await translate(completeTranscription, sourceLanguage, targetLanguage);
+              // We need both complete translation to display AND last paragraph for speech synthesis
+              const [completeTranslation, lastParagraphTranslation] = await Promise.all([
+                translate(completeTranscription, sourceLanguage, targetLanguage),
+                translate(transcript.transcript, sourceLanguage, targetLanguage)
+              ]);
 
               const translation: Translation = {
                 transcript: completeTranscription,
@@ -84,8 +93,8 @@ export const transcribe = async (
 
               client.send(JSON.stringify(translation));
 
-              if (completeTranslation) {
-                await speak(completeTranslation, client, targetLanguage);
+              if (lastParagraphTranslation) {
+                await speak(lastParagraphTranslation, client, targetLanguage);
               }
             }
           }
