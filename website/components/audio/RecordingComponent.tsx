@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand, Translation } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, ServerCommand, Translation } from "@lib/audio/types";
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
@@ -137,15 +137,23 @@ export function RecordingComponent({
     };
 
     ws.onmessage = async (event) => {
-      // Check if the message is binary audio data
+      // Handle binary audio data
       if (event.data instanceof Blob) {
         console.log("Received binary audio data:", event.data.size, "bytes");
+
         await handleBinaryAudio(event.data);
       } else {
-        // Handle text/JSON message (translation)
+        // Handle text
         console.log("Message received:", event.data);
 
-        const translation = JSON.parse(event.data) as Translation;
+        const serverCommand = JSON.parse(event.data) as ServerCommand;
+
+        console.log("Server command received:", serverCommand);
+
+        const translation: Translation = {
+          transcript: serverCommand.transcript,
+          translation: serverCommand.translation
+        };
 
         onTranslation(translation);
       }
