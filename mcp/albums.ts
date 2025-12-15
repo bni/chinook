@@ -24,8 +24,7 @@ server.registerTool(
           type: "text",
           text: JSON.stringify(output, null, 2)
         }
-      ],
-      structuredContent: output
+      ]
     };
   }
 );

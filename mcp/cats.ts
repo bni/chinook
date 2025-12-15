@@ -11,14 +11,14 @@ const Input = z.object({
   catName: z.string().optional().describe("The cats name")
 });
 
-export type Input = z.infer<typeof Input>;
+type Input = z.infer<typeof Input>;
 
 const Output = z.object({
   result: z.string(),
   catData: z.any().optional()
 });
 
-export type Output = z.infer<typeof Output>;
+type Output = z.infer<typeof Output>;
 
 server.registerTool(
   "get-cat-status",

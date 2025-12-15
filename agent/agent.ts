@@ -46,10 +46,6 @@ for await (const message of query({
           "CHINOOK_BASE_URL": process.env.CHINOOK_BASE_URL || "",
           "SHARED_SECRET_FOR_HMAC": process.env.SHARED_SECRET_FOR_HMAC || ""
         }
-      },
-      streaming: {
-        type: "http",
-        url: process.env.STREAMING_MCP_URL || ""
       }
     },
     allowedTools: [
@@ -58,8 +54,7 @@ for await (const message of query({
       "Write",
       "Bash",
       "mcp__cats__get-cat-status",
-      "mcp__albums__search-artist-albums",
-      "mcp__streaming__start-notification-stream"
+      "mcp__albums__search-artist-albums"
     ],
     outputFormat: {
       type: "json_schema",

@@ -7,7 +7,6 @@
     "agent",
     "database",
     "mcp",
-    "streaming",
     "website"
   ],
   "scripts": {
