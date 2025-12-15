@@ -37,11 +37,11 @@ for await (const message of query({
     mcpServers: {
       cats: {
         command: "node",
-        args: ["../mcp/dist/cats.js"]
+        args: ["./dist/cats.js"]
       },
       albums: {
         command: "node",
-        args: ["../mcp/dist/albums.js"],
+        args: ["./dist/albums.js"],
         env: {
           "CHINOOK_BASE_URL": process.env.CHINOOK_BASE_URL || "",
           "SHARED_SECRET_FOR_HMAC": process.env.SHARED_SECRET_FOR_HMAC || ""

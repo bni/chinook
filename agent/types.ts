@@ -11,7 +11,7 @@ export const OutputSchema = z.object({
     z.object({
       albumTitle: z.string(),
       artistName: z.string(),
-      releaseYear: z.int(),
+      releaseYear: z.number(),
       label: z.string(),
       genre: z.string()
     })
