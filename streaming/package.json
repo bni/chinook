@@ -19,7 +19,6 @@
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
     "@types/aws-lambda": "^8.10.159",
-    "sst": "^3.17.25",
     "typescript": "^5.9.3"
   }
 }

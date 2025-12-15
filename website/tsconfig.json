@@ -16,20 +16,30 @@
     "allowJs": true,
     "skipLibCheck": true,
     "paths": {
-      "@components/*": ["./components/*"],
-      "@lib/*": ["./lib/*"]
+      "@components/*": [
+        "./components/*"
+      ],
+      "@lib/*": [
+        "./lib/*"
+      ]
     },
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
     ]
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

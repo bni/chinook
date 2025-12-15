@@ -3,7 +3,6 @@ import express from "express";
 import { handleWebSocket } from "@lib/audio/handleWebSocket";
 import { logger } from "@lib/util/logger";
 import next from "next";
-import { parse } from "url";
 import terminalLink from "terminal-link";
 
 const app = express();
@@ -15,7 +14,7 @@ const nextHandler = nextApp.getRequestHandler();
 const nextHmr = nextApp.getUpgradeHandler();
 
 app.use(async (req, res) => {
-  await nextHandler(req, res, parse(req.url, true));
+  await nextHandler(req, res);
 });
 
 const server = app.listen(3000, () => {
@@ -25,13 +24,11 @@ const server = app.listen(3000, () => {
 });
 
 server.on("upgrade", async (req, socket, head) => {
-  const { pathname } = parse(req.url || "/", true);
-
-  if (pathname === "/_next/webpack-hmr") {
+  if (req.url === "/_next/webpack-hmr") {
     await nextHmr(req, socket, head);
   }
 
-  if (pathname === "/api/internal/ws") {
+  if (req.url === "/api/internal/ws") {
     handleWebSocket(req, socket, head);
   }
 });
