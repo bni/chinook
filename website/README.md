@@ -17,6 +17,7 @@
 | production | When running in the production environment |
 
 ### TODO
-* Drop in sst.config.ts to make it deployable in AWS Lambda
+* Migrate to app router?
+* Drop in sst.config.ts to make it deployable in AWS (Fargate) and Aurora Serverless v2
 * Keep Google Cloud Run (Docker) support if possible
-* DSQL https://github.com/awsfundamentals-hq/aurora-dsql https://github.com/better-auth/better-auth/issues/6605
+* DSQL? https://github.com/awsfundamentals-hq/aurora-dsql https://github.com/better-auth/better-auth/issues/6605
