@@ -8,23 +8,26 @@
     "build": "tsc",
     "test": "vitest run --typecheck",
     "start": "npm run build && node dist/agent.js",
+    "server": "npm run build && node dist/server.js",
     "report": "npm run build && node dist/report.js",
     "hints": "npm run build && node dist/hints.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.3",
     "@anthropic-ai/claude-agent-sdk": "^0.1.58",
-    "zod": "^3.25.76",
+    "@modelcontextprotocol/sdk": "^1.24.3",
     "dotenv": "^17.2.3",
-    "yargs": "^18.0.0"
+    "express": "^5.2.1",
+    "yargs": "^18.0.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
+    "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
     "@types/yargs": "^17.0.35",
-    "vitest": "^4.0.15",
-    "vite-tsconfig-paths": "^5.1.4",
     "nock": "^14.0.10",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.15"
   }
 }
