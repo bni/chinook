@@ -1,11 +1,9 @@
+import type { AllowedLanguage, Mode } from "@lib/audio/types";
 import { Button, Group } from "@mantine/core";
 import React, { useState } from "react";
-import type { AllowedLanguage } from "@lib/audio/types";
 import { IconCheck } from "@tabler/icons-react";
 import { RecordingComponent } from "@components/audio/RecordingComponent";
 import { ScrollPaper } from "./ScrollPaper";
-
-type Mode = "translation" | "conversation";
 
 const languageFlags: Record<AllowedLanguage, string> = {
   "sv-SE": "🇸🇪",
@@ -90,6 +88,7 @@ export function TranslateComponent() {
           autoStart={false}
           sourceLanguage={sourceLanguage}
           targetLanguage={targetLanguage}
+          mode={mode}
         />
       </Group>
 

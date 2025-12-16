@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand, ServerCommand } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, Mode, ServerCommand } from "@lib/audio/types";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { type RawData, WebSocket, WebSocketServer } from "ws";
 import { Duplex } from "stream";
@@ -13,6 +13,7 @@ const wss = new WebSocketServer({ noServer: true });
 
 let ffmpegProcess: ChildProcessWithoutNullStreams | undefined;
 
+let selectedMode: Mode = "translation";
 let selectedSourceLanguage: AllowedLanguage = "sv-SE";
 let selectedTargetLanguage: AllowedLanguage = "en-GB";
 
@@ -138,7 +139,11 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
             event: "pong"
           };
           client.send(JSON.stringify(serverCommand));
-        } else if (clientCommand.event === "selectLanguages") {
+        } else if (clientCommand.event === "selectOptions") {
+          if (clientCommand.mode) {
+            selectedMode = clientCommand.mode;
+          }
+
           if (clientCommand.sourceLanguage) {
             selectedSourceLanguage = clientCommand.sourceLanguage;
           }
@@ -147,12 +152,13 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
             selectedTargetLanguage = clientCommand.targetLanguage;
           }
 
-          logger.info({ selectedSourceLanguage, selectedTargetLanguage }, "Respawning due to source language change");
+          logger.info({ selectedSourceLanguage, selectedTargetLanguage }, "Respawning due to options change");
 
           await respawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
 
           const serverCommand: ServerCommand = {
-            event: "languagesSelected",
+            event: "optionsSelected",
+            mode: selectedMode,
             selectedSourceLanguage,
             selectedTargetLanguage
           };

@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand, ServerCommand, Translation } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, Mode, ServerCommand, Translation } from "@lib/audio/types";
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
@@ -10,6 +10,7 @@ interface RecordingComponentProps {
   autoStart?: boolean;
   sourceLanguage?: AllowedLanguage;
   targetLanguage?: AllowedLanguage;
+  mode?: Mode;
 }
 
 export function RecordingComponent({
@@ -17,7 +18,8 @@ export function RecordingComponent({
   onRecordingStart,
   autoStart = false,
   sourceLanguage,
-  targetLanguage
+  targetLanguage,
+  mode
 }: RecordingComponentProps) {
   const [isRecording, setIsRecording] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
@@ -121,14 +123,15 @@ export function RecordingComponent({
         ws.send(JSON.stringify(pingCommand));
         console.log("Sent ping...");
 
-        // Send language selection
-        const selectLanguagesCommand: ClientCommand = {
-          event: "selectLanguages",
+        // Send option selection
+        const selectOptionsCommand: ClientCommand = {
+          event: "selectOptions",
           sourceLanguage: sourceLanguage,
-          targetLanguage: targetLanguage
+          targetLanguage: targetLanguage,
+          mode: mode
         };
-        ws.send(JSON.stringify(selectLanguagesCommand));
-        console.log("Sent selectLanguages command:", sourceLanguage, targetLanguage);
+        ws.send(JSON.stringify(selectOptionsCommand));
+        console.log("Sent selectOptions command:", sourceLanguage, targetLanguage, mode);
       }).catch((error) => {
         console.error("Error accessing media devices:", error);
 
@@ -228,7 +231,7 @@ export function RecordingComponent({
 
   useEffect(() => {
     if (isRecording) {
-      console.log("Language changed, restarting recording...");
+      console.log("Language or mode changed, restarting recording...");
       stopRecording();
       // Use setTimeout to ensure cleanup completes before restarting
       setTimeout(() => {
@@ -236,7 +239,7 @@ export function RecordingComponent({
       }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sourceLanguage, targetLanguage]);
+  }, [sourceLanguage, targetLanguage, mode]);
 
   if (autoStart) {
     return null;
