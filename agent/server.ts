@@ -38,13 +38,12 @@ app.post("/chat", async (req, res) => {
         res.write(`${JSON.stringify({ type: message.type, content: formatted })}\n`);
       }
     }
+
     res.write(`${JSON.stringify({ type: "done" })}\n`);
 
     res.end();
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-
-    res.write(`${JSON.stringify({ type: "error", content: errorMessage })}\n`);
+    res.write(`${JSON.stringify({ type: "error", content: error })}\n`);
 
     res.end();
   }
