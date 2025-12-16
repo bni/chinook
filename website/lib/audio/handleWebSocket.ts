@@ -112,6 +112,9 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
 
     logger.info({ userId: session.user.id }, "User is authenticated");
 
+    // Spawn FFmpeg immediately with default languages
+    await spawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
+
     client.on("message", async (data: RawData, b: boolean) => {
       if (b) { // Binary
         logger.debug("Binary received");
