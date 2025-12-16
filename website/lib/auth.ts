@@ -1,7 +1,21 @@
+import { type BetterAuthPlugin, betterAuth } from "better-auth";
 import { Pool } from "pg";
-import { betterAuth } from "better-auth";
-import { nextCookies } from "better-auth/next-js";
+import { logger } from "@lib/util/logger";
 import { secret } from "@lib/util/secrets";
+
+// Load nextCookies plugin only when in Next.js context, not when in Express WebSockets
+const plugins: BetterAuthPlugin[] = [];
+try {
+  await import("next/headers");
+
+  logger.debug("Loading nextCookies()");
+
+  const { nextCookies } = await import("better-auth/next-js");
+
+  plugins.push(nextCookies());
+} catch {
+  logger.debug("Not loading nextCookies()");
+}
 
 export const auth = betterAuth({
   secret: await secret("BETTER_AUTH_SECRET"),
@@ -48,5 +62,5 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "https://chinook.loca.lt"
   ],
-  plugins: [nextCookies()]
+  plugins: plugins
 });
