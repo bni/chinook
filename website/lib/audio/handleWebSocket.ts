@@ -52,7 +52,7 @@ const spawnProcess = async (
 
     // Send the stream to transcription, translation and finally speech synthesis
     try {
-      await transcribe(audioStream, client, selectedSourceLanguage, selectedTargetLanguage);
+      await transcribe(audioStream, client, selectedMode, selectedSourceLanguage, selectedTargetLanguage);
     } catch (error) {
       logger.error({ error }, "Transcription, translation or speech synthesis error");
     }

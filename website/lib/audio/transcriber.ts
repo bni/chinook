@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ServerCommand, Transcript } from "@lib/audio/types";
+import type { AllowedLanguage, Mode, ServerCommand, Transcript } from "@lib/audio/types";
 import {
   StartStreamTranscriptionCommand,
   type StartStreamTranscriptionCommandInput,
@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-transcribe-streaming";
 import type { PassThrough } from "stream";
 import { WebSocket } from "ws";
+import { converse } from "@lib/audio/converser";
 import { logger } from "@lib/util/logger";
 import { speak } from "@lib/audio/polly";
 import { translate } from "./translator";
@@ -13,12 +14,13 @@ import { translate } from "./translator";
 export const transcribe = async (
   audioStream: PassThrough,
   client: WebSocket,
+  selectedMode: Mode,
   sourceLanguage: AllowedLanguage,
   targetLanguage: AllowedLanguage
 ) => {
   let completeTranscription = "";
 
-  logger.info({ sourceLanguage }, "Translating");
+  logger.info({ selectedMode, sourceLanguage }, "Transcribing");
 
   const transcribeStreamingClient = new TranscribeStreamingClient();
 
@@ -69,32 +71,58 @@ export const transcribe = async (
             if (transcript.isPartial) {
               const partialTranscript = completeTranscription + transcript.transcript;
 
-              const completeTranslation = await translate(partialTranscript, sourceLanguage, targetLanguage);
+              if (selectedMode === "translation") {
+                const completeTranslation = await translate(partialTranscript, sourceLanguage, targetLanguage);
 
-              const serverCommand: ServerCommand = {
-                transcript: partialTranscript,
-                translation: completeTranslation
-              };
+                const serverCommand: ServerCommand = {
+                  transcript: partialTranscript,
+                  translation: completeTranslation
+                };
 
-              client.send(JSON.stringify(serverCommand));
+                client.send(JSON.stringify(serverCommand));
+              } else if (selectedMode === "conversation") {
+                // Call agent
+                const serverCommand: ServerCommand = {
+                  transcript: partialTranscript
+                };
+
+                client.send(JSON.stringify(serverCommand));
+              }
             } else {
               completeTranscription += transcript.transcript + "\n";
 
-              // We need both complete translation to display AND last paragraph for speech synthesis
-              const [completeTranslation, lastParagraphTranslation] = await Promise.all([
-                translate(completeTranscription, sourceLanguage, targetLanguage),
-                translate(transcript.transcript, sourceLanguage, targetLanguage)
-              ]);
+              const lastParagraphTranscription = transcript.transcript;
 
-              const serverCommand: ServerCommand = {
-                transcript: completeTranscription,
-                translation: completeTranslation
-              };
+              if (selectedMode === "translation") {
+                // We need both complete translation to display AND last paragraph for speech synthesis
+                const [completeTranslation, lastParagraphTranslation] = await Promise.all([
+                  translate(completeTranscription, sourceLanguage, targetLanguage),
+                  translate(lastParagraphTranscription, sourceLanguage, targetLanguage)
+                ]);
 
-              client.send(JSON.stringify(serverCommand));
+                const serverCommand: ServerCommand = {
+                  transcript: completeTranscription,
+                  translation: completeTranslation
+                };
 
-              if (lastParagraphTranslation) {
-                await speak(lastParagraphTranslation, client, targetLanguage);
+                client.send(JSON.stringify(serverCommand));
+
+                if (lastParagraphTranslation) {
+                  await speak(lastParagraphTranslation, client, targetLanguage);
+                }
+              } else if (selectedMode === "conversation") {
+                const cenversationReply = await converse(lastParagraphTranscription);
+
+                const serverCommand: ServerCommand = {
+                  transcript: completeTranscription,
+                  translation: cenversationReply
+                };
+
+                client.send(JSON.stringify(serverCommand));
+
+                if (cenversationReply) {
+                  await speak(cenversationReply, client, targetLanguage);
+                }
               }
             }
           }
