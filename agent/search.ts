@@ -62,6 +62,9 @@ export const search = async (query: string): Promise<Output> => {
         );
       }
 
+      // Only return the top 3 here
+      output.results = output.results.slice(0, 3);
+
       return output;
     }
   } catch (error) {

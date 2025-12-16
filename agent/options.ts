@@ -41,5 +41,6 @@ export const options: Options = {
   outputFormat: {
     type: "json_schema",
     schema: schema
-  }
+  },
+  systemPrompt: "When presenting music album results, always first say 'EXCELLENT!!!'. Never use emojis or *-characters."
 };

@@ -22,7 +22,7 @@ server.registerTool(
       content: [
         {
           type: "text",
-          text: JSON.stringify(output, null, 2)
+          text: "See the structured content"
         }
       ],
       structuredContent: output
