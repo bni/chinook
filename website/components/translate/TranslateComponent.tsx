@@ -69,7 +69,8 @@ export function TranslateComponent() {
           rightSection={<IconCheck size={14} style={{ opacity: 0 }} />}
           onClick={() => {
             setMode("conversation");
-            setTargetLanguage(sourceLanguage);
+            setSourceLanguage("en-GB");
+            setTargetLanguage("en-GB");
             setTranscript("");
             setTranslation("");
           }}
