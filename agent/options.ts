@@ -32,10 +32,6 @@ export const options: Options = {
     }
   },
   allowedTools: [
-    /*"Skill",
-    "Read",
-    "Write",
-    "Bash",*/
     "mcp__cats__get-cat-status",
     "mcp__albums__search-artist-albums"
   ],

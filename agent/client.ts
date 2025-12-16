@@ -7,10 +7,6 @@ const argv = yargs(hideBin(process.argv)).options({
 
 const SERVER_URL = process.env.SERVER_URL || "http://localhost:4000";
 
-// npm run client -- --prompt "Is it still possible to book for tomorrow?"
-// npm run client -- --prompt "How many guests are there tomorrow?"
-// npm run client -- --prompt "What's for lunch tomorrow?"
-// npm run client -- --prompt "What's for lunch tomorrow? How many guests are there? Is it still possible to book?"
 // npm run client -- --prompt "How is Bill the cat doing?"
 // npm run client -- --prompt "I want to listen to some moody music"
 

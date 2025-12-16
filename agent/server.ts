@@ -9,10 +9,6 @@ app.use(express.json());
 
 const SERVER_PORT = process.env.SERVER_PORT || 4000;
 
-// curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"Is it still possible to book for tomorrow?"}'
-// curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"How many guests are there tomorrow?"}'
-// curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"What's for lunch tomorrow?"}'
-// curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"What's for lunch tomorrow? How many guests are there? Is it still possible to book?"}'
 // curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"How is Bill the cat doing?"}'
 // curl -N -X POST http://localhost:4000/chat -H "Content-Type: application/json" -d '{"prompt":"I want to listen to some moody music"}'
 

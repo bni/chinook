@@ -5,6 +5,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 // npm run hints -- --question "How do I get the thing in the ice in Iceland?"
+// npm run hints -- --question "What is scribbled on page 20?"
 
 const argv = yargs(hideBin(process.argv)).options({
   question: { type: "string", demandOption: true }
@@ -15,7 +16,7 @@ for await (const message of query({
   options: {
     cwd: process.cwd(),
     settingSources: ["project"],
-    allowedTools: ["Skill", "Read", "Write", "Bash"]
+    allowedTools: ["Skill", "Read"]
   }
 })) {
   printMessage(message);

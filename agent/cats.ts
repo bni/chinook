@@ -36,7 +36,12 @@ server.registerTool(
     if (catName && catName.toLowerCase() === "bill") {
       output.result = "Bill is not doing too well";
       output.catData = {
-        whatsWrong: "Dunno"
+        status: "He ate something bad"
+      }
+    } else if (catName && catName.toLowerCase() === "bull") {
+      output.result = "Bull is healthy and happy";
+      output.catData = {
+        status: "Nothing to report"
       }
     }
 
@@ -44,7 +49,7 @@ server.registerTool(
       content: [
         {
           type: "text",
-          text: JSON.stringify(output, null, 2)
+          text: "See the structured content"
         }
       ],
       structuredContent: output

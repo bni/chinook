@@ -9,10 +9,6 @@ const argv = yargs(hideBin(process.argv)).options({
   prompt: { type: "string", demandOption: true }
 }).parseSync();
 
-// npm run start -- --prompt "Is it still possible to book for tomorrow?"
-// npm run start -- --prompt "How many guests are there tomorrow?"
-// npm run start -- --prompt "What's for lunch tomorrow?"
-// npm run start -- --prompt "What's for lunch tomorrow? How many guests are there? Is it still possible to book?"
 // npm run start -- --prompt "How is Bill the cat doing?"
 // npm run start -- --prompt "I want to listen to some moody music"
 

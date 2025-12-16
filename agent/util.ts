@@ -15,8 +15,6 @@ export const printMessage = (message: SDKMessage) => {
     } else if (message.subtype === "error_max_structured_output_retries") {
       console.error("Could not produce valid output");
     }
-  } else if (message.type === "tool_progress") {
-    console.log(`[TOOL: ${message.tool_name}]`); // TODO Ever happens?
   }
 };
 
@@ -34,8 +32,6 @@ export const formatMessage = (message: SDKMessage): string | {} | undefined => {
     } else if (message.subtype === "error_max_structured_output_retries") {
       return "Could not produce valid output";
     }
-  } else if (message.type === "tool_progress") {
-    return `[TOOL: ${message.tool_name}]`; // TODO Ever happens?
   }
 
   return undefined;
