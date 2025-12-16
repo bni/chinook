@@ -37,6 +37,13 @@ export function ScrollPaper({ flag, text, onLanguageChange }: TranslationPanelPr
   };
 
   useEffect(() => {
+    const newLanguage = languages.find(lang => lang.flag === flag);
+    if (newLanguage && newLanguage.code !== selectedLanguage.code) {
+      setSelectedLanguage(newLanguage);
+    }
+  }, [flag, selectedLanguage.code]);
+
+  useEffect(() => {
     if (scrollViewportRef.current) {
       scrollViewportRef.current.scrollTop = scrollViewportRef.current.scrollHeight;
     }
