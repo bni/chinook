@@ -16,6 +16,7 @@ const schema = {
 export const options: Options = {
   cwd: process.cwd(),
   settingSources: ["project"],
+  model: "claude-haiku-4-5-20251001",
   mcpServers: {
     cats: {
       command: "node",
@@ -31,10 +32,10 @@ export const options: Options = {
     }
   },
   allowedTools: [
-    "Skill",
+    /*"Skill",
     "Read",
     "Write",
-    "Bash",
+    "Bash",*/
     "mcp__cats__get-cat-status",
     "mcp__albums__search-artist-albums"
   ],
@@ -42,5 +43,9 @@ export const options: Options = {
     type: "json_schema",
     schema: schema
   },
-  systemPrompt: "When presenting music album results, always first say 'EXCELLENT!!!'. Never use emojis or *-characters."
+  systemPrompt: `
+    Be concise. Answer in 1-2 sentences max.
+    Keep responses brief and conversational. No lengthy explanations unless asked.
+    When presenting music album results, always first say 'EXCELLENT!!!'. Never use emojis or *-characters.
+  `.trim()
 };

@@ -111,18 +111,7 @@ export const transcribe = async (
                   await speak(lastParagraphTranslation, client, targetLanguage);
                 }
               } else if (selectedMode === "conversation") {
-                const cenversationReply = await converse(lastParagraphTranscription);
-
-                const serverCommand: ServerCommand = {
-                  transcript: completeTranscription,
-                  translation: cenversationReply
-                };
-
-                client.send(JSON.stringify(serverCommand));
-
-                if (cenversationReply) {
-                  await speak(cenversationReply, client, targetLanguage);
-                }
+                await converse(completeTranscription, lastParagraphTranscription, client, targetLanguage);
               }
             }
           }
