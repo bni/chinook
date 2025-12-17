@@ -31,6 +31,8 @@ export const converse = async (
   const decoder = new TextDecoder();
   let buffer = "";
 
+  let fullContent = "";
+
   while (true) {
     const { done, value } = await reader.read();
 
@@ -47,32 +49,40 @@ export const converse = async (
       if (line.trim()) {
         const message = JSON.parse(line);
 
-        const agentReplyType: string = message.type;
+        logger.info(message, "LINE!!!");
 
-        const agentReplyContent: string | undefined = message.content;
+        const agentReplyType = message.type;
 
-        if (agentReplyType && agentReplyType === "assistant" && typeof agentReplyContent === "string") {
+        if (agentReplyType && agentReplyType === "assistant" && typeof message.content === "string") {
+          const agentReplyContent = message.content;
+
+          if (agentReplyContent) {
+            if (fullContent.length > 0) {
+              fullContent += " " + agentReplyContent;
+            } else {
+              fullContent += agentReplyContent;
+            }
+          }
+
           const serverCommand: ServerCommand = {
             event: "translation",
-            //transcript: prompt,
+            transcript: prompt,
             translation: agentReplyContent,
             newLine: false
           };
 
           client.send(JSON.stringify(serverCommand));
-
-          if (agentReplyContent) {
-            await speak(agentReplyContent, client, targetLanguage);
-          }
         } else if (agentReplyType && agentReplyType === "done") {
           const serverCommand: ServerCommand = {
             event: "translation",
-            //transcript: prompt,
-            translation: "DONE!",
+            transcript: prompt,
+            translation: fullContent,
             newLine: true
           };
 
           client.send(JSON.stringify(serverCommand));
+
+          await speak(fullContent, client, targetLanguage);
         }
       }
     }
