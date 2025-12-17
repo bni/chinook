@@ -11,20 +11,20 @@ import { transcribe } from "./transcriber";
 
 const wss = new WebSocketServer({ noServer: true });
 
-let ffmpegProcess: ChildProcessWithoutNullStreams | undefined;
-
-let selectedMode: Mode = "translation";
-let selectedSourceLanguage: AllowedLanguage = "sv-SE";
-let selectedTargetLanguage: AllowedLanguage = "en-GB";
+interface ConnectionState {
+  ffmpegProcess: ChildProcessWithoutNullStreams | undefined;
+  selectedMode: Mode;
+  selectedSourceLanguage: AllowedLanguage;
+  selectedTargetLanguage: AllowedLanguage;
+}
 
 const spawnProcess = async (
-  client: WebSocket,
-  selectedSourceLanguage: AllowedLanguage,
-  selectedTargetLanguage: AllowedLanguage
+  state: ConnectionState,
+  client: WebSocket
 ) => {
   logger.info("Spawning FFmpeg");
 
-  ffmpegProcess = spawn("ffmpeg", [
+  state.ffmpegProcess = spawn("ffmpeg", [
     "-f", "webm",
     "-i", "pipe:0",
     "-ar", "16000",           // 16kHz sample rate
@@ -33,7 +33,7 @@ const spawnProcess = async (
     "pipe:1"                  // Stream to stdout
   ]);
 
-  ffmpegProcess.on("spawn", async () => {
+  state.ffmpegProcess.on("spawn", async () => {
     logger.info("FFmpeg process spawned");
 
     // Create a PassThrough stream with controlled chunk size
@@ -42,49 +42,60 @@ const spawnProcess = async (
     });
 
     // Pipe FFmpeg output to the stream
-    if (ffmpegProcess) {
+    if (state.ffmpegProcess) {
       logger.info("Piping audio stream");
 
-      ffmpegProcess.stdout.pipe(audioStream);
+      state.ffmpegProcess.stdout.pipe(audioStream);
     }
 
     logger.info("Setting up transcribing");
 
     // Send the stream to transcription, translation and finally speech synthesis
     try {
-      await transcribe(audioStream, client, selectedMode, selectedSourceLanguage, selectedTargetLanguage);
+      await transcribe(
+        audioStream,
+        client,
+        state.selectedMode,
+        state.selectedSourceLanguage,
+        state.selectedTargetLanguage
+      );
     } catch (error) {
       logger.error({ error }, "Transcription, translation or speech synthesis error");
     }
   });
 };
 
-const terminateProcess = async () => {
+const terminateProcess = async (state: ConnectionState) => {
   return new Promise<void>((resolve) => {
-    if (ffmpegProcess) {
-      ffmpegProcess.on("close", () => {
+    if (state.ffmpegProcess) {
+      // Add listener BEFORE killing to avoid race condition
+      state.ffmpegProcess.on("close", () => {
         logger.info("FFmpeg process closed");
 
-        ffmpegProcess = undefined;
+        state.ffmpegProcess = undefined;
 
         resolve();
       });
 
-      ffmpegProcess.kill("SIGKILL");
+      state.ffmpegProcess.kill("SIGKILL");
+    } else {
+      // No process to terminate, resolve immediately
+      resolve();
     }
   });
 };
 
 const respawnProcess = async (
-  client: WebSocket,
-  selectedSourceLanguage: AllowedLanguage,
-  selectedTargetLanguage: AllowedLanguage
+  state: ConnectionState,
+  client: WebSocket
 ) => {
-  if (ffmpegProcess) {
-    await terminateProcess();
-  }
+  logger.info("Terminating FFmpeg");
+  await terminateProcess(state);
 
-  await spawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
+  logger.info("Spawning FFmpeg");
+  await spawnProcess(state, client);
+
+  logger.info("FFmpeg spawn complete");
 };
 
 export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
@@ -114,16 +125,24 @@ export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buff
 
     logger.info({ userId: session.user.id }, "User is authenticated");
 
+    // Per-connection state
+    const state: ConnectionState = {
+      ffmpegProcess: undefined,
+      selectedMode: "translation",
+      selectedSourceLanguage: "sv-SE",
+      selectedTargetLanguage: "en-GB"
+    };
+
     // Spawn FFmpeg immediately with default languages
-    await spawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
+    await spawnProcess(state, client);
 
     client.on("message", async (data: RawData, b: boolean) => {
       if (b) { // Binary
         logger.debug("Binary received");
 
-        if (ffmpegProcess) {
+        if (state.ffmpegProcess) {
           try {
-            ffmpegProcess.stdin.write(data);
+            state.ffmpegProcess.stdin.write(data);
           } catch (error) {
             logger.error(`Error writing to FFmpeg stdin: ${error}`);
           }
@@ -142,26 +161,26 @@ export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buff
           client.send(JSON.stringify(serverCommand));
         } else if (clientCommand.event === "selectOptions") {
           if (clientCommand.mode) {
-            selectedMode = clientCommand.mode;
+            state.selectedMode = clientCommand.mode;
           }
 
           if (clientCommand.sourceLanguage) {
-            selectedSourceLanguage = clientCommand.sourceLanguage;
+            state.selectedSourceLanguage = clientCommand.sourceLanguage;
           }
 
           if (clientCommand.targetLanguage) {
-            selectedTargetLanguage = clientCommand.targetLanguage;
+            state.selectedTargetLanguage = clientCommand.targetLanguage;
           }
 
-          logger.info({ selectedSourceLanguage, selectedTargetLanguage }, "Respawning due to options change");
+          logger.info({ selectedSourceLanguage: state.selectedSourceLanguage, selectedTargetLanguage: state.selectedTargetLanguage }, "Respawning due to options change");
 
-          await respawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
+          await respawnProcess(state, client);
 
           const serverCommand: ServerCommand = {
             event: "optionsSelected",
-            mode: selectedMode,
-            selectedSourceLanguage,
-            selectedTargetLanguage
+            mode: state.selectedMode,
+            selectedSourceLanguage: state.selectedSourceLanguage,
+            selectedTargetLanguage: state.selectedTargetLanguage
           };
 
           client.send(JSON.stringify(serverCommand));
@@ -174,7 +193,7 @@ export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buff
     client.on("close", async () => {
       logger.info("Client disconnected");
 
-      await terminateProcess();
+      await terminateProcess(state);
     });
   });
 };

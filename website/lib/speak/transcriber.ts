@@ -78,7 +78,7 @@ export const transcribe = async (
   sourceLanguage: AllowedLanguage,
   targetLanguage: AllowedLanguage
 ) => {
-  logger.info({ selectedMode, sourceLanguage }, "Transcribing");
+  logger.info({ selectedMode, sourceLanguage, targetLanguage }, "Transcribing");
 
   const transcribeStreamingClient = new TranscribeStreamingClient();
 
