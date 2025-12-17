@@ -3,7 +3,6 @@ import { IconAlertCircle, IconSearch } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
 import type { AlbumSearchResult } from "@lib/albums/types";
 import { EmptyState } from "@components/search/EmptyState";
-import { RecordingComponent } from "@components/audio/RecordingComponent";
 import { SearchResults } from "@components/search/SearchResults";
 
 export function SemanticSearch() {
@@ -100,11 +99,6 @@ export function SemanticSearch() {
         onKeyDown={handleKeyDown}
         leftSection={<IconSearch size={20} />}
         rightSection={loading ? <Loader size="xs" /> : undefined}
-      />
-
-      <RecordingComponent
-        onRecordingStart={() => setQuery("")}
-        onTranslation={(translation) => setQuery(translation.transcript || "")}
       />
 
       {error && (

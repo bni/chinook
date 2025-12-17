@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
-import { handleWebSocket } from "@lib/audio/handleWebSocket";
 import { logger } from "@lib/util/logger";
 import next from "next";
 import terminalLink from "terminal-link";
+import { webSocketServer } from "@lib/speak/webSocketServer";
 
 const app = express();
 
@@ -29,6 +29,6 @@ server.on("upgrade", async (req, socket, head) => {
   }
 
   if (req.url === "/api/internal/ws") {
-    handleWebSocket(req, socket, head);
+    webSocketServer(req, socket, head);
   }
 });

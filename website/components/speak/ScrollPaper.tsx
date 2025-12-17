@@ -1,6 +1,6 @@
 import { Button, Menu, Paper, ScrollArea, Text } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
-import type { AllowedLanguage } from "@lib/audio/types";
+import type { AllowedLanguage } from "@lib/speak/types";
 
 interface Language {
   code: AllowedLanguage;

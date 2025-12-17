@@ -1,12 +1,11 @@
-import type { AllowedLanguage, ServerCommand } from "@lib/audio/types";
+import type { AllowedLanguage, ServerCommand } from "@lib/speak/types";
 import { WebSocket } from "ws";
 import { logger } from "@lib/util/logger";
 import { secret } from "@lib/util/secrets";
-import { speak } from "@lib/audio/polly";
+import { speak } from "@lib/speak/polly";
 
 export const converse = async (
-  completeTranscription: string,
-  lastParagraphTranscription: string,
+  prompt: string,
   client: WebSocket,
   targetLanguage: AllowedLanguage
 ) => {
@@ -17,13 +16,13 @@ export const converse = async (
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ prompt: lastParagraphTranscription })
+    body: JSON.stringify({ prompt: prompt })
   });
 
   if (!response.ok || !response.body) {
     const error  = `Error: ${response.status} ${response.statusText} ${response.body}`;
 
-    console.error(error);
+    logger.error(error);
 
     throw Error(error);
   }
@@ -48,19 +47,32 @@ export const converse = async (
       if (line.trim()) {
         const message = JSON.parse(line);
 
-        const reply = message.content;
+        const agentReplyType: string = message.type;
 
-        if (typeof reply === "string") {
+        const agentReplyContent: string | undefined = message.content;
+
+        if (agentReplyType && agentReplyType === "assistant" && typeof agentReplyContent === "string") {
           const serverCommand: ServerCommand = {
-            transcript: completeTranscription,
-            translation: reply
+            event: "translation",
+            //transcript: prompt,
+            translation: agentReplyContent,
+            newLine: false
           };
 
           client.send(JSON.stringify(serverCommand));
 
-          if (reply) {
-            await speak(reply, client, targetLanguage);
+          if (agentReplyContent) {
+            await speak(agentReplyContent, client, targetLanguage);
           }
+        } else if (agentReplyType && agentReplyType === "done") {
+          const serverCommand: ServerCommand = {
+            event: "translation",
+            //transcript: prompt,
+            translation: "DONE!",
+            newLine: true
+          };
+
+          client.send(JSON.stringify(serverCommand));
         }
       }
     }

@@ -3,7 +3,7 @@ import {
   TranslateTextCommand,
   type TranslateTextCommandInput
 } from "@aws-sdk/client-translate";
-import type { AllowedLanguage } from "@lib/audio/types";
+import type { AllowedLanguage } from "@lib/speak/types";
 import { logger } from "@lib/util/logger";
 
 export const translate = async (

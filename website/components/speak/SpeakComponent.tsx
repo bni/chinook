@@ -1,8 +1,8 @@
-import type { AllowedLanguage, Mode } from "@lib/audio/types";
+import type { AllowedLanguage, Mode } from "@lib/speak/types";
 import { Button, Group } from "@mantine/core";
 import React, { useState } from "react";
 import { IconCheck } from "@tabler/icons-react";
-import { RecordingComponent } from "@components/audio/RecordingComponent";
+import { RecordingComponent } from "@components/speak/RecordingComponent";
 import { ScrollPaper } from "./ScrollPaper";
 
 const languageFlags: Record<AllowedLanguage, string> = {
@@ -13,9 +13,9 @@ const languageFlags: Record<AllowedLanguage, string> = {
   "es-ES": "🇪🇸"
 };
 
-export function TranslateComponent() {
-  const [transcript, setTranscript] = useState("");
-  const [translation, setTranslation] = useState("");
+export function SpeakComponent() {
+  const [transcriptLines, setTranscriptLines] = useState<string[]>([]);
+  const [translationLines, setTranslationLines] = useState<string[]>([]);
   const [sourceLanguage, setSourceLanguage] = useState<AllowedLanguage>("sv-SE"); // Default
   const [targetLanguage, setTargetLanguage] = useState<AllowedLanguage>("en-GB"); // Default
   const [mode, setMode] = useState<Mode>("translation");
@@ -56,8 +56,8 @@ export function TranslateComponent() {
             setMode("translation");
             setSourceLanguage("sv-SE");
             setTargetLanguage("en-GB");
-            setTranscript("");
-            setTranslation("");
+            setTranscriptLines([]);
+            setTranslationLines([]);
           }}
         >
           Translation
@@ -71,20 +71,34 @@ export function TranslateComponent() {
             setMode("conversation");
             setSourceLanguage("en-GB");
             setTargetLanguage("en-GB");
-            setTranscript("");
-            setTranslation("");
+            setTranscriptLines([]);
+            setTranslationLines([]);
           }}
         >
           Conversation
         </Button>
         <RecordingComponent
           onRecordingStart={() => {
-            setTranscript("");
-            setTranslation("");
+            setTranscriptLines([]);
+            setTranslationLines([]);
           }}
-          onTranslation={(translation) => {
-            setTranscript(translation.transcript || "");
-            setTranslation(translation.translation || "");
+          onServerCommand={(serverCommand) => {
+            if (serverCommand.transcript !== undefined) {
+              setTranscriptLines(prev => {
+                const updated = prev.length === 0
+                  ? [serverCommand.transcript!]
+                  : [...prev.slice(0, -1), serverCommand.transcript!];
+                return serverCommand.newLine ? [...updated, ""] : updated;
+              });
+            }
+            if (serverCommand.translation !== undefined) {
+              setTranslationLines(prev => {
+                const updated = prev.length === 0
+                  ? [serverCommand.translation!]
+                  : [...prev.slice(0, -1), serverCommand.translation!];
+                return serverCommand.newLine ? [...updated, ""] : updated;
+              });
+            }
           }}
           autoStart={false}
           sourceLanguage={sourceLanguage}
@@ -95,12 +109,12 @@ export function TranslateComponent() {
 
       <ScrollPaper
         flag={languageFlags[sourceLanguage]}
-        text={transcript}
+        text={transcriptLines.join("\n")}
         onLanguageChange={handleSourceLanguageChange}
       />
       <ScrollPaper
         flag={languageFlags[targetLanguage]}
-        text={translation}
+        text={translationLines.join("\n")}
         onLanguageChange={handleTargetLanguageChange}
       />
     </div>

@@ -30,8 +30,4 @@ server.registerTool(
   }
 );
 
-const main = async () => {
-  await server.connect(new StdioServerTransport());
-};
-
-await main();
+await server.connect(new StdioServerTransport());

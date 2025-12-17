@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand, Mode, ServerCommand } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, Mode, ServerCommand } from "@lib/speak/types";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { type RawData, WebSocket, WebSocketServer } from "ws";
 import { Duplex } from "stream";
@@ -87,7 +87,7 @@ const respawnProcess = async (
   await spawnProcess(client, selectedSourceLanguage, selectedTargetLanguage);
 };
 
-export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
   wss.handleUpgrade(req, socket, head, async (client: WebSocket) => {
     logger.info("Upgrading to WebSocket");
 
@@ -101,6 +101,7 @@ export const handleWebSocket = (req: IncomingMessage, socket: Duplex, head: Buff
       logger.error(errorMessage);
 
       const serverCommand: ServerCommand = {
+        event: "error",
         error: errorMessage
       };
 

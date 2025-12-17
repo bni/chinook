@@ -8,8 +8,8 @@
     "build": "tsc",
     "test": "vitest run --typecheck",
     "inspect": "npm run build && npx @modelcontextprotocol/inspector@0.16.2",
-    "start": "npm run build && node dist/agent.js",
-    "server": "npm run build && node dist/server.js",
+    "agent": "npm run build && node dist/agent.js",
+    "start": "npm run build && node dist/server.js",
     "client": "npm run build && node dist/client.js",
     "report": "npm run build && node dist/report.js",
     "hints": "npm run build && node dist/hints.js"

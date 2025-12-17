@@ -1,3 +1,8 @@
-docker build -t chinook .
+docker build -t website .
 
-docker run --name chinook -p 3000:3000 -d chinook
+docker run --name website -p 3000:3000 -d website
+
+
+docker build -t agent .
+
+docker run --name agent -p 4000:4000 -d agent

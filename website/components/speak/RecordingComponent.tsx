@@ -1,4 +1,4 @@
-import type { AllowedLanguage, ClientCommand, Mode, ServerCommand, Translation } from "@lib/audio/types";
+import type { AllowedLanguage, ClientCommand, Mode, ServerCommand } from "@lib/speak/types";
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
@@ -6,7 +6,7 @@ import { ActionIcon } from "@mantine/core";
 interface RecordingComponentProps {
   onRecordingStart: () => void;
   // eslint-disable-next-line no-unused-vars
-  onTranslation: (translation: Translation) => void;
+  onServerCommand: (serverCommand: ServerCommand) => void;
   autoStart?: boolean;
   sourceLanguage?: AllowedLanguage;
   targetLanguage?: AllowedLanguage;
@@ -14,7 +14,7 @@ interface RecordingComponentProps {
 }
 
 export function RecordingComponent({
-  onTranslation,
+  onServerCommand,
   onRecordingStart,
   autoStart = false,
   sourceLanguage,
@@ -30,13 +30,18 @@ export function RecordingComponent({
   const audioQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef<boolean>(false);
 
-  const playNextAudio = () => {
+  const playNextAudio = async () => {
     if (isPlayingRef.current || audioQueueRef.current.length === 0) {
       return;
     }
 
     if (!audioContextRef.current) {
       audioContextRef.current = new AudioContext();
+    }
+
+    // Resume AudioContext if suspended (browser autoplay policy)
+    if (audioContextRef.current.state === "suspended") {
+      await audioContextRef.current.resume();
     }
 
     const audioBuffer = audioQueueRef.current.shift();
@@ -62,6 +67,11 @@ export function RecordingComponent({
 
       if (!audioContextRef.current) {
         audioContextRef.current = new AudioContext();
+      }
+
+      // Resume AudioContext if suspended (browser autoplay policy)
+      if (audioContextRef.current.state === "suspended") {
+        await audioContextRef.current.resume();
       }
 
       const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
@@ -153,12 +163,7 @@ export function RecordingComponent({
 
         console.log("Server command received:", serverCommand);
 
-        const translation: Translation = {
-          transcript: serverCommand.transcript,
-          translation: serverCommand.translation
-        };
-
-        onTranslation(translation);
+        onServerCommand(serverCommand);
       }
     };
 

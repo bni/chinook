@@ -1,5 +1,5 @@
 import { Card, Grid, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconMessageLanguage, IconMusic, IconSearch } from "@tabler/icons-react";
+import { IconMessageLanguage, IconMusic, IconSearch, IconUsersGroup } from "@tabler/icons-react";
 import { AuthModal } from "@components/AuthModal";
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { HeadComponent } from "@components/HeadComponent";
@@ -30,6 +30,12 @@ export default function IndexPage() {
       icon: IconMessageLanguage,
       path: "/speak",
       color: "green"
+    },
+    {
+      title: "Employees",
+      icon: IconUsersGroup,
+      path: "/employees",
+      color: "orange"
     }
   ];
 

@@ -4,7 +4,7 @@ import {
   SynthesizeSpeechCommand,
   type VoiceId
 } from "@aws-sdk/client-polly";
-import type { AllowedLanguage } from "@lib/audio/types";
+import type { AllowedLanguage } from "@lib/speak/types";
 import { WebSocket } from "ws";
 import { logger } from "@lib/util/logger";
 
@@ -22,7 +22,7 @@ const voiceEngineMap: Record<AllowedLanguage, VoiceUsesEngine> = {
 };
 
 export const speak = async (
-  completeTranslation: string,
+  textToSpeak: string,
   client: WebSocket,
   targetLanguage: AllowedLanguage
 ): Promise<void> => {
@@ -33,7 +33,7 @@ export const speak = async (
   const pollyClient = new PollyClient();
 
   const command = new SynthesizeSpeechCommand({
-    Text: completeTranslation,
+    Text: textToSpeak,
     OutputFormat: "mp3",
     VoiceId: voiceEngine.voiceId,
     Engine: voiceEngine.engine

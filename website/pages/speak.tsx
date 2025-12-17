@@ -1,29 +1,14 @@
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { CollapseDesktop } from "@components/CollapseDesktop";
 import { Group } from "@mantine/core";
 import { HeadComponent } from "@components/HeadComponent";
-import { TranslateComponent } from "@components/translate/TranslateComponent";
+import { SpeakComponent } from "@components/speak/SpeakComponent";
 
-interface TranslatePageProps {
-  something: string;
-}
-
-export const getServerSideProps = (async () => {
-  return {
-    props: {
-      something: "something"
-    }
-  };
-}) satisfies GetServerSideProps<TranslatePageProps>;
-
-export default function ArtistsPage({
-
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function SpeakPage() {
   return (
     <CollapseDesktop>
-      <HeadComponent pageName={"Translator"}/>
+      <HeadComponent pageName={"Speak"}/>
       <Group mt={25} ml={25} mr={25} justify="space-between" grow>
-        <TranslateComponent/>
+        <SpeakComponent/>
       </Group>
     </CollapseDesktop>
   );
