@@ -1,8 +1,9 @@
 import type { AllowedLanguage, Mode } from "@lib/speak/types";
 import { Button, Group } from "@mantine/core";
 import React, { useState } from "react";
+import { AudioHandler } from "@components/speak/AudioHandler";
+import { AudioVisualizer } from "./AudioVisualizer";
 import { IconCheck } from "@tabler/icons-react";
-import { RecordingComponent } from "@components/speak/RecordingComponent";
 import { ScrollPaper } from "./ScrollPaper";
 
 const languageFlags: Record<AllowedLanguage, string> = {
@@ -19,6 +20,10 @@ export function SpeakComponent() {
   const [sourceLanguage, setSourceLanguage] = useState<AllowedLanguage>("sv-SE"); // Default
   const [targetLanguage, setTargetLanguage] = useState<AllowedLanguage>("en-GB"); // Default
   const [mode, setMode] = useState<Mode>("translation");
+
+  const [micAnalyser, setMicAnalyser] = useState<AnalyserNode | null>(null);
+  const [speakerAnalyser, setSpeakerAnalyser] = useState<AnalyserNode | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
 
   const handleSourceLanguageChange = (language: AllowedLanguage) => {
     if (mode === "conversation") {
@@ -77,10 +82,14 @@ export function SpeakComponent() {
         >
           Conversation
         </Button>
-        <RecordingComponent
+        <AudioHandler
           onRecordingStart={() => {
             setTranscriptLines([]);
             setTranslationLines([]);
+            setIsRecording(true);
+          }}
+          onRecordingStop={() => {
+            setIsRecording(false);
           }}
           onServerCommand={(serverCommand) => {
             if (serverCommand.transcript !== undefined) {
@@ -104,19 +113,35 @@ export function SpeakComponent() {
           sourceLanguage={sourceLanguage}
           targetLanguage={targetLanguage}
           mode={mode}
+          onMicrophoneAnalyserReady={setMicAnalyser}
+          onSpeakerAnalyserReady={setSpeakerAnalyser}
         />
       </Group>
 
-      <ScrollPaper
-        flag={languageFlags[sourceLanguage]}
-        text={transcriptLines.join("\n")}
-        onLanguageChange={handleSourceLanguageChange}
-      />
-      <ScrollPaper
-        flag={languageFlags[targetLanguage]}
-        text={translationLines.join("\n")}
-        onLanguageChange={handleTargetLanguageChange}
-      />
+      <div style={{ display: "flex", flex: 1, gap: "1rem", minHeight: 0 }}>
+        <div style={{ flex: "1 1 80%", display: "flex", flexDirection: "column" }}>
+          <ScrollPaper
+            flag={languageFlags[sourceLanguage]}
+            text={transcriptLines.join("\n")}
+            onLanguageChange={handleSourceLanguageChange}
+          />
+        </div>
+        <div style={{ flex: "0 0 20%", minWidth: "80px" }}>
+          <AudioVisualizer analyser={micAnalyser} isActive={isRecording} />
+        </div>
+      </div>
+      <div style={{ display: "flex", flex: 1, gap: "1rem", minHeight: 0 }}>
+        <div style={{ flex: "1 1 80%", display: "flex", flexDirection: "column" }}>
+          <ScrollPaper
+            flag={languageFlags[targetLanguage]}
+            text={translationLines.join("\n")}
+            onLanguageChange={handleTargetLanguageChange}
+          />
+        </div>
+        <div style={{ flex: "0 0 20%", minWidth: "80px" }}>
+          <AudioVisualizer analyser={speakerAnalyser} isActive={speakerAnalyser !== null} />
+        </div>
+      </div>
     </div>
   );
 }

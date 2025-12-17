@@ -3,24 +3,32 @@ import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { ActionIcon } from "@mantine/core";
 
-interface RecordingComponentProps {
+interface AudioHandlerProps {
   onRecordingStart: () => void;
+  onRecordingStop?: () => void;
   // eslint-disable-next-line no-unused-vars
   onServerCommand: (serverCommand: ServerCommand) => void;
   autoStart?: boolean;
   sourceLanguage?: AllowedLanguage;
   targetLanguage?: AllowedLanguage;
   mode?: Mode;
+  // eslint-disable-next-line no-unused-vars
+  onMicrophoneAnalyserReady?: (analyser: AnalyserNode | null) => void;
+  // eslint-disable-next-line no-unused-vars
+  onSpeakerAnalyserReady?: (analyser: AnalyserNode | null) => void;
 }
 
-export function RecordingComponent({
+export function AudioHandler({
   onServerCommand,
   onRecordingStart,
+  onRecordingStop,
   autoStart = false,
   sourceLanguage,
   targetLanguage,
-  mode
-}: RecordingComponentProps) {
+  mode,
+  onMicrophoneAnalyserReady,
+  onSpeakerAnalyserReady
+}: AudioHandlerProps) {
   const [isRecording, setIsRecording] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -29,6 +37,9 @@ export function RecordingComponent({
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingRef = useRef<boolean>(false);
+
+  const micAnalyserRef = useRef<AnalyserNode | null>(null);
+  const speakerAnalyserRef = useRef<AnalyserNode | null>(null);
 
   const playNextAudio = async () => {
     if (isPlayingRef.current || audioQueueRef.current.length === 0) {
@@ -50,7 +61,17 @@ export function RecordingComponent({
     isPlayingRef.current = true;
     const source = audioContextRef.current.createBufferSource();
     source.buffer = audioBuffer;
-    source.connect(audioContextRef.current.destination);
+
+    // Create speaker analyser if not exists
+    if (!speakerAnalyserRef.current) {
+      speakerAnalyserRef.current = audioContextRef.current.createAnalyser();
+      speakerAnalyserRef.current.fftSize = 1024;
+      speakerAnalyserRef.current.connect(audioContextRef.current.destination);
+      onSpeakerAnalyserReady?.(speakerAnalyserRef.current);
+    }
+
+    // Route: source -> analyser -> destination
+    source.connect(speakerAnalyserRef.current);
 
     source.onended = () => {
       isPlayingRef.current = false;
@@ -81,7 +102,7 @@ export function RecordingComponent({
 
       // Start playing if not already playing
       if (!isPlayingRef.current) {
-        playNextAudio();
+        await playNextAudio();
       }
     } catch (error) {
       console.error("Error decoding audio data:", error);
@@ -106,6 +127,17 @@ export function RecordingComponent({
 
       navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
         streamRef.current = stream;
+
+        // Create microphone analyser for visualization
+        if (!audioContextRef.current) {
+          audioContextRef.current = new AudioContext();
+        }
+        const micSource = audioContextRef.current.createMediaStreamSource(stream);
+        const micAnalyser = audioContextRef.current.createAnalyser();
+        micAnalyser.fftSize = 1024;
+        micSource.connect(micAnalyser);
+        micAnalyserRef.current = micAnalyser;
+        onMicrophoneAnalyserReady?.(micAnalyser);
 
         const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
         mediaRecorderRef.current = mediaRecorder;
@@ -205,10 +237,15 @@ export function RecordingComponent({
     audioQueueRef.current = [];
     isPlayingRef.current = false;
 
+    // Clear microphone analyser
+    micAnalyserRef.current = null;
+    onMicrophoneAnalyserReady?.(null);
+
     // Clear refs
     mediaRecorderRef.current = null;
     wsRef.current = null;
     setIsRecording(false);
+    onRecordingStop?.();
   };
 
   const handleMicrophoneClick = () => {

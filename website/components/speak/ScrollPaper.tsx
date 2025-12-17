@@ -15,14 +15,14 @@ const languages: Language[] = [
   { code: "es-ES", flag: "🇪🇸" }
 ];
 
-interface TranslationPanelProps {
+interface ScrollPaperProps {
   flag: string;
   text: string;
   // eslint-disable-next-line no-unused-vars
   onLanguageChange?: (languageCode: AllowedLanguage) => void;
 }
 
-export function ScrollPaper({ flag, text, onLanguageChange }: TranslationPanelProps) {
+export function ScrollPaper({ flag, text, onLanguageChange }: ScrollPaperProps) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     languages.find(lang => lang.flag === flag) || languages[0]
   );
