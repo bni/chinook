@@ -119,26 +119,26 @@ export function SpeakComponent() {
       </Group>
 
       <div style={{ display: "flex", flex: 1, gap: "1rem", minHeight: 0 }}>
-        <div style={{ flex: "1 1 80%", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: "1 1 90%", display: "flex", flexDirection: "column" }}>
           <ScrollPaper
             flag={languageFlags[sourceLanguage]}
             text={transcriptLines.join("\n")}
             onLanguageChange={handleSourceLanguageChange}
           />
         </div>
-        <div style={{ flex: "0 0 20%", minWidth: "80px" }}>
+        <div style={{ flex: "0 0 10%", minWidth: "80px", display: "flex", flexDirection: "column" }}>
           <AudioVisualizer analyser={micAnalyser} isActive={isRecording} />
         </div>
       </div>
       <div style={{ display: "flex", flex: 1, gap: "1rem", minHeight: 0 }}>
-        <div style={{ flex: "1 1 80%", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: "1 1 90%", display: "flex", flexDirection: "column" }}>
           <ScrollPaper
             flag={languageFlags[targetLanguage]}
             text={translationLines.join("\n")}
             onLanguageChange={handleTargetLanguageChange}
           />
         </div>
-        <div style={{ flex: "0 0 20%", minWidth: "80px" }}>
+        <div style={{ flex: "0 0 10%", minWidth: "80px", display: "flex", flexDirection: "column" }}>
           <AudioVisualizer analyser={speakerAnalyser} isActive={speakerAnalyser !== null} />
         </div>
       </div>
