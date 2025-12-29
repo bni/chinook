@@ -118,7 +118,7 @@ export function AudioHandler({
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 
-    const ws = new WebSocket(`${protocol}//${window.location.host}/api/internal/ws`);
+    const ws = new WebSocket(`${protocol}//${window.location.host}/api/internal/ws/speak`);
 
     wsRef.current = ws;
 

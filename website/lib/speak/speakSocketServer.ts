@@ -98,7 +98,7 @@ const respawnProcess = async (
   logger.info("FFmpeg spawn complete");
 };
 
-export const webSocketServer = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+export const speakSocketServer = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
   wss.handleUpgrade(req, socket, head, async (client: WebSocket) => {
     logger.info("Upgrading to WebSocket");
 

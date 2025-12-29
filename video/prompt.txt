@@ -1,0 +1,4 @@
+Ignore any text overlays on the video frames.
+What team wins the game? Analyze video stills in video/frames/*.jpg.
+Refer to times not frames. First still is at 2 minutes in and then frames is from the following 13 seconds.
+Output the results in the video/RESULT.md file.

@@ -3,7 +3,7 @@ import express from "express";
 import { logger } from "@lib/util/logger";
 import next from "next";
 import terminalLink from "terminal-link";
-import { webSocketServer } from "@lib/speak/webSocketServer";
+import { speakSocketServer } from "@lib/speak/speakSocketServer";
 
 const app = express();
 
@@ -28,7 +28,11 @@ server.on("upgrade", async (req, socket, head) => {
     await nextHmr(req, socket, head);
   }
 
-  if (req.url === "/api/internal/ws") {
-    webSocketServer(req, socket, head);
+  if (req.url === "/api/internal/ws/speak") {
+    speakSocketServer(req, socket, head);
+  }
+
+  if (req.url === "/api/internal/ws/video") {
+    // videoSocketServer(req, socket, head);
   }
 });
